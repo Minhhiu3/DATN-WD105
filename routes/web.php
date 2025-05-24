@@ -17,3 +17,14 @@ Route::get('/blogs', function () {
 Route::get('/blog-detail', function () {
     return view('client.pages.blog-detail');
 })->name('blog-detail');
+Route::get('/login', function () {
+    return view('client.pages.login');
+})->name('login');
+Route::get('/cart', function () {
+    return view('client.pages.cart');
+})->name('cart');
+Route::get('/checkout', function () {
+    return view('client.pages.checkout');
+})->name('checkout');
+
+

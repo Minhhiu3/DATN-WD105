@@ -21,8 +21,8 @@
                             <ul class="dropdown-menu">
                                 <li class="nav-item"><a class="nav-link" href="{{ route('products') }}">Sản phẩm</a></li>
                                 <li class="nav-item"><a class="nav-link" href="{{ route('product-detail') }}">Chi tiết sản phẩm</a></li>
-                                <li class="nav-item"><a class="nav-link" href="checkout.html">Thanh toán</a></li>
-                                <li class="nav-item"><a class="nav-link" href="cart.html">Giỏ hàng</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('checkout') }}">Thanh toán</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('cart') }}">Giỏ hàng</a></li>
                                 <li class="nav-item"><a class="nav-link" href="confirmation.html">Xác nhận đơn hàng</a></li>
                             </ul>
                         </li>
@@ -38,7 +38,7 @@
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                                 aria-expanded="false">Trang</a>
                             <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="login.html">Đăng nhập</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
                                 <li class="nav-item"><a class="nav-link" href="tracking.html">Theo dõi đơn hàng</a></li>
 
                             </ul>
