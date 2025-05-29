@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
+class OrderController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        return view('admin.index');
+        return view('admin.orders.index');
     }
 
 

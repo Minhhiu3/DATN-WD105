@@ -1,10 +1,24 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
 
-
-//admin
-Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index']);
+// Admin
+// Route::prefix('admin')->middleware('auth')->group(function () {
+//     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+//     Route::resource('/users', UserController::class);      // /admin/users
+//     Route::resource('/categories', CategoryController::class); // /admin/categories
+//     Route::resource('/products', ProductController::class);    // /admin/products
+// });
+Route::prefix('admin')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::resource('/users', UserController::class);      // /admin/users
+    Route::resource('/categories', CategoryController::class); // /admin/categories
+    Route::resource('/products', ProductController::class);    // /admin/products
+});
 
 //usser
 Route::get('/', function () {
