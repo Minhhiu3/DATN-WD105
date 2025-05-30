@@ -10,7 +10,7 @@
         <h3 class="card-title">Welcome</h3>
     </div>
     <div class="card-body">
-        <p>Chào mừng bạn đến với trang quản trị AdminLTE đơn giản!</p>
+        <p>Chào mừng bạn đến với trang quản trị Admin!</p>
     </div>
 </div>
 @stop
