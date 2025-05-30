@@ -10,7 +10,7 @@
         </li>
         <!-- ql san pham -->
         <li class="nav-item">
-            <a href="{{ url('/admin/productscontroller') }}"
+            <a href="{{ url('/admin/products') }}"
                 class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="fa-brands fa-product-hunt"></i>
                 <p>Quản lý sản phẩm</p>
@@ -18,14 +18,14 @@
         </li>
         <!-- ql nguoi dung -->
         <li class="nav-item">
-            <a href="{{ url('/admin/usercontroller') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ url('/admin/users') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-users"></i>
                 <p>Quản lý người dùng</p>
             </a>
         </li>
         <!-- ql danh muc -->
         <li class="nav-item">
-            <a href="{{ url('/admin/categorycontroller') }}"
+            <a href="{{ url('/admin/categories') }}"
                 class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="fa-solid fa-layer-group"></i>
                 <p>Quản lý danh mục</p>
