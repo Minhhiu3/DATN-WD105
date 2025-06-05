@@ -45,9 +45,9 @@
         <!-- Content Wrapper -->
         <div class="content-wrapper" style="min-height: 100vh;">
             <section class="content-header">
-                <div class="container-fluid pt-3">
+                {{-- <div class="container-fluid pt-3">
                     <h1>@yield('page_title', 'Dashboard')</h1>
-                </div>
+                </div> --}}
             </section>
 
             <section class="content container-fluid">
