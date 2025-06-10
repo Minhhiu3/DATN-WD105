@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -12,8 +14,106 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('admin.products.index');
+
+       $products = Product::with(['category', 'albumProducts'])->latest()->paginate(10);
+        return view('admin.products.index', compact('products'));
     }
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $categories= Category::all();
+        // Trả về view để tạo sản phẩm mới
+          return view('admin.products.create', compact('categories'));
+    }
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+
+        $request->validate([
+            'name_product' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:category,id_category',
+            'description' => 'nullable|string',
+        ]);
+
+
+        Product::create($request->all());
+
+
+       return redirect()->route('products.index')->with('success', 'Thêm mới thành công.');
+    }
+    /**
+     * Display the specified resource.
+     */
+    public function show(Product $product)
+    {
+      $categories= Category::all();
+        return view('admin.products.show', compact('product','categories'));
+    }
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Product $product)
+    {
+      $categories= Category::all();
+        return view('admin.products.edit', compact('product', 'categories'));
+    }
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Product $product)
+    {
+
+        $request->validate([
+            'name_product' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:category,id_category',
+            'description' => 'nullable|string',
+        ]);
+
+
+        $product->update($request->all());
+
+
+
+        return redirect()->route('products.index')->with('success', 'Cập Nhật Thành Công.');
+    }
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Product $product)
+    {
+
+        $product->delete();
+
+
+        return redirect()->route('products.index')->with('success', 'Xóa Sản phẩm thành công.');
+    }
+    /**
+     * Search for products by name.
+     */
+    public function search(Request $request)
+    {
+        // Validate dữ liệu tìm kiếm
+        $request->validate([
+            'query' => 'required|string|max:255',
+        ]);
+
+        // Tìm kiếm sản phẩm theo tên
+        $products = Product::where('name', 'like', '%' . $request->query . '%')
+            ->with('category')
+            ->latest()
+            ->paginate(10);
+
+        // Trả về view với kết quả tìm kiếm
+        return view('admin.products.index', compact('products'));
+    }
+
+
 
 
 }
