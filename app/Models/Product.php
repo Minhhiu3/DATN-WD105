@@ -26,8 +26,8 @@ class Product extends Model
     protected $fillable = [
         'name_product',
         'price',
-        'describe',
-        'id_category',
+        'description',
+        'category_id',
     ];
 
     /**
@@ -42,7 +42,7 @@ class Product extends Model
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'id_category', 'id_category');
+        return $this->belongsTo(Category::class, 'category_id', 'id_category');
     }
     public function albumProducts(): HasMany
 {
@@ -50,4 +50,5 @@ class Product extends Model
     // và khóa chính trong bảng `products` là 'id_product'
     return $this->hasMany(AlbumProduct::class, 'product_id', 'id_product');
 }
+
 }
