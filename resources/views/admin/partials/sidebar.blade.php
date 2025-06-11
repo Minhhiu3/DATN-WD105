@@ -16,13 +16,6 @@
                 <p>Quản lý sản phẩm</p>
             </a>
         </li>
-        <!-- ql nguoi dung -->
-        <li class="nav-item">
-            <a href="{{ url('/admin/users') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                <i class="nav-icon fas fa-users"></i>
-                <p>Quản lý người dùng</p>
-            </a>
-        </li>
         <!-- ql danh muc -->
         <li class="nav-item">
             <a href="{{ url('/admin/categories') }}"
@@ -31,6 +24,14 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
+        <!-- ql nguoi dung -->
+        <li class="nav-item">
+            <a href="{{ url('/admin/users') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-users"></i>
+                <p>Quản lý người dùng</p>
+            </a>
+        </li>
+
         <!-- ql đơn hànghàng -->
         <li class="nav-item">
             <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
