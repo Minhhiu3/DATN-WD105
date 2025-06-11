@@ -10,7 +10,7 @@
 
        <div class="card-header d-flex justify-content-between align-items-center">
 
-        <a href="{{ route('categories.create') }}" class="btn btn-primary">Thêm mới</a>
+        <a href="{{ route('sizes.create') }}" class="btn btn-primary">Thêm mới</a>
     </div>
 
 
@@ -27,14 +27,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($categories as $category)
+                    @foreach ($sizes as $size)
                         <tr>
-                            <td>{{ $category->id_category }}</td>
-                            <td>{{ $category->name_category }}</td>
+                            <td>{{ $size->id_size }}</td>
+                            <td>{{ $size->name }}</td>
                             <td>
-                                <a href="{{ route('categories.edit', $category->id_category) }}"
+                                <a href="{{ route('sizes.edit', $size->id_size) }}"
                                     class="btn btn-warning btn-sm">Sửa</a>
-                                <form action="{{ route('categories.destroy', $category->id_category) }}" method="POST"
+                                <form action="{{ route('sizes.destroy', $size->id_size) }}" method="POST"
                                     style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')

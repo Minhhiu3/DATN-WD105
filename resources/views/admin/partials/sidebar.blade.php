@@ -24,6 +24,14 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
+        <!-- ql size -->
+        <li class="nav-item">
+            <a href="{{ url('/admin/sizes') }}"
+                class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                <i class="fa-solid fa-layer-group"></i>
+                <p>Quản lý size</p>
+            </a>
+        </li>
         <!-- ql nguoi dung -->
         <li class="nav-item">
             <a href="{{ url('/admin/users') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
