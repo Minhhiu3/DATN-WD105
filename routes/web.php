@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SizeController;
+
 
 // Admin
 // Route::prefix('admin')->middleware('auth')->group(function () {
@@ -18,6 +20,8 @@ Route::prefix('admin')->group(function () {
     Route::resource('/users', UserController::class);      // /admin/users
     Route::resource('/categories', CategoryController::class); // /admin/categories
     Route::resource('/products', ProductController::class);    // /admin/products
+    Route::resource('/sizes', SizeController::class);    // /admin/size
+
 });
 
 //usser
