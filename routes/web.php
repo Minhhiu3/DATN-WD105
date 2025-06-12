@@ -5,7 +5,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
-
+use App\Http\Controllers\Client\ClientProductController;
+use App\Http\Controllers\Client\HomeController;
 // Admin
 // Route::prefix('admin')->middleware('auth')->group(function () {
 //     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -20,16 +21,10 @@ Route::prefix('admin')->group(function () {
     Route::resource('/products', ProductController::class);    // /admin/products
 });
 
-//usser
-Route::get('/', function () {
-    return view('client.pages.home');
-})->name('home');
-Route::get('/products', function () {
-    return view('client.pages.products');
-})->name('products');
-Route::get('/product-detail', function () {
-    return view('client.pages.product-detail');
-})->name('product-detail');
+//user
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/products', [ClientProductController::class, 'index'])->name('products');
+Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->name('client.product.show');
 
 Route::get('/blogs', function () {
     return view('client.pages.blogs');
