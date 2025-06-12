@@ -1,5 +1,12 @@
 @extends('layouts.client_home')
 @section('title','Trang Chủ')
+<style>
+	.owl-nav-custom .btn {
+    margin: 0 5px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+</style>
 @section('content')
 	<!-- start banner Area -->
 	<section class="banner-area">
@@ -8,42 +15,26 @@
 				<div class="col-lg-12">
 					<div class="active-banner-slider owl-carousel">
 						<!-- single-slide -->
-						<div class="row single-slide align-items-center d-flex">
-							<div class="col-lg-5 col-md-6">
-								<div class="banner-content">
-									<h1>Bộ sưu tập mới <br>của Nike!</h1>
-									<p>Khám phá những mẫu giày mới nhất với thiết kế đột phá, mang đến sự thoải mái và phong cách cho mọi hoạt động của bạn.</p>
-									<div class="add-bag d-flex align-items-center">
-										<a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
-										<span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-7">
-								<div class="banner-img">
-									<img class="img-fluid" src="{{asset('assets/img/banner/banner-img.png')}}" alt="">
-								</div>
-							</div>
-						</div>
-						<!-- single-slide -->
-						<div class="row single-slide">
-							<div class="col-lg-5">
-								<div class="banner-content">
-									<h1>Bộ sưu tập mới <br>của Nike!</h1>
-									<p>Khám phá những mẫu giày mới nhất với thiết kế đột phá, mang đến sự thoải mái và phong cách cho mọi hoạt động của bạn.</p>
-									<div class="add-bag d-flex align-items-center">
-										<a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
-										<span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-7">
-								<div class="banner-img">
-									<img class="img-fluid" src="{{asset('assets/img/banner/banner-img.png')}}" alt="">
-								</div>
-							</div>
-						</div>
-					</div>
+						
+						@foreach ($banners as $banner)
+	<div class="row single-slide align-items-center d-flex">
+		<div class="col-lg-5 col-md-6">
+			<div class="banner-content">
+				<h1>{{ $banner->title ?? 'Bộ sưu tập mới của Nike!' }}</h1>
+				<p>Khám phá những mẫu giày mới nhất...</p>
+				<div class="add-bag d-flex align-items-center">
+					<a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
+					<span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-7">
+			<div class="banner-img">
+				<img class="img-fluid" src="{{ asset('storage/' . $banner->image) }}" style="max-height: 400px; object-fit: cover;" alt="{{ $banner->name }}">
+			</div>
+		</div>
+	</div>
+@endforeach
 				</div>
 			</div>
 		</div>
@@ -795,5 +786,26 @@
 	<!-- End brand Area -->
 
 	
+	<script>
+    $(document).ready(function(){
+        var bannerSlider = $('.active-banner-slider').owlCarousel({
+            items: 1,
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 5000,
+            nav: false, // tắt nav mặc định
+            dots: true,
+            animateOut: 'fadeOut',
+        });
 
+        // Gán nút tùy chỉnh
+        $('.btn-next').click(function() {
+            bannerSlider.trigger('next.owl.carousel');
+        });
+
+        $('.btn-prev').click(function() {
+            bannerSlider.trigger('prev.owl.carousel');
+        });
+    });
+</script>
 @endsection
