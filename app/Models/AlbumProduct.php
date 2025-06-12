@@ -21,11 +21,12 @@ class AlbumProduct extends Model
 
     protected $fillable = [
         'product_id',
-        'image',
+        'image'
     ];
 
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class, 'product_id', 'id_product');
-    }
+// Kiểm tra khóa ngoại
+public function product()
+{
+    return $this->belongsTo(Product::class); // Phải khớp tên bảng
+}
 }

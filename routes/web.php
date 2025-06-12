@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SizeController;
-
+use App\Http\Controllers\Admin\AlbumProductController;
 
 // Admin
 // Route::prefix('admin')->middleware('auth')->group(function () {
@@ -21,6 +21,8 @@ Route::prefix('admin')->group(function () {
     Route::resource('/categories', CategoryController::class); // /admin/categories
     Route::resource('/products', ProductController::class);    // /admin/products
     Route::resource('/sizes', SizeController::class);    // /admin/size
+    Route::resource('/Ablum_products', AlbumProductController::class);    // /admin/size
+    Route::resource('/Variants', SizeController::class);    // /admin/size
 
 });
 
