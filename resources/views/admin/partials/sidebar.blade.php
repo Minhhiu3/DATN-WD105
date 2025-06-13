@@ -24,6 +24,7 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
+<<<<<<< HEAD
         <!-- ql size -->
         <li class="nav-item">
             <a href="{{ url('/admin/sizes') }}"
@@ -40,6 +41,16 @@
             </a>
         </li>
 
+=======
+        <!-- ql banner -->
+        <li class="nav-item">
+            <a href="{{ url('/admin/banner') }}"
+                class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                <i class="fa-solid fa-layer-group"></i>
+                <p>Quản lý banner</p>
+            </a>
+        </li>
+>>>>>>> origin/quan
         <!-- ql đơn hànghàng -->
         <li class="nav-item">
             <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
