@@ -38,12 +38,12 @@ class DiscountController extends Controller
     }
     public function edit(DiscountCode $discount)
     {
-        return view('discounts.edit', compact('discount'));
+        return view('admin.discounts.edit', compact('discount'));
     }
-    public function update(Request $request, $id)
+    public function update(Request $request, DiscountCode $discount)
     {
 
-        $data = $request->validate([
+       $request->validate([
             'code' => 'required|string|max:255',
             'type' => 'required|string',
             'value' => 'required|numeric',
@@ -57,14 +57,15 @@ class DiscountController extends Controller
 
         // Update the discount code in the database
         // DiscountCode::findOrFail($id)->update($data);
-
-        return redirect()->route('admin.discounts.index')->with('success', 'Discount code updated successfully.');
+$discount->update($request->all());
+        return redirect()->route('discounts.index')->with('success', 'Sửa mã giảm giá thành công.');
     }
-    public function destroy($id)
+    public function destroy(DiscountCode $discount)
     {
         // Logic to delete a discount code
         // DiscountCode::destroy($id);
+        $discount->delete();
 
-        return redirect()->route('admin.discounts.index')->with('success', 'Discount code deleted successfully.');
+        return redirect()->route('discounts.index')->with('success', 'Mã giảm giá đã được xóa.');
     }
 }

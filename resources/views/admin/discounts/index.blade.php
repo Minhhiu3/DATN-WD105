@@ -27,6 +27,7 @@
                       <th>Đơn tối thiểu</th>
                        <th>Ngày bắt đầu</th>
                         <th>Ngày kết thúc</th>
+                    <th>Trạng thái</th>
 
                     <th>Hành động</th>
                 </tr>
@@ -37,9 +38,9 @@
                         <td>{{ $discount->discount_id }}</td>
                         <td>{{ $discount->code }}</td>
                         <td>@if ($discount->type == 0)
-                              {{$discount->type }} - ( % )
+                              %
                             @elseif ($discount->type == 1)
-                                {{$discount->type }} - ( Giá trị )
+                                Giá trị
                             @else
                                 Không xác định
                             @endif</td>
@@ -54,6 +55,13 @@
                             <td>{{ $discount->min_order_value }}</td>
                               <td>{{ $discount->start_date }}</td>
                                 <td>{{ $discount->end_date }}</td>
+                                    <td>@if ($discount->is_active == 0)
+                               Không hoạt động
+                            @elseif ($discount->is_active == 1)
+                                 Hoạt động
+                            @else
+                                Không xác định
+                            @endif</td>
 
                         <td>
                             <a href="{{ route('discounts.edit', $discount->discount_id) }}"
