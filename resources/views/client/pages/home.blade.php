@@ -1,5 +1,11 @@
 @extends('layouts.client_home')
-@section('title', 'Trang Chủ')
+@section('title', 'Trang Chủ') <style>
+.owl-nav-custom .btn {
+    margin: 0 5px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+</style>
 @section('content')
 <!-- start banner Area -->
 <section class="banner-area">
@@ -8,12 +14,13 @@
             <div class="col-lg-12">
                 <div class="active-banner-slider owl-carousel">
                     <!-- single-slide -->
+
+                    @foreach ($banners as $banner)
                     <div class="row single-slide align-items-center d-flex">
                         <div class="col-lg-5 col-md-6">
                             <div class="banner-content">
-                                <h1>Bộ sưu tập mới <br>của Nike!</h1>
-                                <p>Khám phá những mẫu giày mới nhất với thiết kế đột phá, mang đến sự thoải mái và phong
-                                    cách cho mọi hoạt động của bạn.</p>
+                                <h1>{{ $banner->title ?? 'Bộ sưu tập mới của Nike!' }}</h1>
+                                <p>Khám phá những mẫu giày mới nhất...</p>
                                 <div class="add-bag d-flex align-items-center">
                                     <a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
                                     <span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
@@ -22,35 +29,19 @@
                         </div>
                         <div class="col-lg-7">
                             <div class="banner-img">
-                                <img class="img-fluid" src="{{asset('assets/img/banner/banner-img.png')}}" alt="">
+                                <img class="img-fluid" src="{{ asset('storage/' . $banner->image) }}"
+                                    style="max-height: 400px; object-fit: cover;" alt="{{ $banner->name }}">
                             </div>
                         </div>
                     </div>
-                    <!-- single-slide -->
-                    <div class="row single-slide">
-                        <div class="col-lg-5">
-                            <div class="banner-content">
-                                <h1>Bộ sưu tập mới <br>của Nike!</h1>
-                                <p>Khám phá những mẫu giày mới nhất với thiết kế đột phá, mang đến sự thoải mái và phong
-                                    cách cho mọi hoạt động của bạn.</p>
-                                <div class="add-bag d-flex align-items-center">
-                                    <a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
-                                    <span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-7">
-                            <div class="banner-img">
-                                <img class="img-fluid" src="{{asset('assets/img/banner/banner-img.png')}}" alt="">
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
-    </div>
 </section>
 <!-- End banner Area -->
+<!-- End banner Area -->
+
 
 <!-- start features Area -->
 <section class="features-area section_gap">
@@ -178,13 +169,13 @@
                 <div class="col-lg-6 text-center">
                     <div class="section-title">
                         <h1>Sản phẩm mới nhất</h1>
-                        <p>Khám phá những mẫu giày mới nhất, được thiết kế để mang lại sự thoải mái và phong cách tối ưu
+                        <p>Khám phá những mẫu giày mới nhất, được thiết kế để mang lại sự thoải mái và phong cách
+                            tối ưu
                             cho bạn.</p>
                     </div>
                 </div>
             </div>
             <div class="row">
-
 
 
 
@@ -205,7 +196,8 @@
                             <div class="price">
                                 <h6>{{ number_format($product->price, 0, ',', '.') }} VNĐ</h6>
                                 {{-- Giá gạch nếu có, có thể thêm cột `old_price` trong DB nếu muốn --}}
-                                {{-- <h6 class="l-through">{{ number_format($product->old_price, 0, ',', '.') }} VNĐ
+                                {{-- <h6 class="l-through">{{ number_format($product->old_price, 0, ',', '.') }}
+                                VNĐ
                                 </h6> --}}
                             </div>
                             <div class="prd-bottom">
@@ -241,7 +233,8 @@
                 <div class="col-lg-6 text-center">
                     <div class="section-title">
                         <h1>Sản phẩm sắp ra mắt</h1>
-                        <p>Khám phá những mẫu giày sắp ra mắt, hứa hẹn mang đến phong cách và hiệu suất vượt trội.</p>
+                        <p>Khám phá những mẫu giày sắp ra mắt, hứa hẹn mang đến phong cách và hiệu suất vượt trội.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -598,4 +591,29 @@
 
 
 
+
+
+
+<script>
+$(document).ready(function() {
+    var bannerSlider = $('.active-banner-slider').owlCarousel({
+        items: 1,
+        loop: true,
+        autoplay: true,
+        autoplayTimeout: 5000,
+        nav: false, // tắt nav mặc định
+        dots: true,
+        animateOut: 'fadeOut',
+    });
+
+    // Gán nút tùy chỉnh
+    $('.btn-next').click(function() {
+        bannerSlider.trigger('next.owl.carousel');
+    });
+
+    $('.btn-prev').click(function() {
+        bannerSlider.trigger('prev.owl.carousel');
+    });
+});
+</script>
 @endsection
