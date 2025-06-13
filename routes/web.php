@@ -17,7 +17,8 @@ Route::prefix('admin')->group(function () {
     Route::resource('/categories', CategoryController::class); // /admin/categories
     Route::resource('/products', ProductController::class);    // /admin/products
     Route::resource('/sizes', SizeController::class);    // /admin/size
-
+Route::resource('/discounts', DiscountController::class); // /admin/discounts
+    Route::resource('/banners', BannerController::class); // /admin/banners
 });
 
 // User
