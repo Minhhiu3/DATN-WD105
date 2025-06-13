@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SizeController;
 
@@ -21,7 +22,7 @@ Route::prefix('admin')->group(function () {
     Route::resource('/categories', CategoryController::class); // /admin/categories
     Route::resource('/products', ProductController::class);    // /admin/products
     Route::resource('/sizes', SizeController::class);    // /admin/size
-
+Route::resource('/discounts', DiscountController::class); // /admin/discounts
 });
 
 //usser
