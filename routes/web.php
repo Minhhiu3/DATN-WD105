@@ -3,6 +3,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\BannerController;
@@ -12,11 +13,12 @@ use App\Http\Controllers\Client\HomeController;
 // Admin
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::resource('/users', UserController::class);
-    Route::resource('/categories', CategoryController::class);
-    Route::resource('/products', ProductController::class);
-    Route::resource('/sizes', SizeController::class);
-    Route::resource('/banner', BannerController::class);
+    Route::resource('/users', UserController::class);      // /admin/users
+    Route::resource('/categories', CategoryController::class); // /admin/categories
+    Route::resource('/products', ProductController::class);    // /admin/products
+    Route::resource('/sizes', SizeController::class);    // /admin/size
+Route::resource('/discounts', DiscountController::class); // /admin/discounts
+    Route::resource('/banners', BannerController::class); // /admin/banners
 });
 
 // User

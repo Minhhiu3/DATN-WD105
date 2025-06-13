@@ -188,8 +188,20 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
                         {{-- Ảnh đại diện sản phẩm (nếu có ảnh trong album hoặc cột riêng) --}}
-                        <img class="img-fluid" src="{{ asset('assets/img/product/default.jpg') }}"
-                            alt="{{ $product->name_product }}">
+                        {{-- <img class="img-fluid" src="{{ asset('assets/img/product/default.jpg') }}"
+                            alt="{{ $product->name_product }}"> --}}
+                              {{-- <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                    @foreach($product->albumProducts as $album)
+                                        <img class="img-fluid" src="{{ $album->image }}"
+                                            alt="Ảnh của {{ $product->name_product }}"
+                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+                                    @endforeach
+                                </div> --}}
+                                @if ($product->albumProducts->count() > 0)
+                            <img class="img-fluid" src="{{ $product->albumProducts->first()->image }}" alt="Ảnh của {{ $product->name_product }}">
+                        @else
+                            <img class="img-fluid" src="{{ asset('assets/img/product/default.jpg') }}" alt="Ảnh mặc định">
+                        @endif
 
                         <div class="product-details">
                             <h6>{{ $product->name_product }}</h6>
