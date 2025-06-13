@@ -25,18 +25,12 @@
         <div class="row s_product_inner">
             <div class="col-lg-6">
                 <div class="s_Product_carousel">
-                    @if($product->albumProducts && $product->albumProducts->count())
-                    @foreach($product->albumProducts as $album)
-                    <div class="single-prd-item">
-                        <img class="img-fluid" src="{{ asset($album->image ?? 'assets/img/product/default.jpg') }}"
-                            alt="{{ $product->name_product }}">
-                    </div>
-                    @endforeach
+                  @if($product->albumProducts->count())
+                        @foreach($product->albumProducts as $album)
+                            <img src="{{ asset($album->image ?? 'assets/img/product/default.jpg') }}" alt="{{ $product->name_product }}" class="img-fluid mb-2">
+                        @endforeach
                     @else
-                    <div class="single-prd-item">
-                        <img class="img-fluid" src="{{ asset('assets/img/product/default.jpg') }}"
-                            alt="{{ $product->name_product }}">
-                    </div>
+                        <img src="{{ asset('assets/img/product/default.jpg') }}" alt="{{ $product->name_product }}" class="img-fluid">
                     @endif
                 </div>
             </div>
