@@ -187,33 +187,22 @@
                 @foreach ($products as $product)
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        {{-- Ảnh đại diện sản phẩm (nếu có ảnh trong album hoặc cột riêng) --}}
-                        {{-- <img class="img-fluid" src="{{ asset('assets/img/product/default.jpg') }}"
-                            alt="{{ $product->name_product }}"> --}}
-                              {{-- <div style="display: flex; flex-wrap: wrap; gap: 5px;">
-                                    @foreach($product->albumProducts as $album)
-                                        <img class="img-fluid" src="{{ $album->image }}"
-                                            alt="Ảnh của {{ $product->name_product }}"
-                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
-                                    @endforeach
-                                </div> --}}
-                                @if ($product->albumProducts->count() > 0)
-                            <img class="img-fluid" src="{{ $product->albumProducts->first()->image }}" alt="Ảnh của {{ $product->name_product }}">
+                        @if ($product->albumProducts->count() > 0)
+                        <img class="img-fluid" src="{{ $product->albumProducts->first()->image }}"
+                            alt="Ảnh của {{ $product->name_product }}">
                         @else
-                            <img class="img-fluid" src="{{ asset('assets/img/product/default.jpg') }}" alt="Ảnh mặc định">
+                        <img class="img-fluid" src="{{ asset('assets/img/product/default.jpg') }}" alt="Ảnh mặc định">
                         @endif
 
                         <div class="product-details">
                             <h6>{{ $product->name_product }}</h6>
                             <div class="price">
                                 <h6>{{ number_format($product->price, 0, ',', '.') }} VNĐ</h6>
-                                {{-- Giá gạch nếu có, có thể thêm cột `old_price` trong DB nếu muốn --}}
-                                {{-- <h6 class="l-through">{{ number_format($product->old_price, 0, ',', '.') }}
-                                VNĐ
-                                </h6> --}}
                             </div>
                             <div class="prd-bottom">
-                                <a href="#" class="social-info">
+                                <a href="javascript:void(0);" class="social-info add-to-cart-btn"
+                                    data-id="{{ $product->id_product }}" data-name="{{ $product->name_product }}"
+                                    data-price="{{ $product->price }}" data-size="M">
                                     <span class="ti-bag"></span>
                                     <p class="hover-text">Thêm vào giỏ hàng</p>
                                 </a>
@@ -234,6 +223,7 @@
                     </div>
                 </div>
                 @endforeach
+
 
             </div>
         </div>
@@ -606,26 +596,5 @@
 
 
 
-<script>
-$(document).ready(function() {
-    var bannerSlider = $('.active-banner-slider').owlCarousel({
-        items: 1,
-        loop: true,
-        autoplay: true,
-        autoplayTimeout: 5000,
-        nav: false, // tắt nav mặc định
-        dots: true,
-        animateOut: 'fadeOut',
-    });
 
-    // Gán nút tùy chỉnh
-    $('.btn-next').click(function() {
-        bannerSlider.trigger('next.owl.carousel');
-    });
-
-    $('.btn-prev').click(function() {
-        bannerSlider.trigger('prev.owl.carousel');
-    });
-});
-</script>
 @endsection
