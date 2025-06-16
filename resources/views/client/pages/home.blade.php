@@ -19,12 +19,8 @@
                     <div class="row single-slide align-items-center d-flex">
                         <div class="col-lg-5 col-md-6">
                             <div class="banner-content">
-                                <h1>{{ $banner->title ?? 'Bộ sưu tập mới của Nike!' }}</h1>
-                                <p>Khám phá những mẫu giày mới nhất...</p>
-                                <div class="add-bag d-flex align-items-center">
-                                    <a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
-                                    <span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
-                                </div>
+                                <h1>{{ $banner->name ?? 'Bộ sưu tập mới của Nike!' }}</h1>
+                               
                             </div>
                         </div>
                         <div class="col-lg-7">
