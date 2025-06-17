@@ -56,20 +56,21 @@
                         <li class="nav-item dropdown-cart position-relative">
                             <a href="javascript:void(0)" class="cart">
                                 <span class="ti-bag"></span>
-                                <span id="cart-count" class="badge badge-danger"
-                                    style="position:absolute; top:-5px; right:-10px; font-size: 12px; display: none;">0</span>
                             </a>
                             <div id="mini-cart" class="mini-cart shadow p-3 bg-white rounded"
-                                style="display: none; position: absolute; right: 0; top: 120%; width: 300px; z-index: 1000;">
-                                <div id="mini-cart-items"></div>
+                                style="display: none; position: absolute; right: 0; top: 120%; width: 320px; z-index: 1000;">
+
+                                <div id="mini-cart-items" class="mb-2"></div>
+                                <div id="mini-cart-total" class="text-right font-weight-bold mt-2"></div>
                                 <div class="text-center mt-2">
                                     <a href="{{ route('cart') }}" class="btn btn-primary btn-sm">Xem giỏ hàng</a>
                                 </div>
                             </div>
                         </li>
+
                         <!-- mini cart -->
-                        <div id="mini-cart-items"></div>
-                        <div id="mini-cart-total" class="text-right font-weight-bold mt-2"></div>
+                        <!-- <div id="mini-cart-items"></div>
+                        <div id="mini-cart-total" class="text-right font-weight-bold mt-2"></div> -->
 
 
 
@@ -96,93 +97,3 @@
 
 
 <!-- fe scrip -->
-<!-- add to cart scrip -->
-<script>
-function addToCart(product) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-    const index = cart.findIndex(
-        item => item.id === product.id && item.size === product.size
-    );
-
-    if (index !== -1) {
-        cart[index].quantity += product.quantity;
-    } else {
-        cart.push(product);
-    }
-
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
-}
-
-function updateCartCount() {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    let totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const cartCountEl = document.getElementById('cart-count');
-
-    if (cartCountEl) {
-        if (totalQuantity > 0) {
-            cartCountEl.style.display = 'inline-block';
-            cartCountEl.innerText = totalQuantity;
-        } else {
-            cartCountEl.style.display = 'none';
-        }
-    }
-
-    renderMiniCart(cart);
-}
-
-function renderMiniCart(cart) {
-    const container = document.getElementById('mini-cart-items');
-    const totalEl = document.getElementById('mini-cart-total');
-
-    if (!container || !totalEl) return;
-
-    container.innerHTML = '';
-    let total = 0;
-
-    if (cart.length === 0) {
-        container.innerHTML = '<p class="text-center">Giỏ hàng trống</p>';
-        totalEl.innerText = '';
-        return;
-    }
-
-    cart.forEach((item, index) => {
-        total += item.price * item.quantity;
-        const el = document.createElement('div');
-        el.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
-        el.innerHTML = `
-            <div>
-                <strong>${item.name}</strong><br>
-                <small>SL: ${item.quantity} - Size: ${item.size}</small>
-            </div>
-            <div class="text-right">
-                <small>${item.price.toLocaleString()}₫</small><br>
-                <button class="btn btn-sm btn-danger btn-delete-item" data-index="${index}">&times;</button>
-            </div>
-        `;
-        container.appendChild(el);
-    });
-
-    totalEl.innerText = `Tổng: ${total.toLocaleString()}₫`;
-
-    document.querySelectorAll('.btn-delete-item').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const index = this.getAttribute('data-index');
-            removeFromCart(index);
-        });
-    });
-}
-
-function removeFromCart(index) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.splice(index, 1);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
-}
-
-// Tự động hiển thị giỏ hàng từ localStorage khi load lại trang
-document.addEventListener('DOMContentLoaded', () => {
-    updateCartCount();
-});
-</script>
