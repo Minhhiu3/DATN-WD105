@@ -27,7 +27,6 @@
                         <th>Tên Sản Phẩm</th>
                         <th>Giá</th>
                         <th>Danh Mục</th>
-                        <th>Mô tả</th>
                         <th>Biến thể</th>
                         <th>Ablum Ảnh</th>
                         <th>Hành động</th>
@@ -42,8 +41,7 @@
                             <td><?php echo e($product->name_product); ?></td>
                             <td><?php echo e(number_format($product->price, 0, ',', '.')); ?> VND</td>
                             <td><?php echo e($product->category->name_category ?? 'N/A'); ?></td>
-                            <td><?php echo e($product->description); ?></td>
-                            <th><a href="<?php echo e(route('Variants.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a></th>
+                            <th><a href="<?php echo e(route('variants.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a></th>
                             <th><a href="<?php echo e(route('Ablum_products.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a></th>
                             <td>
                                 <a href="<?php echo e(route('products.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a>

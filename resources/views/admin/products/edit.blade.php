@@ -47,8 +47,10 @@
                 <label for="description">Mô Tả:</label>
                 <textarea name="description" id="description" class="form-control" rows="5">{{ old('description',$product->description) }}</textarea>
             </div>
+  
             <div class="mb-3">
-                <label for="image" class="form-label">Anh san pham</label>
+                <label for="image" class="form-label">Anh san pham</label> <br>
+                <img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}" width="50px" height="50px">
                 <input type="file" name="image" id="image" class="form-control" value="{{ old('description',$product->image) }}" placeholder="Nhập tên size mới" required >
             </div>
             <button type="submit" class="btn btn-primary">Lưu Sản Phẩm</button>
