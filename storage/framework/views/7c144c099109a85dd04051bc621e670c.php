@@ -46,15 +46,9 @@
                 <label for="description">Mô Tả:</label>
                 <textarea name="description" id="description" class="form-control" rows="5" disabled><?php echo e(old('description',$product->description)); ?></textarea>
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
-                                    <?php $__currentLoopData = $product->albumProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $album): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <img src="<?php echo e($album->image); ?>"
-                                            alt="Ảnh của <?php echo e($product->name_product); ?>"
-                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </div>
-
-            
+            <div class="form-group mb-3">
+               <img src="<?php echo e(asset('/storage/'.$product->image)); ?>" alt="<?php echo e($product->image); ?>" width="50px" height="50px">
+            </div>
         </form>
     </div>
 </div>

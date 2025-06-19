@@ -5,14 +5,14 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Danh sách album_product</h3>
+            <h3 class="card-title">Danh sách variant</h3>
         </div>
 
        <div class="card-header d-flex justify-content-between align-items-center">
         @php
             $id = basename(request()->url());
         @endphp
-        <a href="{{ route('Ablum_products.create', ['id' => $id]) }}" class="btn btn-primary">
+        <a href="{{ route('variants.create', ['product_id' => $id]) }}" class="btn btn-primary">
             Thêm mới
         </a>
     </div>
@@ -27,18 +27,24 @@
                     <tr>
                         <th>ID</th>
                         <th>Ma san pham</th>
-                        <th>Anh san pham</th>
+                        <th>size</th>
+                        <th>gia</th>
+                        <th>so luong</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($album_products as $album_product)
+                    @foreach ($variants as $variant)
                         <tr>
-                            <td>{{ $album_product->id_album_product }}</td>
-                            <td>{{ $album_product->product_id }}</td>
-                            <td><img src="{{ asset('/storage/'.$album_product->image) }}" alt="{{$album_product->image}}" width="50px" height="50px"></td>
+                            <td>{{ $variant->id_variant }}</td>
+                            <td>{{ $variant->product->name_product }}</td>
+                            <td>{{ $variant->size->name }}</td>
+                            <td>{{ $variant->price }}</td>
+                            <td>{{ $variant->quantity }}</td>
                             <td>
-                                <form action="{{ route('Ablum_products.destroy', $album_product->id_album_product) }}" method="POST"
+                                <a href="{{ route('variants.edit', $variant->id_variant) }}"
+                                    class="btn btn-warning btn-sm">Sửa</a>
+                                <form action="{{ route('variants.destroy', $variant->id_variant) }}" method="POST"
                                     style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')

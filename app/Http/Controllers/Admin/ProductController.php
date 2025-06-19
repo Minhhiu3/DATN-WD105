@@ -86,7 +86,7 @@ public function update(Request $request, Product $product)
         'image' => 'nullable|image|mimes:jpeg,png|max:2048'
     ]);
 
-    $data = $request->only(['name_product', 'price', 'category_id', 'description']);
+    $data = $request->only(['name_product', 'price', 'category_id', 'description','image',  ]);
 
     // Nếu có ảnh mới
     if ($request->hasFile('image')) {
