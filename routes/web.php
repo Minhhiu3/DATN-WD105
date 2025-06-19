@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Admin\AlbumProductController;
+
 
 // Admin
 Route::prefix('admin')->group(function () {
@@ -17,6 +19,11 @@ Route::prefix('admin')->group(function () {
     Route::resource('/products', ProductController::class);
     Route::resource('/sizes', SizeController::class);
     Route::resource('/banner', BannerController::class);
+    Route::resource('/Ablum_products', AlbumProductController::class);    // /admin/size
+Route::get('/admin/AblumProducts/{product_id}', [AlbumProductController::class, 'showAblum'])
+    ->name('AblumProducts.show_ablum');
+    Route::resource('/Variants', SizeController::class);    // /admin/size
+
 });
 
 // User

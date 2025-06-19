@@ -29,7 +29,9 @@
                         <th>Tên Sản Phẩm</th>
                         <th>Giá</th>
                         <th>Danh Mục</th>
-<th>Mô tả</th>
+                        <th>Mô tả</th>
+                        <th>Biến thể</th>
+                        <th>Ablum Ảnh</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -50,6 +52,8 @@
                             <td>{{ number_format($product->price, 0, ',', '.') }} VND</td>
                             <td>{{ $product->category->name_category ?? 'N/A' }}</td>
                             <td>{{ $product->description }}</td>
+                            <th><a href="{{ route('Variants.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a></th>
+                            <th><a href="{{ route('Ablum_products.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a></th>
                             <td>
                                 <a href="{{ route('products.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a>
                                 <a href="{{ route('products.edit', $product->id_product) }}"
