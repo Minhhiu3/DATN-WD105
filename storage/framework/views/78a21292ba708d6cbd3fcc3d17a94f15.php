@@ -19,7 +19,7 @@
                 <input type="input" name="product_id" id="product_id" class="form-control" value="<?php echo e($product_id); ?>" placeholder="Nhập tên size mới" disabled >
             </div>
             <div class="mb-3">
-                <label for="image" class="form-label">Tên size</label>
+                <label for="image" class="form-label">Anh san pham</label>
                 <input type="file" name="image" id="image" class="form-control" value="<?php echo e(old('image')); ?>" placeholder="Nhập tên size mới" required >
             </div>
             <button type="submit" class="btn btn-primary">Thêm mới</button>

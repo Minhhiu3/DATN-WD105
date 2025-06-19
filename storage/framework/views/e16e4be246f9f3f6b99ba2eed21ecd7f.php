@@ -37,15 +37,8 @@
                     <?php $__empty_1 = true; $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr>
                             <td><?php echo e($product->id_product); ?></td>
-                            <td>
-                                <div style="display: flex; flex-wrap: wrap; gap: 5px;">
-                                    <?php $__currentLoopData = $product->albumProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $album): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <img src="<?php echo e($album->image); ?>"
-                                            alt="Ảnh của <?php echo e($product->name_product); ?>"
-                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </div>
-                            </td>
+                            <td><img src="<?php echo e(asset('/storage/'.$product->image)); ?>" alt="<?php echo e($product->image); ?>" width="50px" height="50px"></td>
+
                             <td><?php echo e($product->name_product); ?></td>
                             <td><?php echo e(number_format($product->price, 0, ',', '.')); ?> VND</td>
                             <td><?php echo e($product->category->name_category ?? 'N/A'); ?></td>
