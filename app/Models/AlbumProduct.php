@@ -26,7 +26,7 @@ class AlbumProduct extends Model
 
     protected $fillable = [
         'product_id',
-        'image',
+        'image'
     ];
     // public function products(): HasMany
     // {

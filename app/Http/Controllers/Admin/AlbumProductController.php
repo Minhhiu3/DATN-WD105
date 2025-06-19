@@ -54,6 +54,7 @@ class AlbumProductController extends Controller
         $album_products = AlbumProduct::where('product_id', $product_id)->get();
         return view('admin.Album_product.index', compact('album_products'));
     }
+    
     public function edit($id)
     {
         // Logic to show the form for editing a specific album product
