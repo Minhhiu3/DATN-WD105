@@ -59,6 +59,10 @@ public function store(Request $request)
 
     public function destroy(Category $category)
     {
+          if ($category->products()->count() > 0) {
+        return redirect()->route('categories.index')
+            ->with('error', 'Không thể xóa danh mục vì vẫn chứa sản phẩm');
+    }
         $category->delete();
 
         return redirect()->route('categories.index')->with('success', 'Xóa danh mục thành công.');

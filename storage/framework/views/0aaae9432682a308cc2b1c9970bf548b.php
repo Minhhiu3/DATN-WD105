@@ -1,12 +1,11 @@
-@extends('layouts.client_home')
-@section('title', 'Trang Chủ') <style>
+<?php $__env->startSection('title', 'Trang Chủ'); ?> <style>
 .owl-nav-custom .btn {
     margin: 0 5px;
     padding: 6px 12px;
     font-weight: bold;
 }
 </style>
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- start banner Area -->
 <section class="banner-area">
     <div class="container">
@@ -15,11 +14,11 @@
                 <div class="active-banner-slider owl-carousel">
                     <!-- single-slide -->
 
-                    @foreach ($banners as $banner)
+                    <?php $__currentLoopData = $banners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $banner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="row single-slide align-items-center d-flex">
                         <div class="col-lg-5 col-md-6">
                             <div class="banner-content">
-                                <h1>{{ $banner->title ?? 'Bộ sưu tập mới của Nike!' }}</h1>
+                                <h1><?php echo e($banner->title ?? 'Bộ sưu tập mới của Nike!'); ?></h1>
                                 <p>Khám phá những mẫu giày mới nhất...</p>
                                 <div class="add-bag d-flex align-items-center">
                                     <a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
@@ -29,12 +28,12 @@
                         </div>
                         <div class="col-lg-7">
                             <div class="banner-img">
-                                <img class="img-fluid" src="{{ asset('storage/' . $banner->image) }}"
-                                    style="max-height: 400px; object-fit: cover;" alt="{{ $banner->name }}">
+                                <img class="img-fluid" src="<?php echo e(asset('storage/' . $banner->image)); ?>"
+                                    style="max-height: 400px; object-fit: cover;" alt="<?php echo e($banner->name); ?>">
                             </div>
                         </div>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
         </div>
@@ -51,7 +50,7 @@
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{asset('assets/img/features/f-icon1.png')}}" alt="">
+                        <img src="<?php echo e(asset('assets/img/features/f-icon1.png')); ?>" alt="">
                     </div>
                     <h6>Giao hàng miễn phí</h6>
                     <p>Miễn phí vận chuyển cho tất cả đơn hàng</p>
@@ -61,7 +60,7 @@
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{asset('assets/img/features/f-icon2.png')}}" alt="">
+                        <img src="<?php echo e(asset('assets/img/features/f-icon2.png')); ?>" alt="">
                     </div>
                     <h6>Chính sách đổi trả</h6>
                     <p>Đổi trả dễ dàng trong 30 ngày</p>
@@ -71,7 +70,7 @@
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{asset('assets/img/features/f-icon3.png')}}" alt="">
+                        <img src="<?php echo e(asset('assets/img/features/f-icon3.png')); ?>" alt="">
                     </div>
                     <h6>Hỗ trợ 24/7</h6>
                     <p>Luôn sẵn sàng hỗ trợ bạn bất cứ lúc nào</p>
@@ -81,7 +80,7 @@
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{asset('assets/img/features/f-icon4.png')}}" alt="">
+                        <img src="<?php echo e(asset('assets/img/features/f-icon4.png')); ?>" alt="">
                     </div>
                     <h6>Thanh toán an toàn</h6>
                     <p>Bảo mật tuyệt đối cho mọi giao dịch</p>
@@ -101,8 +100,8 @@
                     <div class="col-lg-8 col-md-8">
                         <div class="single-deal">
                             <div class="overlay"></div>
-                            <img class="img-fluid w-100" src="{{asset('assets/img/category/c1.jpg')}}" alt="">
-                            <a href="{{asset('assets/img/category/c1.jpg')}}" class="img-pop-up" target="_blank">
+                            <img class="img-fluid w-100" src="<?php echo e(asset('assets/img/category/c1.jpg')); ?>" alt="">
+                            <a href="<?php echo e(asset('assets/img/category/c1.jpg')); ?>" class="img-pop-up" target="_blank">
                                 <div class="deal-details">
                                     <h6 class="deal-title">Giày thể thao</h6>
                                 </div>
@@ -112,8 +111,8 @@
                     <div class="col-lg-4 col-md-4">
                         <div class="single-deal">
                             <div class="overlay"></div>
-                            <img class="img-fluid w-100" src="{{asset('assets/img/category/c2.jpg')}}" alt="">
-                            <a href="{{asset('assets/img/category/c2.jpg')}}" class="img-pop-up" target="_blank">
+                            <img class="img-fluid w-100" src="<?php echo e(asset('assets/img/category/c2.jpg')); ?>" alt="">
+                            <a href="<?php echo e(asset('assets/img/category/c2.jpg')); ?>" class="img-pop-up" target="_blank">
                                 <div class="deal-details">
                                     <h6 class="deal-title">Giày thể thao</h6>
                                 </div>
@@ -123,8 +122,8 @@
                     <div class="col-lg-4 col-md-4">
                         <div class="single-deal">
                             <div class="overlay"></div>
-                            <img class="img-fluid w-100" src="{{asset('assets/img/category/c3.jpg')}}" alt="">
-                            <a href="{{asset('assets/img/category/c3.jpg')}}" class="img-pop-up" target="_blank">
+                            <img class="img-fluid w-100" src="<?php echo e(asset('assets/img/category/c3.jpg')); ?>" alt="">
+                            <a href="<?php echo e(asset('assets/img/category/c3.jpg')); ?>" class="img-pop-up" target="_blank">
                                 <div class="deal-details">
                                     <h6 class="deal-title">Sản phẩm dành cho cặp đôi</h6>
                                 </div>
@@ -134,8 +133,8 @@
                     <div class="col-lg-8 col-md-8">
                         <div class="single-deal">
                             <div class="overlay"></div>
-                            <img class="img-fluid w-100" src="{{asset('assets/img/category/c4.jpg')}}" alt="">
-                            <a href="{{asset('assets/img/category/c4.jpg')}}" class="img-pop-up" target="_blank">
+                            <img class="img-fluid w-100" src="<?php echo e(asset('assets/img/category/c4.jpg')); ?>" alt="">
+                            <a href="<?php echo e(asset('assets/img/category/c4.jpg')); ?>" class="img-pop-up" target="_blank">
                                 <div class="deal-details">
                                     <h6 class="deal-title">Giày thể thao</h6>
                                 </div>
@@ -147,8 +146,8 @@
             <div class="col-lg-5 col-md-6">
                 <div class="single-deal">
                     <div class="overlay"></div>
-                    <img class="img-fluid w-100" src="{{asset('assets/img/category/c5.jpg')}}" alt="">
-                    <a href="{{asset('assets/img/category/c5.jpg')}}" class="img-pop-up" target="_blank">
+                    <img class="img-fluid w-100" src="<?php echo e(asset('assets/img/category/c5.jpg')); ?>" alt="">
+                    <a href="<?php echo e(asset('assets/img/category/c5.jpg')); ?>" class="img-pop-up" target="_blank">
                         <div class="deal-details">
                             <h6 class="deal-title">Giày thể thao</h6>
                         </div>
@@ -184,22 +183,18 @@
 
 
                 <!-- single product -->
-                @foreach ($products as $product)
+                <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        {{-- Ảnh đại diện sản phẩm (nếu có ảnh trong album hoặc cột riêng) --}}
-
-                       <img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}">
-
+                        
+                       <img src="<?php echo e(asset('/storage/'.$product->image)); ?>" alt="<?php echo e($product->image); ?>">
 
                         <div class="product-details">
-                            <h6>{{ $product->name_product }}</h6>
+                            <h6><?php echo e($product->name_product); ?></h6>
                             <div class="price">
-                                <h6>{{ number_format($product->price, 0, ',', '.') }} VNĐ</h6>
-                                {{-- Giá gạch nếu có, có thể thêm cột `old_price` trong DB nếu muốn --}}
-                                {{-- <h6 class="l-through">{{ number_format($product->old_price, 0, ',', '.') }}
-                                VNĐ
-                                </h6> --}}
+                                <h6><?php echo e(number_format($product->price, 0, ',', '.')); ?> VNĐ</h6>
+                                
+                                
                             </div>
                             <div class="prd-bottom">
                                 <a href="#" class="social-info">
@@ -214,7 +209,7 @@
                                     <span class="lnr lnr-sync"></span>
                                     <p class="hover-text">So sánh</p>
                                 </a>
-                                <a href="{{ route('client.product.show', $product->id_product) }}" class="social-info">
+                                <a href="<?php echo e(route('client.product.show', $product->id_product)); ?>" class="social-info">
                                     <span class="lnr lnr-move"></span>
                                     <p class="hover-text">Chi tiết</p>
                                 </a>
@@ -222,7 +217,7 @@
                         </div>
                     </div>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
             </div>
         </div>
@@ -243,7 +238,7 @@
                 <!-- single product -->
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        <img class="img-fluid" src="{{asset('assets/img/product/p6.jpg')}}" alt="">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p6.jpg')); ?>" alt="">
                         <div class="product-details">
                             <h6>Giày thể thao đế búa mới của Adidas</h6>
                             <div class="price">
@@ -274,7 +269,7 @@
                 <!-- single product -->
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        <img class="img-fluid" src="{{asset('assets/img/product/p8.jpg')}}" alt="">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p8.jpg')); ?>" alt="">
                         <div class="product-details">
                             <h6>Giày thể thao đế búa mới của Adidas</h6>
                             <div class="price">
@@ -305,7 +300,7 @@
                 <!-- single product -->
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        <img class="img-fluid" src="{{asset('assets/img/product/p3.jpg')}}" alt="">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p3.jpg')); ?>" alt="">
                         <div class="product-details">
                             <h6>Giày thể thao đế búa mới của Adidas</h6>
                             <div class="price">
@@ -336,7 +331,7 @@
                 <!-- single product -->
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        <img class="img-fluid" src="{{asset('assets/img/product/p5.jpg')}}" alt="">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p5.jpg')); ?>" alt="">
                         <div class="product-details">
                             <h6>Giày thể thao đế búa mới của Adidas</h6>
                             <div class="price">
@@ -367,7 +362,7 @@
                 <!-- single product -->
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        <img class="img-fluid" src="{{asset('assets/img/product/p1.jpg')}}" alt="">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p1.jpg')); ?>" alt="">
                         <div class="product-details">
                             <h6>Giày thể thao đế búa mới của Adidas</h6>
                             <div class="price">
@@ -398,7 +393,7 @@
                 <!-- single product -->
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        <img class="img-fluid" src="{{asset('assets/img/product/p4.jpg')}}" alt="">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p4.jpg')); ?>" alt="">
                         <div class="product-details">
                             <h6>Giày thể thao đế búa mới của Adidas</h6>
                             <div class="price">
@@ -429,7 +424,7 @@
                 <!-- single product -->
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        <img class="img-fluid" src="{{asset('assets/img/product/p1.jpg')}}" alt="">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p1.jpg')); ?>" alt="">
                         <div class="product-details">
                             <h6>Giày thể thao đế búa mới của Adidas</h6>
                             <div class="price">
@@ -460,7 +455,7 @@
                 <!-- single product -->
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        <img class="img-fluid" src="{{asset('assets/img/product/p8.jpg')}}" alt="">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p8.jpg')); ?>" alt="">
                         <div class="product-details">
                             <h6>Giày thể thao đế búa mới của Adidas</h6>
                             <div class="price">
@@ -531,7 +526,7 @@
                 <div class="active-exclusive-product-slider">
                     <!-- single exclusive carousel -->
                     <div class="single-exclusive-slider">
-                        <img class="img-fluid" src="{{asset('assets/img/product/e-p1.png')}}" alt="">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/e-p1.png')); ?>" alt="">
                         <div class="product-details">
                             <div class="price">
                                 <h6>150.000 VNĐ</h6>
@@ -546,7 +541,7 @@
                     </div>
                     <!-- single exclusive carousel -->
                     <div class="single-exclusive-slider">
-                        <img class="img-fluid" src="{{asset('assets/img/product/e-p1.png')}}" alt="">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/e-p1.png')); ?>" alt="">
                         <div class="product-details">
                             <div class="price">
                                 <h6>150.000 VNĐ</h6>
@@ -571,19 +566,19 @@
     <div class="container">
         <div class="row">
             <a class="col single-img" href="#">
-                <img class="img-fluid d-block mx-auto" src="{{asset('assets/img/brand/1.png')}}" alt="">
+                <img class="img-fluid d-block mx-auto" src="<?php echo e(asset('assets/img/brand/1.png')); ?>" alt="">
             </a>
             <a class="col single-img" href="#">
-                <img class="img-fluid d-block mx-auto" src="{{asset('assets/img/brand/2.png')}}" alt="">
+                <img class="img-fluid d-block mx-auto" src="<?php echo e(asset('assets/img/brand/2.png')); ?>" alt="">
             </a>
             <a class="col single-img" href="#">
-                <img class="img-fluid d-block mx-auto" src="{{asset('assets/img/brand/3.png')}}" alt="">
+                <img class="img-fluid d-block mx-auto" src="<?php echo e(asset('assets/img/brand/3.png')); ?>" alt="">
             </a>
             <a class="col single-img" href="#">
-                <img class="img-fluid d-block mx-auto" src="{{asset('assets/img/brand/4.png')}}" alt="">
+                <img class="img-fluid d-block mx-auto" src="<?php echo e(asset('assets/img/brand/4.png')); ?>" alt="">
             </a>
             <a class="col single single-img" href="#">
-                <img class="img-fluid d-block mx-auto" src="{{asset('assets/img/brand/5.png')}}" alt="">
+                <img class="img-fluid d-block mx-auto" src="<?php echo e(asset('assets/img/brand/5.png')); ?>" alt="">
             </a>
         </div>
     </div>
@@ -617,4 +612,6 @@ $(document).ready(function() {
     });
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ACER\OneDrive\Desktop\DATN_SU2025\ShoeMart_New\DATN-WD105\resources\views/client/pages/home.blade.php ENDPATH**/ ?>

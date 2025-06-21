@@ -14,8 +14,8 @@ class VariantController extends Controller
      */
     public function index()
     {
-        // $variants = Variant::with(['product', 'size'])->get();
-        // return view('admin.variants.index', compact('variants'));
+        $variants = Variant::with(['product', 'size'])->get();
+        return view('admin.variants.index', compact('variants'));
     }
     public function show($id_product)
     {

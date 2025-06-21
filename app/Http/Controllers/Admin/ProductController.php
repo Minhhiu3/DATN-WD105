@@ -15,7 +15,9 @@ class ProductController extends Controller
     public function index()
     {
 
-       $products = Product::with(['category', 'albumProducts'])->latest()->paginate(10);
+      $products = Product::with(['category', 'albumProducts' => function ($query) {
+        $query->limit(1); // Lấy chỉ 1 ảnh đầu tiên
+    }])->latest()->paginate(10);
         return view('admin.products.index', compact('products'));
     }
     /**
@@ -37,7 +39,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:category,id_category',
             'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png|max:2048'
+            'image' => 'required|image|mimes:jpeg,jpg,jpg|max:2048'
         ]);
 
         // Lưu dữ liệu form
@@ -65,12 +67,19 @@ class ProductController extends Controller
       $categories= Category::all();
         return view('admin.products.show', compact('product','categories'));
     }
+//     public function show($id)
+// {
+//     $product = Product::with('category', 'albumProducts')->findOrFail($id);
+//     $categories = Category::all();
+//     return view('client.product.show', compact('product', 'categories'));
+// }
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Product $product)
     {
       $categories= Category::all();
+      $product->load('albumProducts', 'category');
         return view('admin.products.edit', compact('product', 'categories'));
     }
     /**
@@ -83,10 +92,10 @@ public function update(Request $request, Product $product)
         'price' => 'required|numeric|min:0',
         'category_id' => 'required|exists:category,id_category',
         'description' => 'nullable|string',
-        'image' => 'nullable|image|mimes:jpeg,png|max:2048'
+        'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
     ]);
 
-    $data = $request->only(['name_product', 'price', 'category_id', 'description','image',  ]);
+    $data = $request->only(['name_product', 'price', 'category_id', 'description'  ]);
 
     // Nếu có ảnh mới
     if ($request->hasFile('image')) {
