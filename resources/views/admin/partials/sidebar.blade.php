@@ -18,10 +18,10 @@
         </li>
         <!-- ql nguoi dung -->
         <li class="nav-item">
-            <a href="{{ url('/admin/usercontroller') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-users"></i>
                 <p>Quản lý người dùng</p>
-            </a>
+            </a>    
         </li>
         <!-- ql danh muc -->
         <li class="nav-item">

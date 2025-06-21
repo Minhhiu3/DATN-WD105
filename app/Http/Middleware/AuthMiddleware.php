@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class AuthMiddleware
 {
     /**
      * Handle an incoming request.
@@ -20,12 +20,6 @@ class AdminMiddleware
             return redirect('/login')->with('error', 'Vui lòng đăng nhập để truy cập trang này.');
         }
 
-        $user = Auth::user();
-        
-        if (!$user->role || $user->role->name !== 'Admin') {
-            return redirect('/')->with('error', 'Bạn không có quyền truy cập trang này.');
-        }
-
         return $next($request);
     }
-}
+} 

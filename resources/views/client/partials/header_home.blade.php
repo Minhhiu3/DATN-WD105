@@ -38,14 +38,39 @@
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                                 aria-expanded="false">Trang</a>
                             <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
+                                @guest
+                                    <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Đăng ký</a></li>
+                                @else
+                                    <!-- <li class="nav-item"><a class="nav-link" href="{{ route('account.profile') }}">Tài khoản</a></li>
+                                    @if(Auth::user()->role && Auth::user()->role->name === 'Admin')
+                                        <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}">Admin Panel</a></li>
+                                    @endif -->
+                                    <li class="nav-item">
+                                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="nav-link btn btn-link" class="nav-item" class="nav-link" >
+                                                Đăng xuất
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endguest
                                 <li class="nav-item"><a class="nav-link" href="tracking.html">Theo dõi đơn hàng</a></li>
-
                             </ul>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
+                        @auth
+                            <li class="nav-item">
+                                <span class="nav-link">
+                                    <!-- <a href="{{ route('account.profile') }}"> <i class="fa fa-user"></i> {{ Auth::user()->name }} </a> -->
+                                     <a href="{{ route('account.profile') }}" style="color: black;">
+                                        <i class="fa fa-user"></i> {{ Auth::user()->name }}
+                                    </a>
+                                </span>
+                            </li>
+                        @endauth
                         <li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
                         <li class="nav-item">
                             <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
