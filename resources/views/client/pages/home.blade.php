@@ -188,7 +188,9 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
                         {{-- Ảnh đại diện sản phẩm (nếu có ảnh trong album hoặc cột riêng) --}}
+
                        <img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}">
+
 
                         <div class="product-details">
                             <h6>{{ $product->name_product }}</h6>
