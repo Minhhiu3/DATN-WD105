@@ -47,16 +47,9 @@
                 <label for="description">Mô Tả:</label>
                 <textarea name="description" id="description" class="form-control" rows="5" disabled>{{ old('description',$product->description) }}</textarea>
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
-                                    @foreach($product->albumProducts as $album)
-                                        <img src="{{ $album->image }}"
-                                            alt="Ảnh của {{ $product->name_product }}"
-                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
-                                    @endforeach
-                                </div>
-
-            {{-- <button type="submit" class="btn btn-primary">Lưu Sản Phẩm</button>
-            <a href="{{ route('products.index') }}" class="btn btn-secondary">Hủy</a> --}}
+            <div class="form-group mb-3">
+               <img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}" width="50px" height="50px">
+            </div>
         </form>
     </div>
 </div>

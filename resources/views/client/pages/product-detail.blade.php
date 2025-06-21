@@ -24,6 +24,7 @@
     <div class="container">
         <div class="row s_product_inner">
             <div class="col-lg-6">
+                 <img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}" >
                 <div class="s_Product_carousel">
                   @if($product->albumProducts->count())
                         @foreach($product->albumProducts as $album)
@@ -32,6 +33,7 @@
                     @else
                         <img src="{{ asset('assets/img/product/default.jpg') }}" alt="{{ $product->name_product }}" class="img-fluid">
                     @endif
+
                 </div>
             </div>
             <div class="col-lg-5 offset-lg-1">

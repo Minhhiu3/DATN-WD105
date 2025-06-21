@@ -24,7 +24,6 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
-<<<<<<< HEAD
         <!-- ql size -->
         <li class="nav-item">
             <a href="{{ url('/admin/sizes') }}"
@@ -41,7 +40,6 @@
             </a>
         </li>
 
-=======
         <!-- ql banner -->
         <li class="nav-item">
             <a href="{{ url('/admin/banner') }}"
@@ -50,17 +48,16 @@
                 <p>Quản lý banner</p>
             </a>
         </li>
->>>>>>> origin/quan
         <!-- ql đơn hànghàng -->
         <li class="nav-item">
-            <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ url('#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="fa-solid fa-truck"></i>
                 <p>Quản lý đơn hàng</p>
             </a>
         </li>
         <!-- ql voucher -->
         <li class="nav-item">
-            <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ url('/admin/discounts') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="fa-solid fa-ticket"></i>
                 <p>Quản lý mã giảm giá</p>
             </a>

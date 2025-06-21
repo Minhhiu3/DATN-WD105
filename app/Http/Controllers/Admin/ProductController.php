@@ -34,20 +34,31 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
             'name_product' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:category,id_category',
             'description' => 'nullable|string',
+            'image' => 'required|image|mimes:jpeg,jpg,jpg|max:2048'
         ]);
 
+        // Lưu dữ liệu form
+        $data = $request->only(['name_product', 'price', 'category_id', 'description']);
 
-        Product::create($request->all());
+        // Xử lý lưu ảnh
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('public/products');
+            $data['image'] = str_replace('public/', '', $path); // lưu path để dùng trong asset()
+        } else {
+            return back()->with('error', 'Không tìm thấy file ảnh');
+        }
 
+        // Tạo sản phẩm
+        Product::create($data);
 
-       return redirect()->route('products.index')->with('success', 'Thêm mới thành công.');
+        return redirect()->route('products.index')->with('success', 'Thêm mới thành công.');
     }
+
     /**
      * Display the specified resource.
      */
@@ -74,23 +85,37 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
-    {
+public function update(Request $request, Product $product)
+{
+    $request->validate([
+        'name_product' => 'required|string|max:255',
+        'price' => 'required|numeric|min:0',
+        'category_id' => 'required|exists:category,id_category',
+        'description' => 'nullable|string',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+    ]);
 
-        $request->validate([
-            'name_product' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:category,id_category',
-            'description' => 'nullable|string',
-        ]);
+    $data = $request->only(['name_product', 'price', 'category_id', 'description'  ]);
 
+    // Nếu có ảnh mới
+    if ($request->hasFile('image')) {
+        // Xóa ảnh cũ nếu tồn tại
+        $oldImagePath = storage_path('app/public/' . $product->image);
+        if (!empty($product->image) && file_exists($oldImagePath)) {
+            unlink($oldImagePath);
+        }
 
-        $product->update($request->all());
-
-
-
-        return redirect()->route('products.index')->with('success', 'Cập Nhật Thành Công.');
+        // Lưu ảnh mới
+        $path = $request->file('image')->store('public/products');
+        $data['image'] = str_replace('public/', '', $path);
     }
+
+    // Cập nhật sản phẩm
+    $product->update($data);
+
+    return redirect()->route('products.index')->with('success', 'Cập nhật thành công!');
+}
+
     /**
      * Remove the specified resource from storage.
      */
