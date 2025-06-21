@@ -37,7 +37,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:category,id_category',
             'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png|max:2048'
+            'image' => 'required|image|mimes:jpeg,jpg,jpg|max:2048'
         ]);
 
         // Lưu dữ liệu form
@@ -83,10 +83,10 @@ public function update(Request $request, Product $product)
         'price' => 'required|numeric|min:0',
         'category_id' => 'required|exists:category,id_category',
         'description' => 'nullable|string',
-        'image' => 'nullable|image|mimes:jpeg,png|max:2048'
+        'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
     ]);
 
-    $data = $request->only(['name_product', 'price', 'category_id', 'description','image',  ]);
+    $data = $request->only(['name_product', 'price', 'category_id', 'description'  ]);
 
     // Nếu có ảnh mới
     if ($request->hasFile('image')) {

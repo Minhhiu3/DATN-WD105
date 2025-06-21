@@ -17,7 +17,8 @@
                 <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
                     <ul class="nav navbar-nav menu_nav ml-auto">
                         <li class="nav-item active"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
-                        <li class="nav-item submenu dropdown">
+                         <li class="nav-item "><a class="nav-link" href="{{ route('products') }}">Cửa hàng</a></li>
+                        {{-- <li class="nav-item submenu dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                                 aria-haspopup="true" aria-expanded="false">Cửa hàng</a>
                             <ul class="dropdown-menu">
@@ -29,17 +30,17 @@
                                 <li class="nav-item"><a class="nav-link" href="confirmation.html">Xác nhận đơn hàng</a>
                                 </li>
                             </ul>
-                        </li>
-                        <li class="nav-item submenu dropdown">
+                        </li> --}}
+                        {{-- <li class="nav-item submenu dropdown">
                             <a href="{{ route('blogs') }}" class="nav-link dropdown-toggle" data-toggle="dropdown"
-                                role="button" aria-haspopup="true" aria-expanded="false">Tin tức</a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="{{ route('blogs') }}">Blog</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{{ route('blog-detail') }}">Chi tiết bài
-                                        viết</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item submenu dropdown">
+                                role="button" aria-haspopup="true" aria-expanded="false">Tin tức</a> --}}
+                            {{-- <ul class="dropdown-menu"> --}}
+                                <li class="nav-item"><a class="nav-link" href="{{ route('blogs') }}">Tin tức</a></li>
+                                {{-- <li class="nav-item"><a class="nav-link" href="{{ route('blog-detail') }}">Chi tiết bài
+                                        viết</a></li> --}}
+                            {{-- </ul> --}}
+                        {{-- </li> --}}
+                        {{-- <li class="nav-item submenu dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                                 aria-haspopup="true" aria-expanded="false">Trang</a>
                             <ul class="dropdown-menu">
@@ -47,11 +48,13 @@
                                 <li class="nav-item"><a class="nav-link" href="tracking.html">Theo dõi đơn hàng</a></li>
 
                             </ul>
-                        </li>
-                        <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
+                        </li> --}}
+                            <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
+                          <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
+
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
+                        <li class="nav-item"><a href="{{ route('cart') }}" class="cart"><span class="ti-bag"></span></a></li>
                         <li class="nav-item">
                             <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
                         </li>

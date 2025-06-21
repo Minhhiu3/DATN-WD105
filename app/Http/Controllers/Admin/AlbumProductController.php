@@ -11,8 +11,8 @@ class AlbumProductController extends Controller
 {
     public function index()
     {
-        $albums = AlbumProduct::with('product')->get();
-        return view('album_products.index', compact('albums'));
+       $album_products = AlbumProduct::with('product')->get();
+        return view('admin.Album_product.index', compact('albums'));
     }
 
     public function create()
@@ -20,7 +20,7 @@ class AlbumProductController extends Controller
         return view('admin.Album_product.create');
     }
 
-    public function store(Request $request) 
+    public function store(Request $request)
     {
         // Validate
         $data = $request->validate([
@@ -54,7 +54,7 @@ class AlbumProductController extends Controller
         $album_products = AlbumProduct::where('product_id', $product_id)->get();
         return view('admin.Album_product.index', compact('album_products'));
     }
-    
+
     public function edit($id)
     {
         // Logic to show the form for editing a specific album product

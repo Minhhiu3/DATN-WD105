@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
-@section('title', 'Thêm Sản phẩm mới')
+@section('title', 'Sửa sản phẩm')
 
 @section('content')
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Thêm Sản phẩm mới</h3>
+        <h3 class="card-title">Sửa sản phẩm</h3>
     </div>
     <div class="card-body">
         @if ($errors->any())
@@ -47,11 +47,11 @@
                 <label for="description">Mô Tả:</label>
                 <textarea name="description" id="description" class="form-control" rows="5">{{ old('description',$product->description) }}</textarea>
             </div>
-  
+
             <div class="mb-3">
-                <label for="image" class="form-label">Anh san pham</label> <br>
+                <label for="image" class="form-label">Ảnh sản phẩm</label> <br>
                 <img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}" width="50px" height="50px">
-                <input type="file" name="image" id="image" class="form-control" value="{{ old('description',$product->image) }}" placeholder="Nhập tên size mới" required >
+                <input type="file" name="image" id="image" class="form-control" value="{{ old('description',$product->image) }}">
             </div>
             <button type="submit" class="btn btn-primary">Lưu Sản Phẩm</button>
             <a href="{{ route('products.index') }}" class="btn btn-secondary">Hủy</a>

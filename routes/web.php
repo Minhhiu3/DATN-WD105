@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Admin\AlbumProductController;
+use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\VariantController;
 
 
@@ -24,8 +25,8 @@ Route::prefix('admin')->group(function () {
     Route::resource('/Ablum_products', AlbumProductController::class);    // /admin/size
     Route::get('/AblumProducts/{product_id}', [AlbumProductController::class, 'showAblum'])
     ->name('AblumProducts.show_ablum');
-    Route::resource('/variants', VariantController::class);    
-
+    Route::resource('/variants', VariantController::class);
+Route::resource('/discounts', DiscountController::class); // /admin/discounts
 });
 
 // User

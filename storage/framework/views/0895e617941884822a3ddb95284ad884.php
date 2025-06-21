@@ -1,6 +1,5 @@
-@extends('layouts.client_home')
-@section('title', 'Chi tiết sản phẩmphẩm')
-@section('content')
+<?php $__env->startSection('title', 'Chi tiết sản phẩmphẩm'); ?>
+<?php $__env->startSection('content'); ?>
 <!-- Start Banner Area -->
 <section class="banner-area organic-breadcrumb">
     <div class="container">
@@ -24,39 +23,40 @@
     <div class="container">
         <div class="row s_product_inner">
             <div class="col-lg-6">
-                 <img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}" >
+                 <img src="<?php echo e(asset('/storage/'.$product->image)); ?>" alt="<?php echo e($product->image); ?>" >
                 <div class="s_Product_carousel">
-                    @if($product->albumProducts && $product->albumProducts->count())
-                    @foreach($product->albumProducts as $album)
+                    <?php if($product->albumProducts && $product->albumProducts->count()): ?>
+                    <?php $__currentLoopData = $product->albumProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $album): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="single-prd-item">
-                        <img class="img-fluid" src="{{ asset($album->image ?? 'assets/img/product/default.jpg') }}"
-                            alt="{{ $product->name_product }}">
+                        <img class="img-fluid" src="<?php echo e(asset($album->image ?? 'assets/img/product/default.jpg')); ?>"
+                            alt="<?php echo e($product->name_product); ?>">
                     </div>
-                    @endforeach
-                    @else
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php else: ?>
                     <div class="single-prd-item">
-                        <img class="img-fluid" src="{{ asset('assets/img/product/default.jpg') }}"
-                            alt="{{ $product->name_product }}">
+                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/default.jpg')); ?>"
+                            alt="<?php echo e($product->name_product); ?>">
                     </div>
-                    @endif
+                    <?php endif; ?>
 
                 </div>
             </div>
             <div class="col-lg-5 offset-lg-1">
                 <div class="s_product_text">
-                    <h3>{{ $product->name_product }}</h3>
-                    <h2>{{ number_format($product->price, 0, ',', '.') }} VNĐ</h2>
+                    <h3><?php echo e($product->name_product); ?></h3>
+                    <h2><?php echo e(number_format($product->price, 0, ',', '.')); ?> VNĐ</h2>
                     <ul class="list">
                         <li>
                             <a class="active" href="#">
-                                <span>Category</span> : {{ $product->category->name_category ?? 'Chưa phân loại' }}
+                                <span>Category</span> : <?php echo e($product->category->name_category ?? 'Chưa phân loại'); ?>
+
                             </a>
                         </li>
                         <li>
                             <a href="#"><span>Availibility</span> : In Stock</a>
                         </li>
                     </ul>
-                    <p>{{ $product->description }}</p>
+                    <p><?php echo e($product->description); ?></p>
                     <div class="product_count">
                         <label for="qty">Quantity:</label>
                         <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:"
@@ -449,4 +449,6 @@
     </div>
 </section>
 <!--================End Product Description Area =================-->
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ACER\OneDrive\Desktop\DATN_SU2025\ShoeMart_New\DATN-WD105\resources\views/client/pages/product-detail.blade.php ENDPATH**/ ?>
