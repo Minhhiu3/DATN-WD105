@@ -22,51 +22,36 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
-        <<<<<<< HEAD <!-- ql size -->
-            <li class="nav-item">
-                <a href="{{ url('/admin/sizes') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-layer-group"></i>
-                    <p>Quản lý size</p>
-                </a>
-            </li>
-            <!-- ql nguoi dung -->
-            <li class="nav-item">
-                <a href="{{ url('/admin/users') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-users"></i>
-                    <p>Quản lý người dùng</p>
-                </a>
-            </li>
+        <!-- ql banner -->
+        <li class="nav-item">
+            <a href="{{ url('/admin/banner') }}"
+                class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                <i class="fa-solid fa-layer-group"></i>
+                <p>Quản lý banner</p>
+            </a>
+        </li>
 
-            =======
-            <!-- ql banner -->
-            <li class="nav-item">
-                <a href="{{ url('/admin/banners') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-layer-group"></i>
-                    <p>Quản lý banner</p>
-                </a>
-            </li>
-            >>>>>>> origin/quan
-            <!-- ql đơn hànghàng -->
-            <li class="nav-item">
-                <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-truck"></i>
-                    <p>Quản lý đơn hàng</p>
-                </a>
-            </li>
-            <!-- ql voucher -->
-            <li class="nav-item">
-                <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-ticket"></i>
-                    <p>Quản lý mã giảm giá</p>
-                </a>
-            </li>
-            <!-- ql đánh giá -->
-            <li class="nav-item">
-                <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-comment-slash"></i>
-                    <p>Quản lý đánh giá</p>
-                </a>
-            </li>
+        <!-- ql đơn hànghàng -->
+        <li class="nav-item">
+            <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                <i class="fa-solid fa-truck"></i>
+                <p>Quản lý đơn hàng</p>
+            </a>
+        </li>
+        <!-- ql voucher -->
+        <li class="nav-item">
+            <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                <i class="fa-solid fa-ticket"></i>
+                <p>Quản lý mã giảm giá</p>
+            </a>
+        </li>
+        <!-- ql đánh giá -->
+        <li class="nav-item">
+            <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                <i class="fa-solid fa-comment-slash"></i>
+                <p>Quản lý đánh giá</p>
+            </a>
+        </li>
 
 
             <li class="nav-item">

@@ -183,12 +183,11 @@
                 @foreach ($products as $product)
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        @if ($product->albumProducts->count() > 0)
-                        <img class="img-fluid" src="{{ $product->albumProducts->first()->image }}"
-                            alt="Ảnh của {{ $product->name_product }}">
-                        @else
-                        <img class="img-fluid" src="{{ asset('assets/img/product/default.jpg') }}" alt="Ảnh mặc định">
-                        @endif
+
+                        {{-- Ảnh đại diện sản phẩm (nếu có ảnh trong album hoặc cột riêng) --}}
+
+                       <img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}">
+
 
                         <div class="product-details">
                             <h6>{{ $product->name_product }}</h6>

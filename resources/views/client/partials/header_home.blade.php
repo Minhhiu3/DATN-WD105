@@ -17,7 +17,8 @@
                 <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
                     <ul class="nav navbar-nav menu_nav ml-auto">
                         <li class="nav-item active"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
-                        <li class="nav-item submenu dropdown">
+                         <li class="nav-item "><a class="nav-link" href="{{ route('products') }}">Cửa hàng</a></li>
+                        {{-- <li class="nav-item submenu dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                                 aria-haspopup="true" aria-expanded="false">Cửa hàng</a>
                             <ul class="dropdown-menu">
@@ -29,17 +30,17 @@
                                 <li class="nav-item"><a class="nav-link" href="confirmation.html">Xác nhận đơn hàng</a>
                                 </li>
                             </ul>
-                        </li>
-                        <li class="nav-item submenu dropdown">
+                        </li> --}}
+                        {{-- <li class="nav-item submenu dropdown">
                             <a href="{{ route('blogs') }}" class="nav-link dropdown-toggle" data-toggle="dropdown"
-                                role="button" aria-haspopup="true" aria-expanded="false">Tin tức</a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="{{ route('blogs') }}">Blog</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{{ route('blog-detail') }}">Chi tiết bài
-                                        viết</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item submenu dropdown">
+                                role="button" aria-haspopup="true" aria-expanded="false">Tin tức</a> --}}
+                            {{-- <ul class="dropdown-menu"> --}}
+                                <li class="nav-item"><a class="nav-link" href="{{ route('blogs') }}">Tin tức</a></li>
+                                {{-- <li class="nav-item"><a class="nav-link" href="{{ route('blog-detail') }}">Chi tiết bài
+                                        viết</a></li> --}}
+                            {{-- </ul> --}}
+                        {{-- </li> --}}
+                        {{-- <li class="nav-item submenu dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                                 aria-haspopup="true" aria-expanded="false">Trang</a>
                             <ul class="dropdown-menu">
@@ -47,33 +48,14 @@
                                 <li class="nav-item"><a class="nav-link" href="tracking.html">Theo dõi đơn hàng</a></li>
 
                             </ul>
-                        </li>
-                        <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
+                        </li> --}}
+                            <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
+                          <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
+
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
 
-                        <!-- add to cart -->
-                        <li class="nav-item dropdown-cart position-relative">
-                            <a href="javascript:void(0)" class="cart">
-                                <span class="ti-bag"></span>
-                                <span id="cart-count" class="badge badge-danger"
-                                    style="position:absolute; top:-5px; right:-10px; font-size: 12px; display: none;">0</span>
-                            </a>
-                            <div id="mini-cart" class="mini-cart shadow p-3 bg-white rounded"
-                                style="display: none; position: absolute; right: 0; top: 120%; width: 300px; z-index: 1000;">
-                                <div id="mini-cart-items"></div>
-                                <div class="text-center mt-2">
-                                    <a href="{{ route('cart') }}" class="btn btn-primary btn-sm">Xem giỏ hàng</a>
-                                </div>
-                            </div>
-                        </li>
-                        <!-- mini cart -->
-                        <div id="mini-cart-items"></div>
-                        <div id="mini-cart-total" class="text-right font-weight-bold mt-2"></div>
-
-
-
-                        <!-- search -->
+                        <li class="nav-item"><a href="{{ route('cart') }}" class="cart"><span class="ti-bag"></span></a></li>g
                         <li class="nav-item">
                             <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
                         </li>
@@ -93,6 +75,7 @@
     </div>
 </header>
 <!-- End Header Area -->
+<<<<<<< HEAD
 
 
 <!-- fe scrip -->
@@ -186,3 +169,5 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
 });
 </script>
+=======
+>>>>>>> origin/main

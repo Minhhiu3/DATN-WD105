@@ -10,7 +10,7 @@
 
     <div class="card-header d-flex justify-content-between align-items-center">
 
-        <a href="{{ route('banners.create') }}" class="btn btn-primary">Thêm mới</a>
+        <a href="{{ route('banner.create') }}" class="btn btn-primary">Thêm mới</a>
     </div>
 
 
@@ -36,8 +36,8 @@
                         <img src="{{ asset('storage/' . $banner->image) }}" alt="Banner Image"
                             style="width: 100px; height: auto;">
                     <td>
-                        <a href="{{ route('banners.edit', $banner->id_banner) }}" class="btn btn-warning btn-sm">Sửa</a>
-                        <form action="{{ route('banners.destroy', $banner->id_banner) }}" method="POST"
+                        <a href="{{ route('banner.edit', $banner->id_banner) }}" class="btn btn-warning btn-sm">Sửa</a>
+                        <form action="{{ route('banner.destroy', $banner->id_banner) }}" method="POST"
                             style="display:inline-block;">
                             @csrf
                             @method('DELETE')

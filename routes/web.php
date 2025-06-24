@@ -9,22 +9,33 @@ use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Admin\AlbumProductController;
+use App\Http\Controllers\Admin\VariantController;
+
+
 
 // Admin
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::resource('/users', UserController::class);      // /admin/users
-    Route::resource('/categories', CategoryController::class); // /admin/categories
-    Route::resource('/products', ProductController::class);    // /admin/products
-    Route::resource('/sizes', SizeController::class);    // /admin/size
+
+    Route::resource('/users', UserController::class);
+    Route::resource('/categories', CategoryController::class);
+    Route::resource('/products', ProductController::class);
+    Route::resource('/sizes', SizeController::class);
+    Route::resource('/banner', BannerController::class);
+    Route::resource('/Ablum_products', AlbumProductController::class);    // /admin/size
+    Route::get('/AblumProducts/{product_id}', [AlbumProductController::class, 'showAblum'])
+    ->name('AblumProducts.show_ablum');
+    Route::resource('/variants', VariantController::class);
 Route::resource('/discounts', DiscountController::class); // /admin/discounts
-    Route::resource('/banners', BannerController::class); // /admin/banners
+
 });
 
 // User
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ClientProductController::class, 'index'])->name('products');
 Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->name('client.product.show');
+Route::get('/products/filter', [ClientProductController::class, 'filterByPrice'])->name('products.filterByPrice');
 
 
 
