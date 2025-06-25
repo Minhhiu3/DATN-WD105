@@ -35,6 +35,7 @@ Route::resource('/discounts', DiscountController::class); // /admin/discounts
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ClientProductController::class, 'index'])->name('products');
 Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->name('client.product.show');
+Route::get('/products/filter', [ClientProductController::class, 'filterByPrice'])->name('products.filterByPrice');
 
 
 

@@ -19,12 +19,8 @@
                     <div class="row single-slide align-items-center d-flex">
                         <div class="col-lg-5 col-md-6">
                             <div class="banner-content">
-                                <h1>{{ $banner->title ?? 'Bộ sưu tập mới của Nike!' }}</h1>
-                                <p>Khám phá những mẫu giày mới nhất...</p>
-                                <div class="add-bag d-flex align-items-center">
-                                    <a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
-                                    <span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
-                                </div>
+                                <h1>{{ $banner->name ?? 'Bộ sưu tập mới của Nike!' }}</h1>
+                               
                             </div>
                         </div>
                         <div class="col-lg-7">
@@ -187,6 +183,7 @@
                 @foreach ($products as $product)
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
+
                         {{-- Ảnh đại diện sản phẩm (nếu có ảnh trong album hoặc cột riêng) --}}
 
                        <img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}">
@@ -196,13 +193,11 @@
                             <h6>{{ $product->name_product }}</h6>
                             <div class="price">
                                 <h6>{{ number_format($product->price, 0, ',', '.') }} VNĐ</h6>
-                                {{-- Giá gạch nếu có, có thể thêm cột `old_price` trong DB nếu muốn --}}
-                                {{-- <h6 class="l-through">{{ number_format($product->old_price, 0, ',', '.') }}
-                                VNĐ
-                                </h6> --}}
                             </div>
                             <div class="prd-bottom">
-                                <a href="#" class="social-info">
+                                <a href="javascript:void(0);" class="social-info add-to-cart-btn"
+                                    data-id="{{ $product->id_product }}" data-name="{{ $product->name_product }}"
+                                    data-price="{{ $product->price }}" data-size="M">
                                     <span class="ti-bag"></span>
                                     <p class="hover-text">Thêm vào giỏ hàng</p>
                                 </a>
@@ -224,6 +219,7 @@
                 </div>
                 @endforeach
 
+
             </div>
         </div>
     </div>
@@ -234,26 +230,5 @@
 
 
 
-<script>
-$(document).ready(function() {
-    var bannerSlider = $('.active-banner-slider').owlCarousel({
-        items: 1,
-        loop: true,
-        autoplay: true,
-        autoplayTimeout: 5000,
-        nav: false, // tắt nav mặc định
-        dots: true,
-        animateOut: 'fadeOut',
-    });
 
-    // Gán nút tùy chỉnh
-    $('.btn-next').click(function() {
-        bannerSlider.trigger('next.owl.carousel');
-    });
-
-    $('.btn-prev').click(function() {
-        bannerSlider.trigger('prev.owl.carousel');
-    });
-});
-</script>
 @endsection

@@ -18,12 +18,8 @@
                     <div class="row single-slide align-items-center d-flex">
                         <div class="col-lg-5 col-md-6">
                             <div class="banner-content">
-                                <h1><?php echo e($banner->title ?? 'Bộ sưu tập mới của Nike!'); ?></h1>
-                                <p>Khám phá những mẫu giày mới nhất...</p>
-                                <div class="add-bag d-flex align-items-center">
-                                    <a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
-                                    <span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
-                                </div>
+                                <h1><?php echo e($banner->name ?? 'Bộ sưu tập mới của Nike!'); ?></h1>
+                               
                             </div>
                         </div>
                         <div class="col-lg-7">
@@ -176,6 +172,7 @@
                 <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
+
                         
 
                        <img src="<?php echo e(asset('/storage/'.$product->image)); ?>" alt="<?php echo e($product->image); ?>">
@@ -185,11 +182,11 @@
                             <h6><?php echo e($product->name_product); ?></h6>
                             <div class="price">
                                 <h6><?php echo e(number_format($product->price, 0, ',', '.')); ?> VNĐ</h6>
-                                
-                                
                             </div>
                             <div class="prd-bottom">
-                                <a href="#" class="social-info">
+                                <a href="javascript:void(0);" class="social-info add-to-cart-btn"
+                                    data-id="<?php echo e($product->id_product); ?>" data-name="<?php echo e($product->name_product); ?>"
+                                    data-price="<?php echo e($product->price); ?>" data-size="M">
                                     <span class="ti-bag"></span>
                                     <p class="hover-text">Thêm vào giỏ hàng</p>
                                 </a>
@@ -211,6 +208,7 @@
                 </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
+
             </div>
         </div>
     </div>
@@ -221,28 +219,6 @@
 
 
 
-<script>
-$(document).ready(function() {
-    var bannerSlider = $('.active-banner-slider').owlCarousel({
-        items: 1,
-        loop: true,
-        autoplay: true,
-        autoplayTimeout: 5000,
-        nav: false, // tắt nav mặc định
-        dots: true,
-        animateOut: 'fadeOut',
-    });
 
-    // Gán nút tùy chỉnh
-    $('.btn-next').click(function() {
-        bannerSlider.trigger('next.owl.carousel');
-    });
-
-    $('.btn-prev').click(function() {
-        bannerSlider.trigger('prev.owl.carousel');
-    });
-});
-</script>
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ACER\OneDrive\Desktop\DATN_SU2025\ShoeMart_New\DATN-WD105\resources\views/client/pages/home.blade.php ENDPATH**/ ?>

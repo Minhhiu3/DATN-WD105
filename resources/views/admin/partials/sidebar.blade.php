@@ -10,20 +10,20 @@
         </li>
         <!-- ql san pham -->
         <li class="nav-item">
-            <a href="{{ url('/admin/products') }}"
-                class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ url('/admin/products') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="fa-brands fa-product-hunt"></i>
                 <p>Quản lý sản phẩm</p>
             </a>
         </li>
         <!-- ql danh muc -->
         <li class="nav-item">
-            <a href="{{ url('/admin/categories') }}"
-                class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ url('/admin/categories') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="fa-solid fa-layer-group"></i>
                 <p>Quản lý danh mục</p>
             </a>
         </li>
+<<<<<<< HEAD
+=======
         <!-- ql size -->
         <li class="nav-item">
             <a href="{{ url('/admin/sizes') }}"
@@ -40,6 +40,7 @@
             </a>
         </li>
 
+>>>>>>> b685ec53cfccae1e4c587a336a56d58c3372b238
         <!-- ql banner -->
         <li class="nav-item">
             <a href="{{ url('/admin/banner') }}"
@@ -48,6 +49,7 @@
                 <p>Quản lý banner</p>
             </a>
         </li>
+
         <!-- ql đơn hànghàng -->
         <li class="nav-item">
             <a href="{{ url('#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
@@ -71,12 +73,12 @@
         </li>
 
 
-        <li class="nav-item">
-            <a href="{{ url('/settings') }}" class="nav-link {{ request()->is('settings') ? 'active' : '' }}">
-                <i class="nav-icon fas fa-cog"></i>
-                <p>Settings</p>
-            </a>
-        </li>
+            <li class="nav-item">
+                <a href="{{ url('/settings') }}" class="nav-link {{ request()->is('settings') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-cog"></i>
+                    <p>Settings</p>
+                </a>
+            </li>
     </ul>
 </nav>
 <!-- /.sidebar-menu -->
