@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->string('phone_number', 20)->nullable();
             $table->string('password', 255);
             $table->unsignedInteger('role_id');
+            $table->rememberToken();
 
             $table->foreign('role_id')->references('id_role')->on('roles')->onDelete('cascade');
             $table->timestamps();

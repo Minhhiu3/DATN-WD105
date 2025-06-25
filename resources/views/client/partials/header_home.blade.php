@@ -51,7 +51,6 @@
                         </li> --}}
                             <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
                           <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
-
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="nav-item"><a href="{{ route('cart') }}" class="cart"><span class="ti-bag"></span></a></li>
@@ -59,6 +58,24 @@
                             <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
                         </li>
                     </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        @auth
+                            <li class="nav-item">
+                                <span class="nav-link">
+                                    <!-- <a href="{{ route('account.profile') }}"> <i class="fa fa-user"></i> {{ Auth::user()->name }} </a> -->
+                                     <a href="{{ route('account.profile') }}" style="color: black;">
+                                        <i class="fa fa-user"></i> {{ Auth::user()->name }}
+                                    </a>
+                                </span>
+                            </li>
+                        @endauth
+                        <li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
+                        <li class="nav-item">
+                            <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
+                        </li>
+                    </ul>
+
                 </div>
             </div>
         </nav>
