@@ -16,7 +16,7 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
                     <ul class="nav navbar-nav menu_nav ml-auto">
-                        <li class="nav-item active"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
                          <li class="nav-item "><a class="nav-link" href="{{ route('products') }}">Cửa hàng</a></li>
                         {{-- <li class="nav-item submenu dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
@@ -49,7 +49,7 @@
 
                             </ul>
                         </li> --}}
-                            <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
+                            {{-- <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li> --}}
                           <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
 
                     </ul>
@@ -74,3 +74,98 @@
     </div>
 </header>
 <!-- End Header Area -->
+
+
+
+<!-- fe scrip -->
+<!-- add to cart scrip -->
+<script>
+function addToCart(product) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    const index = cart.findIndex(
+        item => item.id === product.id && item.size === product.size
+    );
+
+    if (index !== -1) {
+        cart[index].quantity += product.quantity;
+    } else {
+        cart.push(product);
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+}
+
+function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCountEl = document.getElementById('cart-count');
+
+    if (cartCountEl) {
+        if (totalQuantity > 0) {
+            cartCountEl.style.display = 'inline-block';
+            cartCountEl.innerText = totalQuantity;
+        } else {
+            cartCountEl.style.display = 'none';
+        }
+    }
+
+    renderMiniCart(cart);
+}
+
+function renderMiniCart(cart) {
+    const container = document.getElementById('mini-cart-items');
+    const totalEl = document.getElementById('mini-cart-total');
+
+    if (!container || !totalEl) return;
+
+    container.innerHTML = '';
+    let total = 0;
+
+    if (cart.length === 0) {
+        container.innerHTML = '<p class="text-center">Giỏ hàng trống</p>';
+        totalEl.innerText = '';
+        return;
+    }
+
+    cart.forEach((item, index) => {
+        total += item.price * item.quantity;
+        const el = document.createElement('div');
+        el.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
+        el.innerHTML = `
+            <div>
+                <strong>${item.name}</strong><br>
+                <small>SL: ${item.quantity} - Size: ${item.size}</small>
+            </div>
+            <div class="text-right">
+                <small>${item.price.toLocaleString()}₫</small><br>
+                <button class="btn btn-sm btn-danger btn-delete-item" data-index="${index}">&times;</button>
+            </div>
+        `;
+        container.appendChild(el);
+    });
+
+    totalEl.innerText = `Tổng: ${total.toLocaleString()}₫`;
+
+    document.querySelectorAll('.btn-delete-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const index = this.getAttribute('data-index');
+            removeFromCart(index);
+        });
+    });
+}
+
+function removeFromCart(index) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+}
+
+// Tự động hiển thị giỏ hàng từ localStorage khi load lại trang
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartCount();
+});
+</script>
+

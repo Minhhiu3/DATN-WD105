@@ -51,17 +51,14 @@
                     </div>
                     <div class="common-filter">
                         <div class="head">Price</div>
-                        <div class="price-range-area">
-                            <div id="price-range"></div>
-                            <div class="value-wrapper d-flex">
-                                <div class="price">Price:</div>
-                                <span>$</span>
-                                <div id="lower-value"></div>
-                                <div class="to">to</div>
-                                <span>$</span>
-                                <div id="upper-value"></div>
-                            </div>
-                        </div>
+                        <form method="get" action="<?php echo e(route('products.filterByPrice')); ?>">
+                            <select name="price_range" onchange="this.form.submit()" id="">
+                                <option value="">--Chọn Mức Giá--</option>
+                                <option value="under_500000" <?php echo e(request('price_range') == 'under_500000'? 'selected':''); ?>>Dưới 500.000 VNĐ</option>
+                                <option value="500000_2000000" <?php echo e(request('price_range') == '500000_2000000'? 'selected':''); ?>>Từ 500.000 VNĐ đến 2.000.000 VNĐ</option>
+                                <option value="over_2000000" <?php echo e(request('price_range') == 'over_2000000'? 'selected':''); ?>>Trên 2.000.000 VNĐ</option>
+                            </select>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -144,59 +141,7 @@
     </div>
 
     <!-- Start related-product Area -->
-    <section class="related-product-area section_gap">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-6 text-center">
-                    <div class="section-title">
-                        <h1>Deals of the Week</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore
-                            magna aliqua.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-9">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-4 col-sm-6 mb-20">
-                            <div class="single-related-product d-flex">
-                                <a href="#"><img src="<?php echo e('assets/img/r1.jpg'); ?>" alt=""></a>
-                                <div class="desc">
-                                    <a href="#" class="title">Black lace Heels</a>
-                                    <div class="price">
-                                        <h6>$189.00</h6>
-                                        <h6 class="l-through">$210.00</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-4 col-md-4 col-sm-6">
-                            <div class="single-related-product d-flex">
-                                <a href="#"><img src="<?php echo e('assets/img/r9.jpg'); ?>" alt=""></a>
-                                <div class="desc">
-                                    <a href="#" class="title">Black lace Heels</a>
-                                    <div class="price">
-                                        <h6>$189.00</h6>
-                                        <h6 class="l-through">$210.00</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="ctg-right">
-                        <a href="#" target="_blank">
-                            <img class="img-fluid d-block mx-auto" src="img/category/c5.jpg" alt="">
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    
     <!-- End related-product Area -->
 <?php $__env->stopSection(); ?>
 

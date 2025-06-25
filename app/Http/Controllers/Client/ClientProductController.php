@@ -12,16 +12,16 @@ class ClientProductController extends Controller
 {
     public function index()
     {
-        $sizes=Size::all();
-        $categories=Category::all();
+
+        $sizes = Size::all();
+        $categories = Category::all();
         $products = Product::with(['category', 'albumProducts'])->latest()->paginate(9);
-        return view('client.pages.products', compact('products','categories','sizes'));
-    }
-    public function show($id)
-    {
-        $product = Product::findOrFail($id); // Tìm sản phẩm theo ID
-        return view('client.pages.product-detail', compact('product'));
-    }
+        return view('client.pages.products', compact('products', 'categories', 'sizes'));    }
+  public function show($id)
+{
+    $product = Product::with('category','variants', 'albumProducts')->findOrFail($id);
+    return view('client.pages.product-detail', compact('product'));
+}
     public function search(Request $request)
     {
         // Validate dữ liệu tìm kiếm
@@ -38,4 +38,33 @@ class ClientProductController extends Controller
         // Trả về view với kết quả tìm kiếm
         return view('admin.products.index', compact('products'));
     }
+
+    public function filterByPrice(Request $request)
+    {
+        $products = Product::query();
+
+        if ($request->filled('price_range')) {
+            switch ($request->price_range) {
+                case 'under_500000':
+                    $products->where('price', '<', 500000);
+                    break;
+                case '500000_2000000':
+                    $products->whereBetween('price', [500000, 2000000]);
+                    break;
+                case 'over_2000000':
+                    $products->where('price', '>', 2000000);
+                    break;
+            }
+        }
+
+        $products = $products->with(['category', 'albumProducts'])->latest()->paginate(9);
+
+        // lấy thêm dữ liệu danh mục và size nếu cần
+        $sizes = Size::all();
+        $categories = Category::all();
+
+        return view('client.pages.products', compact('products', 'categories', 'sizes'));
+    }
+
+
 }

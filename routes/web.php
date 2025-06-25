@@ -3,13 +3,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Admin\AlbumProductController;
+use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\VariantController;
 
 
@@ -35,6 +35,7 @@ Route::resource('/discounts', DiscountController::class); // /admin/discounts
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ClientProductController::class, 'index'])->name('products');
 Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->name('client.product.show');
+Route::get('/products/filter', [ClientProductController::class, 'filterByPrice'])->name('products.filterByPrice');
 
 
 

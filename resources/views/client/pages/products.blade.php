@@ -62,17 +62,14 @@
                     </div>
                     <div class="common-filter">
                         <div class="head">Price</div>
-                        <div class="price-range-area">
-                            <div id="price-range"></div>
-                            <div class="value-wrapper d-flex">
-                                <div class="price">Price:</div>
-                                <span>$</span>
-                                <div id="lower-value"></div>
-                                <div class="to">to</div>
-                                <span>$</span>
-                                <div id="upper-value"></div>
-                            </div>
-                        </div>
+                        <form method="get" action="{{route('products.filterByPrice')}}">
+                            <select name="price_range" onchange="this.form.submit()" id="">
+                                <option value="">--Chọn Mức Giá--</option>
+                                <option value="under_500000" {{request('price_range') == 'under_500000'? 'selected':'' }}>Dưới 500.000 VNĐ</option>
+                                <option value="500000_2000000" {{request('price_range') == '500000_2000000'? 'selected':'' }}>Từ 500.000 VNĐ đến 2.000.000 VNĐ</option>
+                                <option value="over_2000000" {{request('price_range') == 'over_2000000'? 'selected':'' }}>Trên 2.000.000 VNĐ</option>
+                            </select>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -154,7 +151,7 @@
     </div>
 
     <!-- Start related-product Area -->
-    <section class="related-product-area section_gap">
+    {{-- <section class="related-product-area section_gap">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-6 text-center">
@@ -206,6 +203,6 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <!-- End related-product Area -->
 @endsection

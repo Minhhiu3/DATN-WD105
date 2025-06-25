@@ -51,5 +51,9 @@ class Product extends Model
     // và khóa chính trong bảng `products` là 'id_product'
     return $this->hasMany(AlbumProduct::class, 'product_id', 'id_product');
 }
+public function variants()
+{
+    return $this->hasMany(Variant::class, 'product_id', 'id_product');
+}
 
 }

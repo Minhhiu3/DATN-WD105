@@ -18,12 +18,8 @@
                     <div class="row single-slide align-items-center d-flex">
                         <div class="col-lg-5 col-md-6">
                             <div class="banner-content">
-                                <h1><?php echo e($banner->title ?? 'Bộ sưu tập mới của Nike!'); ?></h1>
-                                <p>Khám phá những mẫu giày mới nhất...</p>
-                                <div class="add-bag d-flex align-items-center">
-                                    <a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
-                                    <span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
-                                </div>
+                                <h1><?php echo e($banner->name ?? 'Bộ sưu tập mới của Nike!'); ?></h1>
+                               
                             </div>
                         </div>
                         <div class="col-lg-7">
@@ -102,9 +98,7 @@
                             <div class="overlay"></div>
                             <img class="img-fluid w-100" src="<?php echo e(asset('assets/img/category/c1.jpg')); ?>" alt="">
                             <a href="<?php echo e(asset('assets/img/category/c1.jpg')); ?>" class="img-pop-up" target="_blank">
-                                <div class="deal-details">
-                                    <h6 class="deal-title">Giày thể thao</h6>
-                                </div>
+                                
                             </a>
                         </div>
                     </div>
@@ -113,9 +107,7 @@
                             <div class="overlay"></div>
                             <img class="img-fluid w-100" src="<?php echo e(asset('assets/img/category/c2.jpg')); ?>" alt="">
                             <a href="<?php echo e(asset('assets/img/category/c2.jpg')); ?>" class="img-pop-up" target="_blank">
-                                <div class="deal-details">
-                                    <h6 class="deal-title">Giày thể thao</h6>
-                                </div>
+                                
                             </a>
                         </div>
                     </div>
@@ -124,9 +116,7 @@
                             <div class="overlay"></div>
                             <img class="img-fluid w-100" src="<?php echo e(asset('assets/img/category/c3.jpg')); ?>" alt="">
                             <a href="<?php echo e(asset('assets/img/category/c3.jpg')); ?>" class="img-pop-up" target="_blank">
-                                <div class="deal-details">
-                                    <h6 class="deal-title">Sản phẩm dành cho cặp đôi</h6>
-                                </div>
+                                
                             </a>
                         </div>
                     </div>
@@ -135,9 +125,7 @@
                             <div class="overlay"></div>
                             <img class="img-fluid w-100" src="<?php echo e(asset('assets/img/category/c4.jpg')); ?>" alt="">
                             <a href="<?php echo e(asset('assets/img/category/c4.jpg')); ?>" class="img-pop-up" target="_blank">
-                                <div class="deal-details">
-                                    <h6 class="deal-title">Giày thể thao</h6>
-                                </div>
+                                
                             </a>
                         </div>
                     </div>
@@ -148,9 +136,7 @@
                     <div class="overlay"></div>
                     <img class="img-fluid w-100" src="<?php echo e(asset('assets/img/category/c5.jpg')); ?>" alt="">
                     <a href="<?php echo e(asset('assets/img/category/c5.jpg')); ?>" class="img-pop-up" target="_blank">
-                        <div class="deal-details">
-                            <h6 class="deal-title">Giày thể thao</h6>
-                        </div>
+                        
                     </a>
                 </div>
             </div>
@@ -184,436 +170,58 @@
 
                 <!-- single product -->
                 <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="col-lg-3 col-md-6">
+                <a href="<?php echo e(route('client.product.show', $product->id_product)); ?>">
+                    <div class="col-lg-3 col-md-6">
                     <div class="single-product">
-                        
 
-                       <img src="<?php echo e(asset('/storage/'.$product->image)); ?>" alt="<?php echo e($product->image); ?>">
+                    
+
+                    <img src="<?php echo e(asset('/storage/'.$product->image)); ?>" alt="<?php echo e($product->image); ?>">
 
 
-                        <div class="product-details">
-                            <h6><?php echo e($product->name_product); ?></h6>
-                            <div class="price">
-                                <h6><?php echo e(number_format($product->price, 0, ',', '.')); ?> VNĐ</h6>
-                                
-                                
-                            </div>
-                            <div class="prd-bottom">
-                                <a href="#" class="social-info">
-                                    <span class="ti-bag"></span>
-                                    <p class="hover-text">Thêm vào giỏ hàng</p>
-                                </a>
-                                <a href="#" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Danh sách yêu thích</p>
-                                </a>
-                                <a href="#" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">So sánh</p>
-                                </a>
-                                <a href="<?php echo e(route('client.product.show', $product->id_product)); ?>" class="social-info">
-                                    <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">Chi tiết</p>
-                                </a>
-                            </div>
+                    <div class="product-details">
+                        <h6><?php echo e($product->name_product); ?></h6>
+                        <div class="price">
+                            <h6><?php echo e(number_format($product->price, 0, ',', '.')); ?> VNĐ</h6>
+                        </div>
+                        <div class="prd-bottom">
+                            <a href="javascript:void(0);" class="social-info add-to-cart-btn"
+                                data-id="<?php echo e($product->id_product); ?>" data-name="<?php echo e($product->name_product); ?>"
+                                data-price="<?php echo e($product->price); ?>" data-size="M">
+                                <span class="ti-bag"></span>
+                                <p class="hover-text">Thêm vào giỏ hàng</p>
+                            </a>
+                            <a href="#" class="social-info">
+                                <span class="lnr lnr-heart"></span>
+                                <p class="hover-text">Danh sách yêu thích</p>
+                            </a>
+                            <a href="#" class="social-info">
+                                <span class="lnr lnr-sync"></span>
+                                <p class="hover-text">So sánh</p>
+                            </a>
+                            <a href="<?php echo e(route('client.product.show', $product->id_product)); ?>" class="social-info">
+                                <span class="lnr lnr-move"></span>
+                                <p class="hover-text">Chi tiết</p>
+                            </a>
                         </div>
                     </div>
                 </div>
+            </div>
+                </a>
+                
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
+
             </div>
         </div>
     </div>
-    <!-- single product slide -->
-    <div class="single-product-slider">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-6 text-center">
-                    <div class="section-title">
-                        <h1>Sản phẩm sắp ra mắt</h1>
-                        <p>Khám phá những mẫu giày sắp ra mắt, hứa hẹn mang đến phong cách và hiệu suất vượt trội.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <!-- single product -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-product">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p6.jpg')); ?>" alt="">
-                        <div class="product-details">
-                            <h6>Giày thể thao đế búa mới của Adidas</h6>
-                            <div class="price">
-                                <h6>150.000 VNĐ</h6>
-                                <h6 class="l-through">210.000 VNĐ</h6>
-                            </div>
-                            <div class="prd-bottom">
-                                <a href="" class="social-info">
-                                    <span class="ti-bag"></span>
-                                    <p class="hover-text">Thêm vào giỏ hàng</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Danh sách yêu thích</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">So sánh</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">Xem thêm</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- single product -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-product">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p8.jpg')); ?>" alt="">
-                        <div class="product-details">
-                            <h6>Giày thể thao đế búa mới của Adidas</h6>
-                            <div class="price">
-                                <h6>150.000 VNĐ</h6>
-                                <h6 class="l-through">210.000 VNĐ</h6>
-                            </div>
-                            <div class="prd-bottom">
-                                <a href="" class="social-info">
-                                    <span class="ti-bag"></span>
-                                    <p class="hover-text">Thêm vào giỏ hàng</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Danh sách yêu thích</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">So sánh</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">Xem thêm</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- single product -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-product">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p3.jpg')); ?>" alt="">
-                        <div class="product-details">
-                            <h6>Giày thể thao đế búa mới của Adidas</h6>
-                            <div class="price">
-                                <h6>150.000 VNĐ</h6>
-                                <h6 class="l-through">210.000 VNĐ</h6>
-                            </div>
-                            <div class="prd-bottom">
-                                <a href="" class="social-info">
-                                    <span class="ti-bag"></span>
-                                    <p class="hover-text">Thêm vào giỏ hàng</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Danh sách yêu thích</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">So sánh</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">Xem thêm</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- single product -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-product">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p5.jpg')); ?>" alt="">
-                        <div class="product-details">
-                            <h6>Giày thể thao đế búa mới của Adidas</h6>
-                            <div class="price">
-                                <h6>150.000 VNĐ</h6>
-                                <h6 class="l-through">210.000 VNĐ</h6>
-                            </div>
-                            <div class="prd-bottom">
-                                <a href="" class="social-info">
-                                    <span class="ti-bag"></span>
-                                    <p class="hover-text">Thêm vào giỏ hàng</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Danh sách yêu thích</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">So sánh</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">Xem thêm</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- single product -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-product">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p1.jpg')); ?>" alt="">
-                        <div class="product-details">
-                            <h6>Giày thể thao đế búa mới của Adidas</h6>
-                            <div class="price">
-                                <h6>150.000 VNĐ</h6>
-                                <h6 class="l-through">210.000 VNĐ</h6>
-                            </div>
-                            <div class="prd-bottom">
-                                <a href="" class="social-info">
-                                    <span class="ti-bag"></span>
-                                    <p class="hover-text">Thêm vào giỏ hàng</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Danh sách yêu thích</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">So sánh</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">Xem thêm</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- single product -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-product">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p4.jpg')); ?>" alt="">
-                        <div class="product-details">
-                            <h6>Giày thể thao đế búa mới của Adidas</h6>
-                            <div class="price">
-                                <h6>150.000 VNĐ</h6>
-                                <h6 class="l-through">210.000 VNĐ</h6>
-                            </div>
-                            <div class="prd-bottom">
-                                <a href="" class="social-info">
-                                    <span class="ti-bag"></span>
-                                    <p class="hover-text">Thêm vào giỏ hàng</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Danh sách yêu thích</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">So sánh</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">Xem thêm</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- single product -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-product">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p1.jpg')); ?>" alt="">
-                        <div class="product-details">
-                            <h6>Giày thể thao đế búa mới của Adidas</h6>
-                            <div class="price">
-                                <h6>150.000 VNĐ</h6>
-                                <h6 class="l-through">210.000 VNĐ</h6>
-                            </div>
-                            <div class="prd-bottom">
-                                <a href="" class="social-info">
-                                    <span class="ti-bag"></span>
-                                    <p class="hover-text">Thêm vào giỏ hàng</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Danh sách yêu thích</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">So sánh</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">Xem thêm</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- single product -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-product">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/p8.jpg')); ?>" alt="">
-                        <div class="product-details">
-                            <h6>Giày thể thao đế búa mới của Adidas</h6>
-                            <div class="price">
-                                <h6>150.000 VNĐ</h6>
-                                <h6 class="l-through">210.000 VNĐ</h6>
-                            </div>
-                            <div class="prd-bottom">
-                                <a href="" class="social-info">
-                                    <span class="ti-bag"></span>
-                                    <p class="hover-text">Thêm vào giỏ hàng</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Danh sách yêu thích</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">So sánh</p>
-                                </a>
-                                <a href="" class="social-info">
-                                    <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">Xem thêm</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- end product Area -->
-
-<!-- Start exclusive deal Area -->
-<section class="exclusive-deal-area">
-    <div class="container-fluid">
-        <div class="row justify-content-center align-items-center">
-            <div class="col-lg-6 no-padding exclusive-left">
-                <div class="row clock_sec clockdiv" id="clockdiv">
-                    <div class="col-lg-12">
-                        <h1>Ưu đãi hấp dẫn độc quyền sắp kết thúc!</h1>
-                        <p>Dành cho những ai yêu thích các sản phẩm thân thiện với môi trường.</p>
-                    </div>
-                    <div class="col-lg-12">
-                        <div class="row clock-wrap">
-                            <div class="col clockinner1 clockinner">
-                                <h1 class="days">150</h1>
-                                <span class="smalltext">Ngày</span>
-                            </div>
-                            <div class="col clockinner clockinner1">
-                                <h1 class="hours">23</h1>
-                                <span class="smalltext">Giờ</span>
-                            </div>
-                            <div class="col clockinner clockinner1">
-                                <h1 class="minutes">47</h1>
-                                <span class="smalltext">Phút</span>
-                            </div>
-                            <div class="col clockinner clockinner1">
-                                <h1 class="seconds">59</h1>
-                                <span class="smalltext">Giây</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <a href="" class="primary-btn">Mua ngay</a>
-            </div>
-            <div class="col-lg-6 no-padding exclusive-right">
-                <div class="active-exclusive-product-slider">
-                    <!-- single exclusive carousel -->
-                    <div class="single-exclusive-slider">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/e-p1.png')); ?>" alt="">
-                        <div class="product-details">
-                            <div class="price">
-                                <h6>150.000 VNĐ</h6>
-                                <h6 class="l-through">210.000 VNĐ</h6>
-                            </div>
-                            <h4>Giày thể thao đế búa mới của Adidas</h4>
-                            <div class="add-bag d-flex align-items-center justify-content-center">
-                                <a class="add-btn" href=""><span class="ti-bag"></span></a>
-                                <span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- single exclusive carousel -->
-                    <div class="single-exclusive-slider">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/e-p1.png')); ?>" alt="">
-                        <div class="product-details">
-                            <div class="price">
-                                <h6>150.000 VNĐ</h6>
-                                <h6 class="l-through">210.000 VNĐ</h6>
-                            </div>
-                            <h4>Giày thể thao đế búa mới của Adidas</h4>
-                            <div class="add-bag d-flex align-items-center justify-content-center">
-                                <a class="add-btn" href=""><span class="ti-bag"></span></a>
-                                <span class="add-text text-uppercase">Thêm vào giỏ hàng</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- End exclusive deal Area -->
-
-<!-- Start brand Area -->
-<section class="brand-area section_gap">
-    <div class="container">
-        <div class="row">
-            <a class="col single-img" href="#">
-                <img class="img-fluid d-block mx-auto" src="<?php echo e(asset('assets/img/brand/1.png')); ?>" alt="">
-            </a>
-            <a class="col single-img" href="#">
-                <img class="img-fluid d-block mx-auto" src="<?php echo e(asset('assets/img/brand/2.png')); ?>" alt="">
-            </a>
-            <a class="col single-img" href="#">
-                <img class="img-fluid d-block mx-auto" src="<?php echo e(asset('assets/img/brand/3.png')); ?>" alt="">
-            </a>
-            <a class="col single-img" href="#">
-                <img class="img-fluid d-block mx-auto" src="<?php echo e(asset('assets/img/brand/4.png')); ?>" alt="">
-            </a>
-            <a class="col single single-img" href="#">
-                <img class="img-fluid d-block mx-auto" src="<?php echo e(asset('assets/img/brand/5.png')); ?>" alt="">
-            </a>
-        </div>
-    </div>
-</section>
-<!-- End brand Area -->
 
 
 
 
 
 
-<script>
-$(document).ready(function() {
-    var bannerSlider = $('.active-banner-slider').owlCarousel({
-        items: 1,
-        loop: true,
-        autoplay: true,
-        autoplayTimeout: 5000,
-        nav: false, // tắt nav mặc định
-        dots: true,
-        animateOut: 'fadeOut',
-    });
 
-    // Gán nút tùy chỉnh
-    $('.btn-next').click(function() {
-        bannerSlider.trigger('next.owl.carousel');
-    });
 
-    $('.btn-prev').click(function() {
-        bannerSlider.trigger('prev.owl.carousel');
-    });
-});
-</script>
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\DATN-WD105\resources\views/client/pages/home.blade.php ENDPATH**/ ?>
