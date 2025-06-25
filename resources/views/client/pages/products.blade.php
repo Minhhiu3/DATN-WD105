@@ -154,7 +154,7 @@
     </div>
 
     <!-- Start related-product Area -->
-    <section class="related-product-area section_gap">
+    {{-- <section class="related-product-area section_gap">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-6 text-center">
@@ -206,6 +206,6 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <!-- End related-product Area -->
 @endsection

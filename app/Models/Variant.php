@@ -10,7 +10,7 @@ class Variant extends Model
 {
     use HasFactory;
     use SoftDeletes; // Dung de xoa mem
-    protected $table = 'variant';  
+    protected $table = 'variant';
     protected $primaryKey = 'id_variant';
 
     protected $fillable = [

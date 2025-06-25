@@ -14,14 +14,14 @@ class ClientProductController extends Controller
     {
         $sizes=Size::all();
         $categories=Category::all();
-        $products = Product::with(['category', 'albumProducts'])->latest()->paginate(9);
+        $products = Product::with(['category'])->latest()->paginate(9);
         return view('client.pages.products', compact('products','categories','sizes'));
     }
-    public function show($id)
-    {
-        $product = Product::findOrFail($id); // Tìm sản phẩm theo ID
-        return view('client.pages.product-detail', compact('product'));
-    }
+  public function show($id)
+{
+    $product = Product::with('category','variants', 'albumProducts')->findOrFail($id);
+    return view('client.pages.product-detail', compact('product'));
+}
     public function search(Request $request)
     {
         // Validate dữ liệu tìm kiếm
