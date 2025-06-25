@@ -24,20 +24,16 @@
     <div class="container">
         <div class="row s_product_inner">
             <div class="col-lg-6">
+                <img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}" width="500px">
                 <div class="s_Product_carousel">
-                    @if($product->albumProducts && $product->albumProducts->count())
-                    @foreach($product->albumProducts as $album)
-                    <div class="single-prd-item">
-                        <img class="img-fluid" src="{{ asset($album->image ?? 'assets/img/product/default.jpg') }}"
-                            alt="{{ $product->name_product }}">
-                    </div>
-                    @endforeach
+                  @if($product->albumProducts->count())
+                        @foreach($product->albumProducts as $album)
+                            <img src="{{ asset($album->image ?? 'assets/img/product/default.jpg') }}" alt="{{ $product->name_product }}" class="img-fluid mb-2">
+                        @endforeach
                     @else
-                    <div class="single-prd-item">
-                        <img class="img-fluid" src="{{ asset('assets/img/product/default.jpg') }}"
-                            alt="{{ $product->name_product }}">
-                    </div>
+                        <img src="{{ asset('assets/img/product/default.jpg') }}" alt="{{ $product->name_product }}" class="img-fluid">
                     @endif
+
                 </div>
             </div>
             <div class="col-lg-5 offset-lg-1">
@@ -50,13 +46,26 @@
                                 <span>Category</span> : {{ $product->category->name_category ?? 'Chưa phân loại' }}
                             </a>
                         </li>
-                        <li>
-                            <a href="#"><span>Availibility</span> : In Stock</a>
-                        </li>
                     </ul>
-                    <p>{{ $product->description }}</p>
+                    <div class="product_size">
+                        <label>Size</label>
+
+                        <div>
+                            <input type="radio" name="size" id="size-m" value="M">
+                            <label class="size-option" for="size-m">M (45-55 kg)</label>
+
+                            <input type="radio" name="size" id="size-l" value="L">
+                            <label class="size-option" for="size-l">L (56-64 kg)</label>
+
+                            <input type="radio" name="size" id="size-xl" value="XL">
+                            <label class="size-option" for="size-xl">XL (65-74 kg)</label>
+
+                            <input type="radio" name="size" id="size-2xl" value="2XL">
+                            <label class="size-option" for="size-2xl">2XL (75-85 kg)</label>
+                        </div>
+                    </div>
                     <div class="product_count">
-                        <label for="qty">Quantity:</label>
+                        <label for="qty">Số lượng:</label>
                         <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:"
                             class="input-text qty">
                         <button

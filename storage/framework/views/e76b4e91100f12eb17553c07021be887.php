@@ -187,8 +187,9 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="single-product">
                         
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/default.jpg')); ?>"
-                            alt="<?php echo e($product->name_product); ?>">
+
+                       <img src="<?php echo e(asset('/storage/'.$product->image)); ?>" alt="<?php echo e($product->image); ?>">
+
 
                         <div class="product-details">
                             <h6><?php echo e($product->name_product); ?></h6>
@@ -614,4 +615,5 @@ $(document).ready(function() {
 });
 </script>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\DATN-WD105\resources\views/client/pages/home.blade.php ENDPATH**/ ?>

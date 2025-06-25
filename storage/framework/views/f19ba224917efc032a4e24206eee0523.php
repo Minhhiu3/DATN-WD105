@@ -23,20 +23,16 @@
     <div class="container">
         <div class="row s_product_inner">
             <div class="col-lg-6">
+                <img src="<?php echo e(asset('/storage/'.$product->image)); ?>" alt="<?php echo e($product->image); ?>" width="500px">
                 <div class="s_Product_carousel">
-                    <?php if($product->albumProducts && $product->albumProducts->count()): ?>
-                    <?php $__currentLoopData = $product->albumProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $album): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="single-prd-item">
-                        <img class="img-fluid" src="<?php echo e(asset($album->image ?? 'assets/img/product/default.jpg')); ?>"
-                            alt="<?php echo e($product->name_product); ?>">
-                    </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                  <?php if($product->albumProducts->count()): ?>
+                        <?php $__currentLoopData = $product->albumProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $album): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <img src="<?php echo e(asset($album->image ?? 'assets/img/product/default.jpg')); ?>" alt="<?php echo e($product->name_product); ?>" class="img-fluid mb-2">
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     <?php else: ?>
-                    <div class="single-prd-item">
-                        <img class="img-fluid" src="<?php echo e(asset('assets/img/product/default.jpg')); ?>"
-                            alt="<?php echo e($product->name_product); ?>">
-                    </div>
+                        <img src="<?php echo e(asset('assets/img/product/default.jpg')); ?>" alt="<?php echo e($product->name_product); ?>" class="img-fluid">
                     <?php endif; ?>
+
                 </div>
             </div>
             <div class="col-lg-5 offset-lg-1">
@@ -50,13 +46,26 @@
 
                             </a>
                         </li>
-                        <li>
-                            <a href="#"><span>Availibility</span> : In Stock</a>
-                        </li>
                     </ul>
-                    <p><?php echo e($product->description); ?></p>
+                    <div class="product_size">
+                        <label>Size</label>
+
+                        <div>
+                            <input type="radio" name="size" id="size-m" value="M">
+                            <label class="size-option" for="size-m">M (45-55 kg)</label>
+
+                            <input type="radio" name="size" id="size-l" value="L">
+                            <label class="size-option" for="size-l">L (56-64 kg)</label>
+
+                            <input type="radio" name="size" id="size-xl" value="XL">
+                            <label class="size-option" for="size-xl">XL (65-74 kg)</label>
+
+                            <input type="radio" name="size" id="size-2xl" value="2XL">
+                            <label class="size-option" for="size-2xl">2XL (75-85 kg)</label>
+                        </div>
+                    </div>
                     <div class="product_count">
-                        <label for="qty">Quantity:</label>
+                        <label for="qty">Số lượng:</label>
                         <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:"
                             class="input-text qty">
                         <button
@@ -448,4 +457,5 @@
 </section>
 <!--================End Product Description Area =================-->
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\DATN-WD105\resources\views/client/pages/product-detail.blade.php ENDPATH**/ ?>

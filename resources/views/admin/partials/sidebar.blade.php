@@ -50,14 +50,14 @@
         </li>
         <!-- ql đơn hànghàng -->
         <li class="nav-item">
-            <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ url('#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="fa-solid fa-truck"></i>
                 <p>Quản lý đơn hàng</p>
             </a>
         </li>
         <!-- ql voucher -->
         <li class="nav-item">
-            <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ url('/admin/discounts') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="fa-solid fa-ticket"></i>
                 <p>Quản lý mã giảm giá</p>
             </a>

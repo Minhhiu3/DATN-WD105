@@ -42,7 +42,7 @@
 
                             <td>{{ $product->name_product }}</td>
                             <td>{{ number_format($product->price, 0, ',', '.') }} VND</td>
-                            <td>{{ $product->category->name_category ?? 'N/A' }}</td>
+                            <td>{{ $product->category->name_category ?? 'Không có danh mục' }}</td>
                             <th><a href="{{ route('variants.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a></th>
                             <th><a href="{{ route('Ablum_products.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a></th>
                             <td>
@@ -65,12 +65,12 @@
                     @endforelse
                 </tbody>
             </table>
+         @if ($products->hasPages())
+    <div class="d-flex justify-content-center mt-3 ">
+         {!! $products->links('pagination::bootstrap-5') !!}
+    </div>
+@endif
 
-            @if ($products->hasPages())
-                <div class="mt-3">
-                    {{ $products->links() }}
-                </div>
-            @endif
         </div>
     </div>
 @endsection
