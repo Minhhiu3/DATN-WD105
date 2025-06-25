@@ -47,7 +47,7 @@
     @include('client.partials.header_home')
     <main>
         @yield('content')
-        @include('client.partials.related_product')
+ @include('client.partials.related_product')
     </main>
     @include('client.partials.footer_home')
 

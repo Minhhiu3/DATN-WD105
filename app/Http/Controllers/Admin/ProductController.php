@@ -39,7 +39,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:category,id_category',
             'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,jpg,jpg|max:2048'
+            'image' => 'required|image|mimes:jpeg,jpg,png|max:2048'
         ]);
 
         // Lưu dữ liệu form

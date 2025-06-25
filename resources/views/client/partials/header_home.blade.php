@@ -16,7 +16,7 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
                     <ul class="nav navbar-nav menu_nav ml-auto">
-                        <li class="nav-item active"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
                          <li class="nav-item "><a class="nav-link" href="{{ route('products') }}">Cửa hàng</a></li>
                         {{-- <li class="nav-item submenu dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
@@ -49,7 +49,7 @@
 
                             </ul>
                         </li> --}}
-                            <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
+                            {{-- <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li> --}}
                           <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
 
                     </ul>
@@ -74,8 +74,7 @@
     </div>
 </header>
 <!-- End Header Area -->
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 
 
 <!-- fe scrip -->
@@ -169,7 +168,4 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
 });
 </script>
-=======
->>>>>>> origin/main
-=======
->>>>>>> b685ec53cfccae1e4c587a336a56d58c3372b238
+
