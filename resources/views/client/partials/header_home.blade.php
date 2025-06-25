@@ -54,8 +54,7 @@
 
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-
-                        <li class="nav-item"><a href="{{ route('cart') }}" class="cart"><span class="ti-bag"></span></a></li>g
+                        <li class="nav-item"><a href="{{ route('cart') }}" class="cart"><span class="ti-bag"></span></a></li>
                         <li class="nav-item">
                             <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
                         </li>
@@ -75,6 +74,7 @@
     </div>
 </header>
 <!-- End Header Area -->
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 
@@ -171,3 +171,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 =======
 >>>>>>> origin/main
+=======
+>>>>>>> b685ec53cfccae1e4c587a336a56d58c3372b238

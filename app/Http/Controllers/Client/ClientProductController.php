@@ -12,10 +12,17 @@ class ClientProductController extends Controller
 {
     public function index()
     {
+<<<<<<< HEAD
         $sizes = Size::all();
         $categories = Category::all();
         $products = Product::with(['category', 'albumProducts'])->latest()->paginate(9);
         return view('client.pages.products', compact('products', 'categories', 'sizes'));
+=======
+        $sizes=Size::all();
+        $categories=Category::all();
+        $products = Product::with(['category', 'albumProducts'])->latest()->paginate(9);
+        return view('client.pages.products', compact('products','categories','sizes'));
+>>>>>>> b685ec53cfccae1e4c587a336a56d58c3372b238
     }
     public function show($id)
     {
@@ -38,6 +45,7 @@ class ClientProductController extends Controller
         // Trả về view với kết quả tìm kiếm
         return view('admin.products.index', compact('products'));
     }
+<<<<<<< HEAD
     public function filterByPrice(Request $request)
     {
         $products = Product::query();
@@ -64,4 +72,6 @@ class ClientProductController extends Controller
 
         return view('client.pages.products', compact('products', 'categories', 'sizes'));
     }
+=======
+>>>>>>> b685ec53cfccae1e4c587a336a56d58c3372b238
 }
