@@ -10,16 +10,14 @@
         </li>
         <!-- ql san pham -->
         <li class="nav-item">
-            <a href="<?php echo e(url('/admin/products')); ?>"
-                class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+            <a href="<?php echo e(url('/admin/products')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                 <i class="fa-brands fa-product-hunt"></i>
                 <p>Quản lý sản phẩm</p>
             </a>
         </li>
         <!-- ql danh muc -->
         <li class="nav-item">
-            <a href="<?php echo e(url('/admin/categories')); ?>"
-                class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+            <a href="<?php echo e(url('/admin/categories')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                 <i class="fa-solid fa-layer-group"></i>
                 <p>Quản lý danh mục</p>
             </a>
@@ -48,9 +46,10 @@
                 <p>Quản lý banner</p>
             </a>
         </li>
+
         <!-- ql đơn hànghàng -->
         <li class="nav-item">
-            <a href="<?php echo e(url('#')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+            <a href="<?php echo e(url('/admin/orders')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                 <i class="fa-solid fa-truck"></i>
                 <p>Quản lý đơn hàng</p>
             </a>
@@ -79,5 +78,4 @@
         </li>
     </ul>
 </nav>
-<!-- /.sidebar-menu -->
-<?php /**PATH C:\laragon\www\DATN-WD105\resources\views/admin/partials/sidebar.blade.php ENDPATH**/ ?>
+<!-- /.sidebar-menu --><?php /**PATH C:\laragon\www\DATN-WD105\resources\views/admin/partials/sidebar.blade.php ENDPATH**/ ?>

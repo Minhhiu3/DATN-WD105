@@ -40,7 +40,7 @@
 
                             <td><?php echo e($product->name_product); ?></td>
                             <td><?php echo e(number_format($product->price, 0, ',', '.')); ?> VND</td>
-                            <td><?php echo e($product->category->name_category ?? 'N/A'); ?></td>
+                            <td><?php echo e($product->category->name_category ?? 'Không có danh mục'); ?></td>
                             <th><a href="<?php echo e(route('variants.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a></th>
                             <th><a href="<?php echo e(route('Ablum_products.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a></th>
                             <td>
@@ -63,13 +63,13 @@
                     <?php endif; ?>
                 </tbody>
             </table>
+         <?php if($products->hasPages()): ?>
+    <div class="d-flex justify-content-center mt-3 ">
+         <?php echo $products->links('pagination::bootstrap-5'); ?>
 
-            <?php if($products->hasPages()): ?>
-                <div class="mt-3">
-                    <?php echo e($products->links()); ?>
+    </div>
+<?php endif; ?>
 
-                </div>
-            <?php endif; ?>
         </div>
     </div>
 <?php $__env->stopSection(); ?>

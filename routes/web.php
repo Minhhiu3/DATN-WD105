@@ -11,6 +11,8 @@ use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Admin\AlbumProductController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\VariantController;
+use App\Http\Controllers\Admin\OrderController;
+
 
 
 
@@ -27,7 +29,18 @@ Route::prefix('admin')->group(function () {
     Route::get('/AblumProducts/{product_id}', [AlbumProductController::class, 'showAblum'])
     ->name('AblumProducts.show_ablum');
     Route::resource('/variants', VariantController::class);
-Route::resource('/discounts', DiscountController::class); // /admin/discounts
+    Route::resource('/discounts', DiscountController::class); // /admin/discounts
+
+
+    Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('/orders/{order_id}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('/orders/{order_id}/edit', [OrderController::class, 'edit'])->name('admin.orders.edit');
+    Route::put('/orders/{order_id}', [OrderController::class, 'update'])->name('admin.orders.update');
+    Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    Route::post('/orders/cancel', [OrderController::class, 'cancel'])->name('admin.orders.cancel');
+
+
+
 
 });
 
