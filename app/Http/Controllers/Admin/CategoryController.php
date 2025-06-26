@@ -49,7 +49,7 @@ public function store(Request $request)
     public function update(Request $request, Category $category)
     {
         $request->validate([
-            'name_category' => 'required|string|max:255',
+            'name_category' => 'required|string|max:255'
         ]);
 
         $category->update($request->all());
@@ -60,7 +60,7 @@ public function store(Request $request)
     public function destroy(Category $category)
     {
           if ($category->products()->count() > 0) {
-        return redirect()->route('categories.index')
+        return redirect()->route('admin.categories.index')
             ->with('error', 'Không thể xóa danh mục vì vẫn chứa sản phẩm');
     }
         $category->delete();

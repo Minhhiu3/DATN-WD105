@@ -24,12 +24,12 @@ class SizeController extends Controller
 public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:size,name',
         ]);
 
         Size::create($request->all());
 
-        return redirect()->route('sizes.index')->with('success', 'Thêm danh mục mới thành công.');
+        return redirect()->route('admin.sizes.index')->with('success', 'Thêm danh mục mới thành công.');
     }
 
     public function show(Size $size)
@@ -50,13 +50,13 @@ public function store(Request $request)
 
         $size->update($request->all());
 
-        return redirect()->route('sizes.index')->with('success', 'Cập nhật danh mục mới thành công.');
+        return redirect()->route('admin.sizes.index')->with('success', 'Cập nhật danh mục mới thành công.');
     }
 
     public function destroy(size $size)
     {
         $size->delete();
 
-        return redirect()->route('sizes.index')->with('success', 'Xóa danh mục thành công.');
+        return redirect()->route('admin.sizes.index')->with('success', 'Xóa danh mục thành công.');
     }
 }

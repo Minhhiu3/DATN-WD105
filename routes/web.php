@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Admin\AlbumProductController;
+use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -24,7 +25,7 @@ Route::get('/products/filter', [ClientProductController::class, 'filterByPrice']
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
-    
+
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
 });
@@ -46,7 +47,7 @@ Route::prefix('account')->middleware('auth')->group(function () {
 // Admin Routes (Protected by AdminMiddleware)
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    
+
     // User Management Routes
     Route::resource('/users', UserController::class)->names([
         'index' => 'admin.users.index',
@@ -58,7 +59,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.users.destroy',
     ]);
     Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
-    
+
     // Category Management Routes
     Route::resource('/categories', CategoryController::class)->names([
         'index' => 'admin.categories.index',
@@ -69,7 +70,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.categories.update',
         'destroy' => 'admin.categories.destroy',
     ]);
-    
+
     // Product Management Routes
     Route::resource('/products', ProductController::class)->names([
         'index' => 'admin.products.index',
@@ -80,7 +81,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.products.update',
         'destroy' => 'admin.products.destroy',
     ]);
-    
+
     // Size Management Routes
     Route::resource('/sizes', SizeController::class)->names([
         'index' => 'admin.sizes.index',
@@ -91,7 +92,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.sizes.update',
         'destroy' => 'admin.sizes.destroy',
     ]);
-    
+
     // Banner Management Routes
     Route::resource('/banner', BannerController::class)->names([
         'index' => 'admin.banner.index',
@@ -102,7 +103,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.banner.update',
         'destroy' => 'admin.banner.destroy',
     ]);
-    
+
     // Album Product Management Routes
     Route::resource('/album-products', AlbumProductController::class)->names([
         'index' => 'admin.album-products.index',
@@ -115,7 +116,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     ]);
     Route::get('/album-products/{product_id}/show-album', [AlbumProductController::class, 'showAblum'])
         ->name('admin.album-products.show-album');
-    
+
     // Variant Management Routes
     Route::resource('/variants', VariantController::class)->names([
         'index' => 'admin.variants.index',
@@ -126,7 +127,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.variants.update',
         'destroy' => 'admin.variants.destroy',
     ]);
-    
+
     // Discount Management Routes
     Route::resource('/discounts', DiscountController::class)->names([
         'index' => 'admin.discounts.index',

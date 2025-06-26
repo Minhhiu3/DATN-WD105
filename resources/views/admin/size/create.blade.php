@@ -9,7 +9,16 @@
     </div>
     <div class="card-body">
 
-        <form action="{{ route('sadmin.sizes.store') }}" method="POST">
+ @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <form action="{{ route('admin.sizes.store') }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label for="name" class="form-label">Tên size</label>
