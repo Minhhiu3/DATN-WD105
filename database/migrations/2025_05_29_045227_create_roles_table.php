@@ -12,7 +12,11 @@ return new class extends Migration {
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->increments('id_role');
-            $table->string('name', 50);
+            $table->string('name', 50)->unique();
+            $table->text('description')->nullable();
+            $table->json('permissions')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

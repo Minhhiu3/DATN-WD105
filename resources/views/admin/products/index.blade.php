@@ -9,7 +9,7 @@
         </div>
 
         <div class="card-header d-flex justify-content-between align-items-center">
-            <a href="{{ route('products.create') }}" class="btn btn-primary">Thêm Sản Phẩm Mới</a>
+            <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Thêm Sản Phẩm Mới</a>
 
         </div>
 
