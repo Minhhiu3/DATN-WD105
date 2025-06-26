@@ -40,7 +40,7 @@ class AlbumProductController extends Controller
         AlbumProduct::create($data);
 
         // Fix typo in route name (Ablum -> Album)
-        return redirect()->route('Ablum_products.show', $request->product_id)
+        return redirect()->route('admin.album-products.show', $request->product_id)
             ->with('success', 'Upload ảnh thành công!');
     }
 
@@ -79,8 +79,8 @@ class AlbumProductController extends Controller
         $album_product->delete();
 
         // Điều hướng về trang hiển thị album theo product_id
-        return redirect()->route('AblumProducts.show_ablum', ['product_id' => $product_id])
-        ->with('success', 'Xóa thành công!');
+      return redirect()->route('admin.album-products.show', ['album_product' => $product_id])
+    ->with('success', 'Xóa thành công!');
     }
 
 

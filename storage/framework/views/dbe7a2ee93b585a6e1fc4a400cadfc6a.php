@@ -8,11 +8,15 @@
 
        <div class="card-header d-flex justify-content-between align-items-center">
 
-        <a href="<?php echo e(route('sizes.create')); ?>" class="btn btn-primary">Thêm mới</a>
+        <a href="<?php echo e(route('admin.sizes.create')); ?>" class="btn btn-primary">Thêm mới</a>
     </div>
 
 
         <div class="card-body">
+              <?php if(session('error')): ?>
+                <div class="alert alert-danger"><?php echo e(session('error')); ?></div>
+            <?php endif; ?>
+
             <?php if(session('success')): ?>
                 <div class="alert alert-success"><?php echo e(session('success')); ?></div>
             <?php endif; ?>
@@ -30,9 +34,9 @@
                             <td><?php echo e($size->id_size); ?></td>
                             <td><?php echo e($size->name); ?></td>
                             <td>
-                                <a href="<?php echo e(route('sizes.edit', $size->id_size)); ?>"
+                                <a href="<?php echo e(route('admin.sizes.edit', $size->id_size)); ?>"
                                     class="btn btn-warning btn-sm">Sửa</a>
-                                <form action="<?php echo e(route('sizes.destroy', $size->id_size)); ?>" method="POST"
+                                <form action="<?php echo e(route('admin.sizes.destroy', $size->id_size)); ?>" method="POST"
                                     style="display:inline-block;">
                                     <?php echo csrf_field(); ?>
                                     <?php echo method_field('DELETE'); ?>

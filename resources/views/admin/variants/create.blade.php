@@ -23,7 +23,7 @@
             </div>
         @endif
 
-        <form action="{{ route('variants.store') }}" method="POST">
+        <form action="{{ route('admin.variants.store') }}" method="POST">
             @csrf
 
             <div class="form-group mb-3">
@@ -63,8 +63,8 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Thêm Biến Thể</button>
-            {{-- <a href="{{ route('variants.index') }}" class="btn btn-secondary">Hủy</a> --}}
-            <a href="{{ route('variants.show', $id_product) }}" class="btn btn-secondary">Quay lại</a>
+            {{-- <a href="{{ route('admin.variants.index') }}" class="btn btn-secondary">Hủy</a> --}}
+            <a href="{{ route('admin.variants.show', $id_product) }}" class="btn btn-secondary">Quay lại</a>
 
         </form>
     </div>

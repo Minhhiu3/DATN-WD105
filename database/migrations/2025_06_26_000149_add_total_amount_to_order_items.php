@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('album_product', function (Blueprint $table) {
+        Schema::table('order_items', function (Blueprint $table) {
             //
-                 $table->softDeletes();
+             $table->decimal('total_amount', 10, 2);
         });
     }
 
@@ -22,8 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('album_product', function (Blueprint $table) {
+        Schema::table('order_items', function (Blueprint $table) {
             //
+         
         });
     }
 };

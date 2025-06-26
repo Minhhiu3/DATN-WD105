@@ -10,7 +10,7 @@
 
        <div class="card-header d-flex justify-content-between align-items-center">
 
-        <a href="{{ route('categories.create') }}" class="btn btn-primary">Thêm mới</a>
+        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">Thêm mới</a>
     </div>
 
 
@@ -36,9 +36,9 @@
                             <td>{{ $category->id_category }}</td>
                             <td>{{ $category->name_category }}</td>
                             <td>
-                                <a href="{{ route('categories.edit', $category->id_category) }}"
+                                <a href="{{ route('admin.categories.edit', $category->id_category) }}"
                                     class="btn btn-warning btn-sm">Sửa</a>
-                                <form action="{{ route('categories.destroy', $category->id_category) }}" method="POST"
+                                <form action="{{ route('admin.categories.destroy', $category->id_category) }}" method="POST"
                                     style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')

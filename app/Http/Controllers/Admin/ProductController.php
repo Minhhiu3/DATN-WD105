@@ -56,7 +56,7 @@ class ProductController extends Controller
         // Tạo sản phẩm
         Product::create($data);
 
-        return redirect()->route('products.index')->with('success', 'Thêm mới thành công.');
+        return redirect()->route('admin.products.index')->with('success', 'Thêm mới thành công.');
     }
 
     /**
@@ -113,7 +113,7 @@ public function update(Request $request, Product $product)
     // Cập nhật sản phẩm
     $product->update($data);
 
-    return redirect()->route('products.index')->with('success', 'Cập nhật thành công!');
+    return redirect()->route('admin.products.index')->with('success', 'Cập nhật thành công!');
 }
 
     /**
@@ -125,7 +125,7 @@ public function update(Request $request, Product $product)
         $product->delete();
 
 
-        return redirect()->route('products.index')->with('success', 'Xóa Sản phẩm thành công.');
+        return redirect()->route('admin.products.index')->with('success', 'Xóa Sản phẩm thành công.');
     }
     /**
      * Search for products by name.

@@ -22,6 +22,7 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
+
         <!-- ql size -->
         <li class="nav-item">
             <a href="<?php echo e(url('/admin/sizes')); ?>"
@@ -30,14 +31,15 @@
                 <p>Quản lý size</p>
             </a>
         </li>
+        
         <!-- ql nguoi dung -->
         <li class="nav-item">
-            <a href="<?php echo e(url('/admin/users')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+            <a href="<?php echo e(route('admin.users.index')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                 <i class="nav-icon fas fa-users"></i>
                 <p>Quản lý người dùng</p>
-            </a>
+            </a>    
         </li>
-
+        
         <!-- ql banner -->
         <li class="nav-item">
             <a href="<?php echo e(url('/admin/banner')); ?>"
@@ -78,4 +80,5 @@
         </li>
     </ul>
 </nav>
-<!-- /.sidebar-menu --><?php /**PATH C:\laragon\www\DATN-WD105\resources\views/admin/partials/sidebar.blade.php ENDPATH**/ ?>
+<!-- /.sidebar-menu -->
+<?php /**PATH C:\laragon\www\DATN-WD105\resources\views/admin/partials/sidebar.blade.php ENDPATH**/ ?>

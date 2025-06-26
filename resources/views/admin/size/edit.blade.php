@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
 
-        <form action="{{ route('sizes.update', $size->id_size) }}" method="POST">
+        <form action="{{ route('admin.sizes.update', $size->id_size) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="mb-3">
@@ -17,7 +17,7 @@
                 <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $size->name) }}" placeholder="Nhập tên danh mục mới" required >
             </div>
             <button type="submit" class="btn btn-primary">Cập nhật</button>
-            <a href="{{ route('sizes.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('admin.sizes.index') }}" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 </div>

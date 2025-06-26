@@ -12,7 +12,7 @@
         @php
             $id = basename(request()->url());
         @endphp
-        <a href="{{ route('Ablum_products.create', ['id' => $id]) }}" class="btn btn-primary">
+        <a href="{{ route('admin.album-products.create', ['id' => $id]) }}" class="btn btn-primary">
             Thêm mới
         </a>
     </div>
@@ -38,7 +38,7 @@
                             <td>{{ $album_product->product_id }}</td>
                             <td><img src="{{ asset('/storage/'.$album_product->image) }}" alt="{{$album_product->image}}" width="50px" height="50px"></td>
                             <td>
-                                <form action="{{ route('Ablum_products.destroy', $album_product->id_album_product) }}" method="POST"
+                                <form action="{{ route('admin.album-products.destroy', $album_product->id_album_product) }}" method="POST"
                                     style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')

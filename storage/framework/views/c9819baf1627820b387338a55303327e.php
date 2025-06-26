@@ -7,7 +7,7 @@
     </div>
 
     <div class="card-header d-flex justify-content-between align-items-center">
-        <a href="<?php echo e(route('discounts.create')); ?>" class="btn btn-primary">Thêm mới</a>
+        <a href="<?php echo e(route('admin.discounts.create')); ?>" class="btn btn-primary">Thêm mới</a>
     </div>
 
     <div class="card-body">
@@ -63,9 +63,9 @@
                             <?php endif; ?></td>
 
                         <td>
-                            <a href="<?php echo e(route('discounts.edit', $discount->discount_id)); ?>"
+                            <a href="<?php echo e(route('admin.discounts.edit', $discount->discount_id)); ?>"
                                 class="btn btn-warning btn-sm">Sửa</a>
-                            <form action="<?php echo e(route('discounts.destroy', $discount->discount_id)); ?>" method="POST"
+                            <form action="<?php echo e(route('admin.discounts.destroy', $discount->discount_id)); ?>" method="POST"
                                 style="display:inline-block;">
                                 <?php echo csrf_field(); ?>
                                 <?php echo method_field('DELETE'); ?>

@@ -8,7 +8,7 @@
 
     <div class="card-header d-flex justify-content-between align-items-center">
 
-        <a href="<?php echo e(route('banner.create')); ?>" class="btn btn-primary">Thêm mới</a>
+        <a href="<?php echo e(route('admin.banner.create')); ?>" class="btn btn-primary">Thêm mới</a>
     </div>
 
 
@@ -34,8 +34,8 @@
                         <img src="<?php echo e(asset('storage/' . $banner->image)); ?>" alt="Banner Image"
                             style="width: 100px; height: auto;">
                     <td>
-                        <a href="<?php echo e(route('banner.edit', $banner->id_banner)); ?>" class="btn btn-warning btn-sm">Sửa</a>
-                        <form action="<?php echo e(route('banner.destroy', $banner->id_banner)); ?>" method="POST"
+                        <a href="<?php echo e(route('admin.banner.edit', $banner->id_banner)); ?>" class="btn btn-warning btn-sm">Sửa</a>
+                        <form action="<?php echo e(route('admin.banner.destroy', $banner->id_banner)); ?>" method="POST"
                             style="display:inline-block;">
                             <?php echo csrf_field(); ?>
                             <?php echo method_field('DELETE'); ?>

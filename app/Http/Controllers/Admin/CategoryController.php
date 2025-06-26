@@ -33,7 +33,7 @@ public function store(Request $request)
 
         Category::create($request->all());
 
-        return redirect()->route('categories.index')->with('success', 'Thêm danh mục mới thành công.');
+        return redirect()->route('admin.categories.index')->with('success', 'Thêm danh mục mới thành công.');
     }
 
     public function show(Category $category)
@@ -49,22 +49,22 @@ public function store(Request $request)
     public function update(Request $request, Category $category)
     {
         $request->validate([
-            'name_category' => 'required|string|max:255',
+            'name_category' => 'required|string|max:255'
         ]);
 
         $category->update($request->all());
 
-        return redirect()->route('categories.index')->with('success', 'Cập nhật danh mục mới thành công.');
+        return redirect()->route('admin.categories.index')->with('success', 'Cập nhật danh mục mới thành công.');
     }
 
     public function destroy(Category $category)
     {
           if ($category->products()->count() > 0) {
-        return redirect()->route('categories.index')
+        return redirect()->route('admin.categories.index')
             ->with('error', 'Không thể xóa danh mục vì vẫn chứa sản phẩm');
     }
         $category->delete();
 
-        return redirect()->route('categories.index')->with('success', 'Xóa danh mục thành công.');
+        return redirect()->route('admin.categories.index')->with('success', 'Xóa danh mục thành công.');
     }
 }

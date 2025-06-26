@@ -8,7 +8,7 @@
         <h3 class="card-title">Sửa</h3>
     </div>
     <div class="card-body">
-        <form action="{{ route('discounts.update',$discount->discount_id) }}" method="POST">
+        <form action="{{ route('admin.discounts.update',$discount->discount_id) }}" method="POST">
             @csrf
               @method('PUT')
             <div class="mb-3">
@@ -48,7 +48,7 @@
                 <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $discount->is_active) ? 'checked' : '0' }}>
             </div>
             <button type="submit" class="btn btn-primary">Lưu</button>
-            <a href="{{ route('discounts.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('admin.discounts.index') }}" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 </div>

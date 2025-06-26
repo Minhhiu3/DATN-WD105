@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
 
-        <form action="{{ route('banners.update', ['banner' => $banner->id_banner]) }}" method="POST"
+        <form action="{{ route('admin.banners.update', ['banner' => $banner->id_banner]) }}" method="POST"
             enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -27,7 +27,7 @@
                 @endif
             </div>
             <button type="submit" class="btn btn-primary">Cập nhật</button>
-            <a href="{{ route('banners.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('admin.banners.index') }}" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 </div>

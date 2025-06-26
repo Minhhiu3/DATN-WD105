@@ -22,6 +22,7 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
+
         <!-- ql size -->
         <li class="nav-item">
             <a href="{{ url('/admin/sizes') }}"
@@ -30,14 +31,15 @@
                 <p>Quản lý size</p>
             </a>
         </li>
+        
         <!-- ql nguoi dung -->
         <li class="nav-item">
-            <a href="{{ url('/admin/users') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-users"></i>
                 <p>Quản lý người dùng</p>
-            </a>
+            </a>    
         </li>
-
+        
         <!-- ql banner -->
         <li class="nav-item">
             <a href="{{ url('/admin/banner') }}"

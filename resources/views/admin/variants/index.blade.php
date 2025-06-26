@@ -12,7 +12,7 @@
         @php
             $id = basename(request()->url());
         @endphp
-        <a href="{{ route('variants.create', ['product_id' => $id]) }}" class="btn btn-primary">
+        <a href="{{ route('admin.variants.create', ['product_id' => $id]) }}" class="btn btn-primary">
             Thêm mới
         </a>
     </div>
@@ -42,9 +42,9 @@
                             <td>{{ $variant->price }}</td>
                             <td>{{ $variant->quantity }}</td>
                             <td>
-                                <a href="{{ route('variants.edit', $variant->id_variant) }}"
+                                <a href="{{ route('admin.variants.edit', $variant->id_variant) }}"
                                     class="btn btn-warning btn-sm">Sửa</a>
-                                <form action="{{ route('variants.destroy', $variant->id_variant) }}" method="POST"
+                                <form action="{{ route('admin.variants.destroy', $variant->id_variant) }}" method="POST"
                                     style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')

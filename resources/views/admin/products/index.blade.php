@@ -9,7 +9,7 @@
         </div>
 
         <div class="card-header d-flex justify-content-between align-items-center">
-            <a href="{{ route('products.create') }}" class="btn btn-primary">Thêm Sản Phẩm Mới</a>
+            <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Thêm Sản Phẩm Mới</a>
 
         </div>
 
@@ -43,13 +43,13 @@
                             <td>{{ $product->name_product }}</td>
                             <td>{{ number_format($product->price, 0, ',', '.') }} VND</td>
                             <td>{{ $product->category->name_category ?? 'Không có danh mục' }}</td>
-                            <th><a href="{{ route('variants.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a></th>
-                            <th><a href="{{ route('Ablum_products.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a></th>
+                            <th><a href="{{ route('admin.variants.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a></th>
+                            <th><a href="{{ route('admin.album-products.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a></th>
                             <td>
-                                <a href="{{ route('products.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a>
-                                <a href="{{ route('products.edit', $product->id_product) }}"
+                                <a href="{{ route('admin.products.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a>
+                                <a href="{{ route('admin.products.edit', $product->id_product) }}"
                                     class="btn btn-warning btn-sm">Sửa</a>
-                                <form action="{{ route('products.destroy', $product->id_product) }}" method="POST"
+                                <form action="{{ route('admin.products.destroy', $product->id_product) }}" method="POST"
                                     style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')

@@ -7,8 +7,8 @@
 					<div class="col-first">
 						<h1>Login/Register</h1>
 						<nav class="d-flex align-items-center">
-							<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-							<a href="category.html">Login/Register</a>
+							<a href="<?php echo e(route('home')); ?>">Home<span class="lnr lnr-arrow-right"></span></a>
+							<a href="<?php echo e(route('login')); ?>">Login/Register</a>
 						</nav>
 					</div>
 				</div>
@@ -22,33 +22,89 @@
 				<div class="row">
 					<div class="col-lg-6">
 						<div class="login_box_img">
-							<img class="img-fluid" src="<?php echo e(('assets/img/login.jpg')); ?>" alt="">
+							<img class="img-fluid" src="<?php echo e(asset('assets/img/login.jpg')); ?>" alt="">
 							<div class="hover">
 								<h4>New to our website?</h4>
 								<p>There are advances being made in science and technology everyday, and a good example of this is the</p>
-								<a class="primary-btn" href="registration.html">Create an Account</a>
+								<a class="primary-btn" href="<?php echo e(route('register')); ?>">Create an Account</a>
 							</div>
 						</div>
 					</div>
 					<div class="col-lg-6">
 						<div class="login_form_inner">
 							<h3>Log in to enter</h3>
-							<form class="row login_form" action="contact_process.php" method="post" id="contactForm" novalidate="novalidate">
+							
+							<?php if(session('success')): ?>
+								<div class="alert alert-success alert-dismissible fade show" role="alert">
+									<?php echo e(session('success')); ?>
+
+									<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+								</div>
+							<?php endif; ?>
+
+							<?php if(session('error')): ?>
+								<div class="alert alert-danger alert-dismissible fade show" role="alert">
+									<?php echo e(session('error')); ?>
+
+									<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+								</div>
+							<?php endif; ?>
+
+							<form class="row login_form" action="<?php echo e(route('login')); ?>" method="POST" id="contactForm" novalidate="novalidate">
+								<?php echo csrf_field(); ?>
 								<div class="col-md-12 form-group">
-									<input type="text" class="form-control" id="name" name="name" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'">
+									<input type="email" class="form-control <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+										   id="email" name="email" value="<?php echo e(old('email')); ?>" 
+										   placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
+									<?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+										<div class="invalid-feedback"><?php echo e($message); ?></div>
+									<?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
 								</div>
 								<div class="col-md-12 form-group">
-									<input type="text" class="form-control" id="name" name="name" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+									<input type="password" class="form-control <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+										   id="password" name="password" 
+										   placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+									<?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+										<div class="invalid-feedback"><?php echo e($message); ?></div>
+									<?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
 								</div>
 								<div class="col-md-12 form-group">
 									<div class="creat_account">
-										<input type="checkbox" id="f-option2" name="selector">
-										<label for="f-option2">Keep me logged in</label>
+										<input type="checkbox" id="remember" name="remember">
+										<label for="remember">Keep me logged in</label>
 									</div>
 								</div>
 								<div class="col-md-12 form-group">
 									<button type="submit" value="submit" class="primary-btn">Log In</button>
-									<a href="#">Forgot Password?</a>
+									<a href="<?php echo e(route('register')); ?>">Don't have an account? Register</a>
 								</div>
 							</form>
 						</div>

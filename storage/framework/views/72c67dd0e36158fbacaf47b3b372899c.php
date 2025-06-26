@@ -36,6 +36,7 @@
                         <th>Khách hàng</th>
                         <th>Tổng tiền</th>
                         <th>Ngày đặt</th>
+                        <th>Phương thức thanh toán</th>
                         <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
@@ -47,6 +48,8 @@
                             <td><?php echo e($order->user->name ?? 'N/A'); ?></td>
                             <td><?php echo e(number_format($order->total_amount, 0, ',', '.')); ?> VND</td>
                             <td><?php echo e(\Carbon\Carbon::parse($order->created_at)->format('d/m/Y')); ?></td>
+                            <td><?php echo e($order->payment_method ?? 'N/A'); ?></td>
+
                            <?php
                                 $statusLevels = [
                                     'pending' => 1,
