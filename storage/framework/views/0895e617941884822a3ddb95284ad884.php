@@ -305,53 +305,7 @@
             </div>
         </div>
     </section>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const sizeSelect = document.getElementById('size');
-    const qtyInput = document.getElementById('sst');
-    const btnIncrease = document.querySelector('.increase');
-    const btnDecrease = document.querySelector('.reduced');
 
-    function getMaxQuantity() {
-        const selected = sizeSelect.options[sizeSelect.selectedIndex];
-        return parseInt(selected.dataset.quantity) || 1;
-    }
-
-    btnIncrease.addEventListener('click', function () {
-        let currentQty = parseInt(qtyInput.value) || 1;
-        const maxQty = getMaxQuantity();
-        if (currentQty < maxQty) {
-            qtyInput.value = currentQty + 1;
-        }
-    });
-
-    btnDecrease.addEventListener('click', function () {
-        let currentQty = parseInt(qtyInput.value) || 1;
-        if (currentQty > 1) {
-            qtyInput.value = currentQty - 1;
-        }
-    });
-
-    // Khi chọn size mới, reset lại qty nếu vượt quá max
-    sizeSelect.addEventListener('change', function () {
-        const maxQty = getMaxQuantity();
-        if (parseInt(qtyInput.value) > maxQty) {
-            qtyInput.value = maxQty;
-        }
-    });
-
-    // Không cho nhập số lớn hơn max
-    qtyInput.addEventListener('input', function () {
-        const maxQty = getMaxQuantity();
-        let val = parseInt(qtyInput.value) || 1;
-        if (val > maxQty) {
-            qtyInput.value = maxQty;
-        } else if (val < 1) {
-            qtyInput.value = 1;
-        }
-    });
-});
-</script>
     <!--================End Product Description Area =================-->
 <?php $__env->stopSection(); ?>
 
