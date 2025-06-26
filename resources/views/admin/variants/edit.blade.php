@@ -23,7 +23,7 @@
             </div>
         @endif
 
-        <form action="{{ route('variants.update', $variant->id_variant) }}" method="POST">
+        <form action="{{ route('admin.variants.update', $variant->id_variant) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="form-group mb-3">

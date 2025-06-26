@@ -9,7 +9,7 @@
     </div>
 
     <div class="card-header d-flex justify-content-between align-items-center">
-        <a href="{{ route('discounts.create') }}" class="btn btn-primary">Thêm mới</a>
+        <a href="{{ route('admin.discounts.create') }}" class="btn btn-primary">Thêm mới</a>
     </div>
 
     <div class="card-body">
@@ -64,9 +64,9 @@
                             @endif</td>
 
                         <td>
-                            <a href="{{ route('discounts.edit', $discount->discount_id) }}"
+                            <a href="{{ route('admin.discounts.edit', $discount->discount_id) }}"
                                 class="btn btn-warning btn-sm">Sửa</a>
-                            <form action="{{ route('discounts.destroy', $discount->discount_id) }}" method="POST"
+                            <form action="{{ route('admin.discounts.destroy', $discount->discount_id) }}" method="POST"
                                 style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')

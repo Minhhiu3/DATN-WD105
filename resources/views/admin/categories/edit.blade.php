@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
 
-        <form action="{{ route('categories.update', $category->id_category) }}" method="POST">
+        <form action="{{ route('admin.categories.update', $category->id_category) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="mb-3">
@@ -17,7 +17,7 @@
                 <input type="text" name="name_category" id="name_category" class="form-control" value="{{ old('name_category', $category->name_category) }}" placeholder="Nhập tên danh mục mới" required >
             </div>
             <button type="submit" class="btn btn-primary">Cập nhật</button>
-            <a href="{{ route('categories.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 </div>

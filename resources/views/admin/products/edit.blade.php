@@ -18,7 +18,7 @@
             </div>
         @endif
 
-        <form action="{{ route('products.update',$product->id_product) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.products.update',$product->id_product) }}" method="POST" enctype="multipart/form-data">
             @csrf
               @method('PUT')
             <div class="form-group mb-3">
@@ -54,7 +54,7 @@
                 <input type="file" name="image" id="image" class="form-control" value="{{ old('description',$product->image) }}">
             </div>
             <button type="submit" class="btn btn-primary">Lưu Sản Phẩm</button>
-            <a href="{{ route('products.index') }}" class="btn btn-secondary">Hủy</a>
+            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Hủy</a>
         </form>
     </div>
 </div>

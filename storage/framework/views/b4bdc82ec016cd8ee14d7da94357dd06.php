@@ -41,13 +41,13 @@
                             <td><?php echo e($product->name_product); ?></td>
                             <td><?php echo e(number_format($product->price, 0, ',', '.')); ?> VND</td>
                             <td><?php echo e($product->category->name_category ?? 'Không có danh mục'); ?></td>
-                            <th><a href="<?php echo e(route('variants.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a></th>
-                            <th><a href="<?php echo e(route('Ablum_products.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a></th>
+                            <th><a href="<?php echo e(route('admin.variants.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a></th>
+                            <th><a href="<?php echo e(route('admin.album-products.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a></th>
                             <td>
-                                <a href="<?php echo e(route('products.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a>
-                                <a href="<?php echo e(route('products.edit', $product->id_product)); ?>"
+                                <a href="<?php echo e(route('admin.products.show', $product->id_product)); ?>" class="btn btn-info btn-sm">Xem</a>
+                                <a href="<?php echo e(route('admin.products.edit', $product->id_product)); ?>"
                                     class="btn btn-warning btn-sm">Sửa</a>
-                                <form action="<?php echo e(route('products.destroy', $product->id_product)); ?>" method="POST"
+                                <form action="<?php echo e(route('admin.products.destroy', $product->id_product)); ?>" method="POST"
                                     style="display:inline-block;">
                                     <?php echo csrf_field(); ?>
                                     <?php echo method_field('DELETE'); ?>

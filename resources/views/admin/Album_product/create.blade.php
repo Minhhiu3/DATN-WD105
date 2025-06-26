@@ -13,7 +13,7 @@
     </div>
     <div class="card-body">
 
-        <form action="{{ route('Ablum_products.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.Ablum_products.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product_id }}">
             <div class="mb-3">
@@ -25,7 +25,7 @@
                 <input type="file" name="image" id="image" class="form-control" value="{{ old('image') }}" placeholder="Nhập tên size mới" required >
             </div>
             <button type="submit" class="btn btn-primary">Thêm mới</button>
-            <a href="{{ route('Ablum_products.show', $product_id) }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('admin.Ablum_products.show', $product_id) }}" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 </div>

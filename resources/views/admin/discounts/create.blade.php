@@ -8,7 +8,7 @@
         <h3 class="card-title">Thêm mã giảm giá mới</h3>
     </div>
     <div class="card-body">
-        <form action="{{ route('discounts.store') }}" method="POST">
+        <form action="{{ route('admin.discounts.store') }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label for="code" class="form-label">Mã giảm giá</label>
@@ -47,7 +47,7 @@
                 <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
             </div>
             <button type="submit" class="btn btn-primary">Thêm mới</button>
-            <a href="{{ route('discounts.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('admin.discounts.index') }}" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 </div>

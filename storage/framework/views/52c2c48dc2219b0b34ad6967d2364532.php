@@ -8,7 +8,7 @@
 
        <div class="card-header d-flex justify-content-between align-items-center">
 
-        <a href="<?php echo e(route('categories.create')); ?>" class="btn btn-primary">Thêm mới</a>
+        <a href="<?php echo e(route('admin.categories.create')); ?>" class="btn btn-primary">Thêm mới</a>
     </div>
 
 
@@ -34,9 +34,9 @@
                             <td><?php echo e($category->id_category); ?></td>
                             <td><?php echo e($category->name_category); ?></td>
                             <td>
-                                <a href="<?php echo e(route('categories.edit', $category->id_category)); ?>"
+                                <a href="<?php echo e(route('admin.categories.edit', $category->id_category)); ?>"
                                     class="btn btn-warning btn-sm">Sửa</a>
-                                <form action="<?php echo e(route('categories.destroy', $category->id_category)); ?>" method="POST"
+                                <form action="<?php echo e(route('admin.categories.destroy', $category->id_category)); ?>" method="POST"
                                     style="display:inline-block;">
                                     <?php echo csrf_field(); ?>
                                     <?php echo method_field('DELETE'); ?>

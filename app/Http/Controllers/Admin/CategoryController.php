@@ -33,7 +33,7 @@ public function store(Request $request)
 
         Category::create($request->all());
 
-        return redirect()->route('categories.index')->with('success', 'Thêm danh mục mới thành công.');
+        return redirect()->route('admin.categories.index')->with('success', 'Thêm danh mục mới thành công.');
     }
 
     public function show(Category $category)
@@ -54,7 +54,7 @@ public function store(Request $request)
 
         $category->update($request->all());
 
-        return redirect()->route('categories.index')->with('success', 'Cập nhật danh mục mới thành công.');
+        return redirect()->route('admin.categories.index')->with('success', 'Cập nhật danh mục mới thành công.');
     }
 
     public function destroy(Category $category)
@@ -65,6 +65,6 @@ public function store(Request $request)
     }
         $category->delete();
 
-        return redirect()->route('categories.index')->with('success', 'Xóa danh mục thành công.');
+        return redirect()->route('admin.categories.index')->with('success', 'Xóa danh mục thành công.');
     }
 }
