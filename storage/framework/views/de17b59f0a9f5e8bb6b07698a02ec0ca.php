@@ -11,15 +11,16 @@
             <?php echo csrf_field(); ?>
             <div class="mb-3">
                 <label for="name" class="form-label">Tên banner</label>
-                <input type="text" name="name" id="name" class="form-control" value="<?php echo e(old('name')); ?>" placeholder="Nhập tên banner" required >
+                <input type="text" name="name" id="name" class="form-control" value="<?php echo e(old('name')); ?>"
+                    placeholder="Nhập tên banner" required>
             </div>
             <div class="mb-3">
                 <label for="image" class="form-label">Ảnh banner</label>
                 <input type="file" name="image" id="image" class="form-control" accept="image/*" required>
             </div>
             <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Thêm mới</button>
-            <a href="<?php echo e(route('banner.index')); ?>" class="btn btn-secondary">Quay lại</a>
+                <button type="submit" class="btn btn-primary">Thêm mới</button>
+                <a href="<?php echo e(route('banner.index')); ?>" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 </div>

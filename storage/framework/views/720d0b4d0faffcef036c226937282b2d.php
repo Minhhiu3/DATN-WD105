@@ -10,20 +10,19 @@
         </li>
         <!-- ql san pham -->
         <li class="nav-item">
-            <a href="<?php echo e(url('/admin/products')); ?>"
-                class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+            <a href="<?php echo e(url('/admin/products')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                 <i class="fa-brands fa-product-hunt"></i>
                 <p>Quản lý sản phẩm</p>
             </a>
         </li>
         <!-- ql danh muc -->
         <li class="nav-item">
-            <a href="<?php echo e(url('/admin/categories')); ?>"
-                class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+            <a href="<?php echo e(url('/admin/categories')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                 <i class="fa-solid fa-layer-group"></i>
                 <p>Quản lý danh mục</p>
             </a>
         </li>
+
         <!-- ql size -->
         <li class="nav-item">
             <a href="<?php echo e(url('/admin/sizes')); ?>"
@@ -39,7 +38,7 @@
                 <p>Quản lý người dùng</p>
             </a>
         </li>
-
+        
         <!-- ql banner -->
         <li class="nav-item">
             <a href="<?php echo e(url('/admin/banner')); ?>"
@@ -48,6 +47,7 @@
                 <p>Quản lý banner</p>
             </a>
         </li>
+
         <!-- ql đơn hànghàng -->
         <li class="nav-item">
             <a href="<?php echo e(url('#')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
@@ -71,12 +71,12 @@
         </li>
 
 
-        <li class="nav-item">
-            <a href="<?php echo e(url('/settings')); ?>" class="nav-link <?php echo e(request()->is('settings') ? 'active' : ''); ?>">
-                <i class="nav-icon fas fa-cog"></i>
-                <p>Settings</p>
-            </a>
-        </li>
+            <li class="nav-item">
+                <a href="<?php echo e(url('/settings')); ?>" class="nav-link <?php echo e(request()->is('settings') ? 'active' : ''); ?>">
+                    <i class="nav-icon fas fa-cog"></i>
+                    <p>Settings</p>
+                </a>
+            </li>
     </ul>
 </nav>
 <!-- /.sidebar-menu -->

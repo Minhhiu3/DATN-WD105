@@ -44,11 +44,11 @@ class BannerController extends Controller
         $banner->name = $request->name;
 
         if ($request->hasFile('image')) {
-            $banner->image = $request->file('image')->store('banner', 'public');
+            $banner->image = $request->file('image')->store('banners', 'public');
         }
 
         $banner->save();
-        return redirect()->route('banners.index')->with('success', 'Banner created successfully.');
+        return redirect()->route('banner.index')->with('success', 'Banner created successfully.');
     }
     public function edit(Banner $banner)
     {

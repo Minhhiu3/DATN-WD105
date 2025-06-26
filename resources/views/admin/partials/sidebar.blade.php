@@ -22,8 +22,7 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
-<<<<<<< HEAD
-=======
+
         <!-- ql size -->
         <li class="nav-item">
             <a href="{{ url('/admin/sizes') }}"
@@ -39,8 +38,7 @@
                 <p>Quản lý người dùng</p>
             </a>
         </li>
-
->>>>>>> b685ec53cfccae1e4c587a336a56d58c3372b238
+        
         <!-- ql banner -->
         <li class="nav-item">
             <a href="{{ url('/admin/banner') }}"
