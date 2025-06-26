@@ -31,7 +31,7 @@
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>STT</th>
                     <th>Họ tên</th>
                     <th>Tên tài khoản</th>
                     <th>Email</th>

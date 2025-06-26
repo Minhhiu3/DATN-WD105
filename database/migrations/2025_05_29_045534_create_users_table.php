@@ -18,10 +18,13 @@ return new class extends Migration {
             $table->string('phone_number', 20)->nullable();
             $table->string('password', 255);
             $table->unsignedInteger('role_id');
+            $table->boolean('status')->default(true);
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
+            $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('role_id')->references('id_role')->on('roles')->onDelete('cascade');
-            $table->timestamps();
         });
     }
 

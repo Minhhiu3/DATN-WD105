@@ -70,12 +70,7 @@
                                 </span>
                             </li>
                         @endauth
-                        <li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
-                        <li class="nav-item">
-                            <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
-                        </li>
                     </ul>
-
                 </div>
             </div>
         </nav>

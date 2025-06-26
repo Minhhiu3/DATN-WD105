@@ -9,11 +9,16 @@ use App\Models\User;
 
 class LoginController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('guest')->except('logout');
+    }
+
     public function showLoginForm()
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->role && $user->role->name === 'Admin') {
+            if ($user->isAdmin()) {
                 return redirect()->intended('/admin/dashboard');
             } else {
                 return redirect()->intended('/');
@@ -37,28 +42,46 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
         $remember = $request->has('remember');
 
+        // Kiểm tra xem user có tồn tại và có active không
+        $user = User::where('email', $request->email)->first();
+        
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'Email không tồn tại trong hệ thống.',
+            ])->withInput($request->only('email'));
+        }
+
+        if (!$user->isActive()) {
+            return back()->withErrors([
+                'email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin.',
+            ])->withInput($request->only('email'));
+        }
+
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
             
             // Kiểm tra vai trò và chuyển hướng
-            if ($user->role && $user->role->name === 'Admin') {
-                return redirect()->intended('/admin/dashboard')->with('success', 'Đăng nhập thành công!');
+            if ($user->isAdmin()) {
+                return redirect()->intended('/admin/dashboard')->with('success', 'Đăng nhập thành công! Chào mừng Admin.');
             } else {
-                return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
+                return redirect()->intended('/')->with('success', 'Đăng nhập thành công! Chào mừng ' . $user->display_name);
             }
         }
 
         return back()->withErrors([
-            'email' => 'Email hoặc mật khẩu không đúng.',
+            'password' => 'Mật khẩu không đúng.',
         ])->withInput($request->only('email'));
     }
 
     public function logout(Request $request)
     {
+        $user = Auth::user();
+        $userName = $user ? $user->display_name : 'User';
+        
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        return redirect('/login')->with('success', 'Đăng xuất thành công!');
+        return redirect('/login')->with('success', 'Đăng xuất thành công! Tạm biệt ' . $userName);
     }
 }
