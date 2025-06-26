@@ -97,6 +97,23 @@
                             <a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
                             <a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
                         </div>
+                        @php
+                            $firstVariant = $product->variants->first();
+                        @endphp
+
+                        <div class="card_area d-flex align-items-center mt-3">
+                            @if ($firstVariant)
+                                <form action="{{ route('account.checkout.form') }}" method="GET">
+                                    @csrf
+                                    <input type="hidden" name="variant_id" id="selectedVariant"
+                                        value="{{ $firstVariant->id_variant }}">
+                                    <input type="hidden" name="quantity" id="selectedQty" value="1">
+                                    <button type="submit" class="primary-btn">Mua ngay</button>
+                                </form>
+                            @else
+                                <span class="text-danger fw-bold">Hết hàng</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -310,6 +327,16 @@
             </div>
         </div>
     </section>
+    <script>
+        document.querySelector('form[action="{{ route('account.checkout.form') }}"]').addEventListener('submit', function(
+            e) {
+            const qty = document.getElementById('sst').value;
+            document.getElementById('selectedQty').value = qty;
+
+            const variantId = document.getElementById('size').value;
+            document.getElementById('selectedVariant').value = variantId;
+        });
+    </script>
 
     <!--================End Product Description Area =================-->
 @endsection

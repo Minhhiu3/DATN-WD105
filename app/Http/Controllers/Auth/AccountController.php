@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -41,7 +42,7 @@ class AccountController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'name' => 'required|string|max:100',
             'account_name' => ['required', 'string', 'max:50', 'unique:users,account_name,' . $user->id_user . ',id_user'],
@@ -112,11 +113,46 @@ class AccountController extends Controller
      */
     public function orders()
     {
-        $user = Auth::user();
-        // TODO: Thêm logic lấy đơn hàng của user
-        $orders = collect(); // Tạm thời để trống
-        return view('auth.orders', compact('orders'));
+    //      if (!Auth::check()) {
+    //     abort(403, 'Bạn chưa đăng nhập!');
+    // }
+
+    $user = Auth::user();
+
+    // Kiểm tra kỹ dữ liệu truy vấn
+    $orders = Order::with('orderItems')
+        ->where('user_id', $user->id_user)
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+        // dd($orders);
+        // dd(Auth::user()->id);
+            return view('auth.orders', compact('orders'));
+
+}
+public function cancelOrder($id)
+{
+    $order = Order::where('id_order', $id)
+        ->where('user_id', Auth::id())
+        ->firstOrFail();
+
+    if ($order->status != 'chờ xác nhận') {
+        return redirect()->back()->with('error', 'Đơn hàng không thể hủy!');
     }
+
+    $order->status = 'đã hủy';
+    $order->save();
+
+    return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công.');
+}
+public function orderDetail($id)
+{
+    $order = Order::with('orderItems.variant.product') 
+        ->where('user_id', Auth::id())
+        ->where('id_order', $id)
+        ->firstOrFail();
+
+    return view('auth.order_detail', compact('order'));
+}
 
     /**
      * Hiển thị thông tin cá nhân

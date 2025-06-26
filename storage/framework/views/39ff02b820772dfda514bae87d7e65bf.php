@@ -98,6 +98,23 @@
                             <a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
                             <a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
                         </div>
+                        <?php
+                            $firstVariant = $product->variants->first();
+                        ?>
+
+                        <div class="card_area d-flex align-items-center mt-3">
+                            <?php if($firstVariant): ?>
+                                <form action="<?php echo e(route('account.checkout.form')); ?>" method="GET">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" name="variant_id" id="selectedVariant"
+                                        value="<?php echo e($firstVariant->id_variant); ?>">
+                                    <input type="hidden" name="quantity" id="selectedQty" value="1">
+                                    <button type="submit" class="primary-btn">Mua ngay</button>
+                                </form>
+                            <?php else: ?>
+                                <span class="text-danger fw-bold">Hết hàng</span>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -305,6 +322,16 @@
             </div>
         </div>
     </section>
+    <script>
+        document.querySelector('form[action="<?php echo e(route('account.checkout.form')); ?>"]').addEventListener('submit', function(
+            e) {
+            const qty = document.getElementById('sst').value;
+            document.getElementById('selectedQty').value = qty;
+
+            const variantId = document.getElementById('size').value;
+            document.getElementById('selectedVariant').value = variantId;
+        });
+    </script>
 
     <!--================End Product Description Area =================-->
 <?php $__env->stopSection(); ?>
