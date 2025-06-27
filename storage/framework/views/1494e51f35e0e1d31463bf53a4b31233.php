@@ -79,15 +79,15 @@
                                                     </td>
                                                     <td>
                                                         <?php $status = $order->status; ?>
-                                                        <?php if($status == 'chờ xác nhận'): ?>
+                                                        <?php if($status == 'pending'): ?>
                                                             <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                                                        <?php elseif($status == 'đã xác nhận'): ?>
+                                                        <?php elseif($status == 'confirmed'): ?>
                                                             <span class="badge bg-success text-white">Đã xác nhận</span>
-                                                        <?php elseif($status == 'đang giao'): ?>
+                                                        <?php elseif($status == 'shipping'): ?>
                                                             <span class="badge bg-primary text-white">Đang giao</span>
-                                                        <?php elseif($status == 'đã giao'): ?>
-                                                            <span class="badge bg-success">Đã giao</span>
-                                                        <?php elseif($status == 'đã hủy'): ?>
+                                                        <?php elseif($status == 'delivered'): ?>
+                                                            <span class="badge bg-success text-white">Đã giao</span>
+                                                        <?php elseif($status == 'canceled'): ?>
                                                             <span class="badge bg-danger text-white">Đã hủy</span>
                                                         <?php else: ?>
                                                             <span class="badge "><?php echo e($status); ?></span>

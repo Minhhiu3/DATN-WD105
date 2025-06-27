@@ -6,15 +6,15 @@
         <h2 class="mb-4">Chi tiết đơn hàng #{{ $order->id_order }}</h2>
         <p><strong>Ngày đặt:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
         <p><strong>Trạng thái:</strong>
-            @if ($order->status == 'chờ xác nhận')
+            @if ($order->status == 'pending')
                 <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                  @elseif ($order->status == 'đã xác nhận')
+                  @elseif ($order->status == 'confirmed')
                 <span class="badge bg-success text-white">Đã xác nhận</span>
-            @elseif ($order->status == 'đang giao')
+            @elseif ($order->status == 'shipping')
                 <span class="badge bg-primary text-white">Đang giao</span>
-            @elseif ($order->status == 'đã giao')
+            @elseif ($order->status == 'delivered')
                 <span class="badge bg-success text-white">Đã giao</span>
-            @elseif ($order->status == 'đã hủy')
+            @elseif ($order->status == 'canceled')
                 <span class="badge bg-danger text-white">Đã hủy</span>
             @else
                 <span class="badge">{{ $order->status }}</span>

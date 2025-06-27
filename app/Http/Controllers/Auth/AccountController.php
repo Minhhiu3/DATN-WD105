@@ -136,7 +136,7 @@ public function cancelOrder($id)
         ->where('user_id', Auth::id())
         ->firstOrFail();
 
-    if ($order->status != 'chờ xác nhận') {
+    if ($order->status != '0') {
         return redirect()->back()->with('error', 'Đơn hàng không thể hủy!');
     }
 

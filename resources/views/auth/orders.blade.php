@@ -80,15 +80,15 @@
                                                     </td>
                                                     <td>
                                                         @php $status = $order->status; @endphp
-                                                        @if ($status == 'chờ xác nhận')
+                                                        @if ($status == 'pending')
                                                             <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                                                        @elseif ($status == 'đã xác nhận')
+                                                        @elseif ($status == 'confirmed')
                                                             <span class="badge bg-success text-white">Đã xác nhận</span>
-                                                        @elseif ($status == 'đang giao')
+                                                        @elseif ($status == 'shipping')
                                                             <span class="badge bg-primary text-white">Đang giao</span>
-                                                        @elseif ($status == 'đã giao')
-                                                            <span class="badge bg-success text white">Đã giao</span>
-                                                        @elseif ($status == 'đã hủy')
+                                                        @elseif ($status == 'delivered')
+                                                            <span class="badge bg-success text-white">Đã giao</span>
+                                                        @elseif ($status == 'canceled')
                                                             <span class="badge bg-danger text-white">Đã hủy</span>
                                                         @else
                                                             <span class="badge ">{{ $status }}</span>

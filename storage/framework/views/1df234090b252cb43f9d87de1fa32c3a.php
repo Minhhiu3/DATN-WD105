@@ -12,7 +12,7 @@
             <?php elseif($order->status == 'đang giao'): ?>
                 <span class="badge bg-primary text-white">Đang giao</span>
             <?php elseif($order->status == 'đã giao'): ?>
-                <span class="badge bg-success">Đã giao</span>
+                <span class="badge bg-success text-white">Đã giao</span>
             <?php elseif($order->status == 'đã hủy'): ?>
                 <span class="badge bg-danger text-white">Đã hủy</span>
             <?php else: ?>

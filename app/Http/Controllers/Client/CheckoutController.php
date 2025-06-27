@@ -54,7 +54,7 @@ class CheckoutController extends Controller
             // Tạo đơn hàng
             $order = new Order();
             $order->user_id = $user->id_user;
-            $order->status = 'chờ xác nhận';
+            $order->status = 'pending';
             $order->created_at = now();
             $order->save();
 
