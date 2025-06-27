@@ -10,10 +10,12 @@ use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Admin\AlbumProductController;
 use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
+use App\Http\Controllers\Client\CheckoutController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -42,7 +44,12 @@ Route::prefix('account')->middleware('auth')->group(function () {
     Route::put('/update-password', [AccountController::class, 'updatePassword'])->name('account.update-password');
     Route::get('/orders', [AccountController::class, 'orders'])->name('account.orders');
     Route::get('/settings', [AccountController::class, 'settings'])->name('account.settings');
+ Route::get('/checkout-form', [CheckoutController::class, 'showCheckoutForm'])->name('account.checkout.form');
+    Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('account.placeOrder');
+Route::put('/account/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
+Route::get('/account/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
 });
+
 
 // Admin Routes (Protected by AdminMiddleware)
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
@@ -156,3 +163,4 @@ Route::get('/cart', function () {
 Route::get('/checkout', function () {
     return view('client.pages.checkout');
 })->name('checkout');
+
