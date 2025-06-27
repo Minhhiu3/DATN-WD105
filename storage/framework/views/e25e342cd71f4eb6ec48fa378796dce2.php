@@ -21,7 +21,7 @@
             </div>
         <?php endif; ?>
 
-        <form action="<?php echo e(route('variants.store')); ?>" method="POST">
+        <form action="<?php echo e(route('admin.variants.store')); ?>" method="POST">
             <?php echo csrf_field(); ?>
 
             <div class="form-group mb-3">
@@ -64,7 +64,7 @@
 
             <button type="submit" class="btn btn-primary">Thêm Biến Thể</button>
             
-            <a href="<?php echo e(route('variants.show', $id_product)); ?>" class="btn btn-secondary">Quay lại</a>
+            <a href="<?php echo e(route('admin.variants.show', $id_product)); ?>" class="btn btn-secondary">Quay lại</a>
 
         </form>
     </div>

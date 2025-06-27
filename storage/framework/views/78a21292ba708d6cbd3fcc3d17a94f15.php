@@ -7,23 +7,23 @@
 ?>
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Thêm anh sản phẩm </h3>
+        <h3 class="card-title">Thêm Ảnh sản phẩm </h3>
     </div>
     <div class="card-body">
 
-        <form action="<?php echo e(route('Ablum_products.store')); ?>" method="POST" enctype="multipart/form-data">
+        <form action="<?php echo e(route('admin.album-products.store')); ?>" method="POST" enctype="multipart/form-data">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="product_id" value="<?php echo e($product_id); ?>">
             <div class="mb-3">
-                <label for="product_id" class="form-label">Ma san pham</label>
+                <label for="product_id" class="form-label">ID</label>
                 <input type="input" name="product_id" id="product_id" class="form-control" value="<?php echo e($product_id); ?>" placeholder="Nhập tên size mới" disabled >
             </div>
             <div class="mb-3">
-                <label for="image" class="form-label">Anh san pham</label>
+                <label for="image" class="form-label">Ảnh</label>
                 <input type="file" name="image" id="image" class="form-control" value="<?php echo e(old('image')); ?>" placeholder="Nhập tên size mới" required >
             </div>
             <button type="submit" class="btn btn-primary">Thêm mới</button>
-            <a href="<?php echo e(route('Ablum_products.show', $product_id)); ?>" class="btn btn-secondary">Quay lại</a>
+            <a href="<?php echo e(route('admin.album-products.show', $product_id)); ?>" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 </div>

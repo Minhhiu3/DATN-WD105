@@ -51,7 +51,7 @@
 
         <!-- ql đơn hànghàng -->
         <li class="nav-item">
-            <a href="{{ url('#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ url('/admin/orders') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="fa-solid fa-truck"></i>
                 <p>Quản lý đơn hàng</p>
             </a>
@@ -65,19 +65,19 @@
         </li>
         <!-- ql đánh giá -->
         <li class="nav-item">
-            <a href="{{ url('/#') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+            <a href="{{ url('/admin/reviews') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="fa-solid fa-comment-slash"></i>
                 <p>Quản lý đánh giá</p>
             </a>
         </li>
 
 
-            <li class="nav-item">
-                <a href="{{ url('/settings') }}" class="nav-link {{ request()->is('settings') ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-cog"></i>
-                    <p>Settings</p>
-                </a>
-            </li>
+        <li class="nav-item">
+            <a href="{{ url('/settings') }}" class="nav-link {{ request()->is('settings') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-cog"></i>
+                <p>Settings</p>
+            </a>
+        </li>
     </ul>
 </nav>
 <!-- /.sidebar-menu -->
