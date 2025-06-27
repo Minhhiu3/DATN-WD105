@@ -16,6 +16,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Admin\ProductReviewController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -145,6 +146,37 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.discounts.update',
         'destroy' => 'admin.discounts.destroy',
     ]);
+    Route::get('orders', [OrderController::class, 'index'])
+         ->name('admin.orders.index');
+
+    // Hiển thị chi tiết 1 đơn hàng
+    Route::get('orders/{order}', [OrderController::class, 'show'])
+         ->name('admin.orders.show');
+
+    // // Trang edit (nếu dùng)
+    // Route::get('orders/{order}/edit', [OrderController::class, 'edit'])
+    //      ->name('admin.orders.edit');
+
+    // // Cập nhật (PUT)
+    // Route::put('orders/{order}', [OrderController::class, 'update'])
+    //      ->name('admin.orders.update');
+
+    // AJAX: cập nhật trạng thái
+    Route::post('orders/update-status', [OrderController::class, 'updateStatus'])
+         ->name('admin.orders.updateStatus');
+
+    // AJAX: hủy đơn hàng
+    Route::post('orders/cancel', [OrderController::class, 'cancel'])
+         ->name('admin.orders.cancel');
+
+
+
+    Route::get('reviews', [ProductReviewController::class, 'index'])
+         ->name('admin.reviews.index');
+    Route::post('/reviews/update-status', [ProductReviewController::class, 'updateStatus'])->name('admin.reviews.updateStatus');
+    Route::post('/reviews/update-status', [ProductReviewController::class, 'updateStatus'])->name('admin.reviews.updateStatus');
+    Route::delete('/reviews/{id_review}', [ProductReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+
 });
 
 // Client Routes

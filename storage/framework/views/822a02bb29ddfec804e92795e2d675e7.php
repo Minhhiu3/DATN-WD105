@@ -16,7 +16,7 @@
             </div>
         <?php endif; ?>
 
-        <form action="<?php echo e(route('products.store')); ?>" method="POST" enctype="multipart/form-data">
+        <form action="<?php echo e(route('admin.products.store')); ?>" method="POST" enctype="multipart/form-data">
             <?php echo csrf_field(); ?>
             <div class="form-group mb-3">
                 <label for="name_product">Tên Sản Phẩm:</label>
@@ -53,7 +53,7 @@
 
 
             <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
-            <a href="<?php echo e(route('products.index')); ?>" class="btn btn-secondary">Hủy</a>
+            <a href="<?php echo e(route('admin.products.index')); ?>" class="btn btn-secondary">Hủy</a>
         </form>
     </div>
 </div>
