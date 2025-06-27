@@ -131,7 +131,8 @@ class AccountController extends Controller
 }
 public function cancelOrder($id)
 {
-    $order = Order::where('id_order', $id)
+    $order = Order::with('orderItems') // eager load orderItems
+        ->where('id_order', $id)
         ->where('user_id', Auth::id())
         ->firstOrFail();
 
@@ -139,14 +140,26 @@ public function cancelOrder($id)
         return redirect()->back()->with('error', 'Đơn hàng không thể hủy!');
     }
 
+
+    foreach ($order->orderItems as $item) {
+        $product = $item-> variant;
+
+        if ($product) {
+            $product->quantity += $item->quantity;
+            $product->save();
+        }
+    }
+
+
     $order->status = 'đã hủy';
     $order->save();
 
-    return redirect()->back()->with('success', 'Đơn hàng đã được hủy thành công.');
+    return redirect()->back()->with('success', 'Đơn hàng đã được hủy');
 }
+
 public function orderDetail($id)
 {
-    $order = Order::with('orderItems.variant.product') 
+    $order = Order::with('orderItems.variant.product')
         ->where('user_id', Auth::id())
         ->where('id_order', $id)
         ->firstOrFail();

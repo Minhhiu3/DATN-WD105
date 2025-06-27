@@ -8,14 +8,16 @@
         <p><strong>Trạng thái:</strong>
             @if ($order->status == 'chờ xác nhận')
                 <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                  @elseif ($order->status == 'đã xác nhận')
+                <span class="badge bg-success text-white">Đã xác nhận</span>
             @elseif ($order->status == 'đang giao')
                 <span class="badge bg-primary text-white">Đang giao</span>
             @elseif ($order->status == 'đã giao')
-                <span class="badge bg-success">Đã giao</span>
+                <span class="badge bg-success text-white">Đã giao</span>
             @elseif ($order->status == 'đã hủy')
                 <span class="badge bg-danger text-white">Đã hủy</span>
             @else
-                <span class="badge bg-secondary">{{ $order->status }}</span>
+                <span class="badge">{{ $order->status }}</span>
             @endif
         </p>
 <p>@foreach ($order->orderItems as $item)

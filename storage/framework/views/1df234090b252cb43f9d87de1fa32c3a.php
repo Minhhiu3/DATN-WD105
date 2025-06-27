@@ -7,6 +7,8 @@
         <p><strong>Trạng thái:</strong>
             <?php if($order->status == 'chờ xác nhận'): ?>
                 <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                  <?php elseif($order->status == 'đã xác nhận'): ?>
+                <span class="badge bg-success text-white">Đã xác nhận</span>
             <?php elseif($order->status == 'đang giao'): ?>
                 <span class="badge bg-primary text-white">Đang giao</span>
             <?php elseif($order->status == 'đã giao'): ?>
@@ -14,7 +16,7 @@
             <?php elseif($order->status == 'đã hủy'): ?>
                 <span class="badge bg-danger text-white">Đã hủy</span>
             <?php else: ?>
-                <span class="badge bg-secondary"><?php echo e($order->status); ?></span>
+                <span class="badge"><?php echo e($order->status); ?></span>
             <?php endif; ?>
         </p>
 <p><?php $__currentLoopData = $order->orderItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>

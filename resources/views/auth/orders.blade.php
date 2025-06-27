@@ -82,18 +82,21 @@
                                                         @php $status = $order->status; @endphp
                                                         @if ($status == 'chờ xác nhận')
                                                             <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                                        @elseif ($status == 'đã xác nhận')
+                                                            <span class="badge bg-success text-white">Đã xác nhận</span>
                                                         @elseif ($status == 'đang giao')
                                                             <span class="badge bg-primary text-white">Đang giao</span>
                                                         @elseif ($status == 'đã giao')
-                                                            <span class="badge bg-success">Đã giao</span>
+                                                            <span class="badge bg-success text white">Đã giao</span>
                                                         @elseif ($status == 'đã hủy')
                                                             <span class="badge bg-danger text-white">Đã hủy</span>
                                                         @else
-                                                            <span class="badge bg-secondary">{{ $status }}</span>
+                                                            <span class="badge ">{{ $status }}</span>
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        <a href="{{ route('account.orderDetail', $order->id_order) }}" class="btn btn-sm btn-info">
+                                                        <a href="{{ route('account.orderDetail', $order->id_order) }}"
+                                                            class="btn btn-sm btn-info">
                                                             <i class="fa fa-eye"></i> Xem chi tiết
                                                         </a>
                                                         @if ($order->status == 'chờ xác nhận')

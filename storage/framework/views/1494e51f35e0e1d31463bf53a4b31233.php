@@ -81,6 +81,8 @@
                                                         <?php $status = $order->status; ?>
                                                         <?php if($status == 'chờ xác nhận'): ?>
                                                             <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                                        <?php elseif($status == 'đã xác nhận'): ?>
+                                                            <span class="badge bg-success text-white">Đã xác nhận</span>
                                                         <?php elseif($status == 'đang giao'): ?>
                                                             <span class="badge bg-primary text-white">Đang giao</span>
                                                         <?php elseif($status == 'đã giao'): ?>
@@ -88,11 +90,12 @@
                                                         <?php elseif($status == 'đã hủy'): ?>
                                                             <span class="badge bg-danger text-white">Đã hủy</span>
                                                         <?php else: ?>
-                                                            <span class="badge bg-secondary"><?php echo e($status); ?></span>
+                                                            <span class="badge "><?php echo e($status); ?></span>
                                                         <?php endif; ?>
                                                     </td>
                                                     <td>
-                                                        <a href="<?php echo e(route('account.orderDetail', $order->id_order)); ?>" class="btn btn-sm btn-info">
+                                                        <a href="<?php echo e(route('account.orderDetail', $order->id_order)); ?>"
+                                                            class="btn btn-sm btn-info">
                                                             <i class="fa fa-eye"></i> Xem chi tiết
                                                         </a>
                                                         <?php if($order->status == 'chờ xác nhận'): ?>
