@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Order;
 use App\Models\Order_item;
+use App\Models\OrderItem;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -68,7 +69,7 @@ class OrderController extends Controller
 
         $order = Order::findOrFail($order_id);
         $user = User::findOrFail($order->user_id);
-        $order_items = Order_item::with(['variant.size', 'variant.product'])
+        $order_items = OrderItem::with(['variant.size', 'variant.product'])
             ->where('order_id', $order_id)
             ->get();
 
@@ -122,6 +123,14 @@ public function update(Request $request, $order_id)
         ]);
 
         $order = Order::findOrFail($request->id);
+          foreach ($order->orderItems as $item) {
+        $product = $item-> variant;
+
+        if ($product) {
+            $product->quantity += $item->quantity;
+            $product->save();
+        }
+    }
         $order->status = $request->status;
         $order->save();
 
@@ -145,7 +154,7 @@ public function update(Request $request, $order_id)
     }
 
 
- 
+
     /**
      * Remove the specified resource from storage.
      */

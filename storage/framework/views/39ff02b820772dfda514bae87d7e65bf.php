@@ -97,14 +97,13 @@
                         <?php
                             $firstVariant = $product->variants->first();
                         ?>
-
-                        <div class="card_area d-flex align-items-center mt-3">
-                            <?php if($firstVariant): ?>
-                            <div class="card_area d-flex align-items-center">
-                            <a class="primary-btn" href="#">Add to Cart</a>
-                            <a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
-                            <a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
-                        </div>
+                        <?php if($firstVariant): ?>
+                            <div class="card_area d-flex align-items-center mt-3">
+                                <div class="card_area d-flex align-items-center">
+                                    <a class="primary-btn" href="#">Add to Cart</a>
+                                    <a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
+                                    <a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
+                                </div>
                                 <form action="<?php echo e(route('account.checkout.form')); ?>" method="GET">
                                     <?php echo csrf_field(); ?>
                                     <input type="hidden" name="variant_id" id="selectedVariant"
@@ -112,14 +111,15 @@
                                     <input type="hidden" name="quantity" id="selectedQty" value="1">
                                     <button type="submit" class="primary-btn">Mua ngay</button>
                                 </form>
-                            <?php else: ?>
-                                <span class="text-danger fw-bold">Hết hàng</span>
-                            <?php endif; ?>
-                        </div>
+                            </div>
+                        <?php else: ?>
+                            <span class="text-danger fw-bold">Hết hàng</span>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <!--================End detail Product Area =================-->
 

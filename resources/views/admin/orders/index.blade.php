@@ -7,13 +7,13 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0">Danh sách đơn hàng</h3>
 
-            <form action="{{ route('admin.orders.index') }}" 
-                    method="GET" 
+            <form action="{{ route('admin.orders.index') }}"
+                    method="GET"
                     class="d-flex align-items-center ms-auto w-50 gap-2" style="margin-left: 50%">
                 <input type="date"
                     name="date"
                     class="form-control "
-                    value="{{ request('date', $date) }}" style=" width: 25%; height: 100%; margin-left: 1% " > 
+                    value="{{ request('date', $date) }}" style=" width: 25%; height: 100%; margin-left: 1% " >
 
                 <input type="text"
                     name="code"
@@ -102,8 +102,8 @@
                                 <a href="{{ route('admin.orders.show', $order->id_order ) }}" class="btn btn-info btn-sm">Chi tiết</a>
                                 {{-- <a href="{{ route('admin.orders.edit', $order->id_order ) }}" class="btn btn-warning btn-sm">Cập nhật</a> --}}
                              @if (in_array($order->status, ['pending', 'processing']))
-                                <a href="javascript:void(0);" 
-                                class="btn btn-danger btn-sm cancel-order-btn" 
+                                <a href="javascript:void(0);"
+                                class="btn btn-danger btn-sm cancel-order-btn"
                                 data-id="{{ $order->id_order }}">
                                 Hủy
                                 </a>
