@@ -17,4 +17,10 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+<<<<<<< HEAD
 /storage/logs/laravel.log
+=======
+/storge/logs/laravel.log
+/storage/logs
+
+>>>>>>> 683bedf2d1fcd42ab147efa3674ad63e6415a6b5
