@@ -5,22 +5,22 @@
         <h2 class="mb-4">Chi tiết đơn hàng #<?php echo e($order->id_order); ?></h2>
         <p><strong>Ngày đặt:</strong> <?php echo e($order->created_at->format('d/m/Y H:i')); ?></p>
         <p><strong>Trạng thái:</strong>
-            <?php if($order->status == 'chờ xác nhận'): ?>
+            <?php if($order->status == 'pending'): ?>
                 <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                  <?php elseif($order->status == 'đã xác nhận'): ?>
+                  <?php elseif($order->status == 'processing'): ?>
                 <span class="badge bg-success text-white">Đã xác nhận</span>
-            <?php elseif($order->status == 'đang giao'): ?>
+            <?php elseif($order->status == 'shipping'): ?>
                 <span class="badge bg-primary text-white">Đang giao</span>
-            <?php elseif($order->status == 'đã giao'): ?>
+            <?php elseif($order->status == 'completed'): ?>
                 <span class="badge bg-success text-white">Đã giao</span>
-            <?php elseif($order->status == 'đã hủy'): ?>
+            <?php elseif($order->status == 'canceled'): ?>
                 <span class="badge bg-danger text-white">Đã hủy</span>
             <?php else: ?>
                 <span class="badge"><?php echo e($order->status); ?></span>
             <?php endif; ?>
         </p>
 <p><?php $__currentLoopData = $order->orderItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-    <strong>Phương thức thanh toán:</strong> <?php echo e($item->payment_method); ?> <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?></p>
+    <strong>Phương thức thanh toán:</strong> <?php echo e($order->payment_method); ?> <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?></p>
         <div class="table-responsive mt-4">
             <table class="table table-bordered">
                 <thead>
@@ -38,7 +38,7 @@
     <td><?php echo e($item->variant->product->name_product ?? 'Không có sản phẩm'); ?></td>
     <td><?php echo e($item->quantity); ?></td>
     <td><?php echo e(number_format($item->variant->product->price)); ?> VNĐ</td>
-    <td><?php echo e(number_format($item->total_amount)); ?> VNĐ</td>
+    <td><?php echo e(number_format($order->total_amount)); ?> VNĐ</td>
 </tr>
 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
@@ -46,7 +46,7 @@
         </div>
 
         <p class="mt-3 text-end">
-            <strong>Tổng tiền:</strong> <?php echo e(number_format($order->orderItems->sum('total_amount'))); ?> VNĐ
+            <strong>Tổng tiền:</strong> <?php echo e(number_format($order->sum('total_amount'))); ?> VNĐ
         </p>
 
         <a href="<?php echo e(route('account.orders')); ?>" class="btn btn-secondary mt-3">

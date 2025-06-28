@@ -6,9 +6,8 @@
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <a class="navbar-brand logo_h" href="<?php echo e(route('home')); ?>"><img src="<?php echo e(asset('assets/img/logo.png')); ?>"
                         alt=""></a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="Chuyển đổi điều hướng">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Chuyển đổi điều hướng">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -16,45 +15,48 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
                     <ul class="nav navbar-nav menu_nav ml-auto">
-                        <li class="nav-item active"><a class="nav-link" href="<?php echo e(route('home')); ?>">Trang chủ</a></li>
-                        <li class="nav-item submenu dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                                aria-haspopup="true" aria-expanded="false">Cửa hàng</a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="<?php echo e(route('products')); ?>">Sản phẩm</a>
-                                </li>
-                                <li class="nav-item"><a class="nav-link" href="<?php echo e(route('checkout')); ?>">Thanh toán</a>
-                                </li>
-                                <li class="nav-item"><a class="nav-link" href="<?php echo e(route('cart')); ?>">Giỏ hàng</a></li>
-                                <li class="nav-item"><a class="nav-link" href="confirmation.html">Xác nhận đơn hàng</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item submenu dropdown">
-                            <a href="<?php echo e(route('blogs')); ?>" class="nav-link dropdown-toggle" data-toggle="dropdown"
-                                role="button" aria-haspopup="true" aria-expanded="false">Tin tức</a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="<?php echo e(route('blogs')); ?>">Blog</a></li>
-                                <li class="nav-item"><a class="nav-link" href="<?php echo e(route('blog-detail')); ?>">Chi tiết bài
-                                        viết</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item submenu dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                                aria-haspopup="true" aria-expanded="false">Trang</a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="<?php echo e(route('login')); ?>">Đăng nhập</a></li>
-                                <li class="nav-item"><a class="nav-link" href="tracking.html">Theo dõi đơn hàng</a></li>
+                        <li class="nav-item"><a class="nav-link" href="<?php echo e(route('home')); ?>">Trang chủ</a></li>
+                        <li class="nav-item "><a class="nav-link" href="<?php echo e(route('products')); ?>">Cửa hàng</a></li>
+                        
+                        
+                        
+                        <li class="nav-item"><a class="nav-link" href="<?php echo e(route('blogs')); ?>">Tin tức</a></li>
+                        
+                        
+                        
+                        
+                            <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
+                          <li class="nav-item"><a class="nav-link" href="<?php echo e(route('login')); ?>">Đăng nhập</a></li>
 
-                            </ul>
-                        </li>
-                        <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
+                        <li class="nav-item position-relative">
+    <a href="<?php echo e(route('cart')); ?>" class="cart" id="cart-icon">
+        <span class="ti-bag"></span>
+        <span id="cart-count" class="badge" style="display:none;position:absolute;top:0;right:0;">0</span>
+    </a>
+    <div id="mini-cart" style="display:none;position:absolute;right:0;top:40px;z-index:1000;background:#fff;border:1px solid #eee;width:300px;padding:15px;">
+        <div id="mini-cart-items"></div>
+        <div id="mini-cart-total" class="mt-2"></div>
+    </div>
+</li>
                         <li class="nav-item">
                             <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
                         </li>
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <?php if(auth()->guard()->check()): ?>
+                            <li class="nav-item">
+                                <span class="nav-link">
+                                    <!-- <a href="<?php echo e(route('account.profile')); ?>"> <i class="fa fa-user"></i> <?php echo e(Auth::user()->name); ?> </a> -->
+                                     <a href="<?php echo e(route('account.profile')); ?>" style="color: black;">
+                                        <i class="fa fa-user"></i> <?php echo e(Auth::user()->name); ?>
+
+                                    </a>
+                                </span>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>
@@ -70,4 +72,9 @@
         </div>
     </div>
 </header>
-<!-- End Header Area --><?php /**PATH C:\laragon\www\DATN-WD105\resources\views/client/partials/header_home.blade.php ENDPATH**/ ?>
+<!-- End Header Area -->
+
+
+
+<!-- fe scrip -->
+<?php /**PATH C:\laragon\www\DATN-WD105\resources\views/client/partials/header_home.blade.php ENDPATH**/ ?>

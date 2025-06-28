@@ -38,7 +38,7 @@ class CheckoutController extends Controller
         $request->validate([
             'variant_id' => 'required|exists:variant,id_variant',
             'quantity' => 'required|integer|min:1',
-            'payment_method' => 'required|string',
+
         ]);
 
         DB::beginTransaction();
@@ -55,6 +55,8 @@ class CheckoutController extends Controller
             $order = new Order();
             $order->user_id = $user->id_user;
             $order->status = 'pending';
+            $order->payment_method = $request->payment_method;
+            $order->total_amount = $variant->price * $request->quantity;
             $order->created_at = now();
             $order->save();
 
@@ -63,8 +65,7 @@ class CheckoutController extends Controller
             $orderItem->order_id = $order->id_order;
             $orderItem->variant_id = $variant->id_variant;
             $orderItem->quantity = $request->quantity;
-            $orderItem->payment_method = $request->payment_method;
-            $orderItem->total_amount = $variant->price * $request->quantity;
+
             $orderItem->created_at = now();
             $orderItem->save();
 

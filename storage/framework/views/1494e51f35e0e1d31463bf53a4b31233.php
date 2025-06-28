@@ -75,17 +75,17 @@
                                                 <tr>
                                                     <td>#<?php echo e($order->id_order); ?></td>
                                                     <td><?php echo e($order->created_at?->format('d/m/Y H:i') ?? 'N/A'); ?></td>
-                                                    <td><?php echo e(number_format($order->orderItems->sum('total_amount'))); ?> VNĐ
+                                                    <td><?php echo e(number_format($order->total_amount)); ?> VNĐ
                                                     </td>
                                                     <td>
                                                         <?php $status = $order->status; ?>
                                                         <?php if($status == 'pending'): ?>
                                                             <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                                                        <?php elseif($status == 'confirmed'): ?>
+                                                        <?php elseif($status == 'processing'): ?>
                                                             <span class="badge bg-success text-white">Đã xác nhận</span>
                                                         <?php elseif($status == 'shipping'): ?>
                                                             <span class="badge bg-primary text-white">Đang giao</span>
-                                                        <?php elseif($status == 'delivered'): ?>
+                                                        <?php elseif($status == 'completed'): ?>
                                                             <span class="badge bg-success text-white">Đã giao</span>
                                                         <?php elseif($status == 'canceled'): ?>
                                                             <span class="badge bg-danger text-white">Đã hủy</span>
@@ -98,7 +98,7 @@
                                                             class="btn btn-sm btn-info">
                                                             <i class="fa fa-eye"></i> Xem chi tiết
                                                         </a>
-                                                        <?php if($order->status == 'chờ xác nhận'): ?>
+                                                        <?php if($order->status == 'pending'): ?>
                                                             <form
                                                                 action="<?php echo e(route('account.cancelOrder', $order->id_order)); ?>"
                                                                 method="POST"

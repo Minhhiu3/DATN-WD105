@@ -76,17 +76,17 @@
                                                 <tr>
                                                     <td>#{{ $order->id_order }}</td>
                                                     <td>{{ $order->created_at?->format('d/m/Y H:i') ?? 'N/A' }}</td>
-                                                    <td>{{ number_format($order->orderItems->sum('total_amount')) }} VNĐ
+                                                    <td>{{ number_format($order->total_amount) }} VNĐ
                                                     </td>
                                                     <td>
                                                         @php $status = $order->status; @endphp
                                                         @if ($status == 'pending')
                                                             <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                                                        @elseif ($status == 'confirmed')
+                                                        @elseif ($status == 'processing')
                                                             <span class="badge bg-success text-white">Đã xác nhận</span>
                                                         @elseif ($status == 'shipping')
                                                             <span class="badge bg-primary text-white">Đang giao</span>
-                                                        @elseif ($status == 'delivered')
+                                                        @elseif ($status == 'completed')
                                                             <span class="badge bg-success text-white">Đã giao</span>
                                                         @elseif ($status == 'canceled')
                                                             <span class="badge bg-danger text-white">Đã hủy</span>
@@ -99,7 +99,7 @@
                                                             class="btn btn-sm btn-info">
                                                             <i class="fa fa-eye"></i> Xem chi tiết
                                                         </a>
-                                                        @if ($order->status == 'chờ xác nhận')
+                                                        @if ($order->status == 'pending')
                                                             <form
                                                                 action="{{ route('account.cancelOrder', $order->id_order) }}"
                                                                 method="POST"
