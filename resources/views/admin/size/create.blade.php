@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
 
-        <form action="{{ route('sadmin.sizes.store') }}" method="POST">
+        <form action="{{ route('admin.sizes.store') }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label for="name" class="form-label">Tên size</label>

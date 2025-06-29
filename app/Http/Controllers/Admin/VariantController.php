@@ -63,7 +63,7 @@ class VariantController extends Controller
     // Tạo mới biến thể nếu chưa tồn tại
     Variant::create($request->only(['size_id','product_id', 'price', 'quantity']));
 
-    return redirect()->route('variants.show', $id_product)->with('success', 'Thêm biến thể thành công!');
+    return redirect()->route('admin.variants.show', $id_product)->with('success', 'Thêm biến thể thành công!');
 }
 
 
@@ -94,7 +94,7 @@ class VariantController extends Controller
         $id_product=$variant->product_id;
         $variant->update($request->all());
 
-        return redirect()->route('variants.show', $id_product)->with('success', 'Thêm biến thể thành công!');
+        return redirect()->route('admin.variants.show', $id_product)->with('success', 'Thêm biến thể thành công!');
     }
 
     /**
@@ -106,6 +106,6 @@ class VariantController extends Controller
         $id_product = $variant->product_id;
         $variant->forceDelete();
 
-    return redirect()->route('variants.show', $id_product)->with('success', 'Thêm biến thể thành công!');
+    return redirect()->route('admin.variants.show', $id_product)->with('success', 'Thêm biến thể thành công!');
     }
 }

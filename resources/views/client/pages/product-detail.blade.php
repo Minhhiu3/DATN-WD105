@@ -71,11 +71,12 @@
                         <div class="form-group d-flex align-items-center">
                             <label for="size" class="mr-2 mb-0">Size:</label>
                             <select name="size" id="size" class="form-control w-auto">
+                                <option value="">-- Chọn Size --</option>
                                 @foreach ($product->variants as $variant)
                                     @if ($variant->quantity > 0)
                                         <option value="{{ $variant->id_variant }}"
                                             data-quantity="{{ $variant->quantity }}">
-                                            Size {{ $variant->size->name }} - Còn {{ $variant->quantity }}
+                                            Size {{ $variant->size ? $variant->size->name : 'Không xác định' }} - Còn {{ $variant->quantity }}
                                         </option>
                                     @endif
                                 @endforeach
@@ -93,7 +94,7 @@
                                 class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
                         </div>
                         <div class="card_area d-flex align-items-center">
-                            <a class="primary-btn" href="#">Add to Cart</a>
+                            <button class="primary-btn" id="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
                             <a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
                             <a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
                         </div>
@@ -313,3 +314,89 @@
 
     <!--================End Product Description Area =================-->
 @endsection
+
+@push('scripts')
+<script>
+function addToCart() {
+    const variantId = document.getElementById('size').value;
+    const quantity = document.getElementById('sst').value;
+    
+    console.log('Adding to cart:', { variantId, quantity });
+    
+    if (!variantId) {
+        alert('Vui lòng chọn size!');
+        return;
+    }
+    
+    if (quantity < 1) {
+        alert('Số lượng phải lớn hơn 0!');
+        return;
+    }
+
+    // Disable button to prevent double click
+    const btn = document.getElementById('add-to-cart-btn');
+    btn.disabled = true;
+    btn.textContent = 'Đang thêm...';
+
+    // Tạo form data thay vì JSON
+    const formData = new FormData();
+    formData.append('variant_id', variantId);
+    formData.append('quantity', quantity);
+    formData.append('_token', '{{ csrf_token() }}');
+
+    fetch('{{ route("cart.add") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+            alert(data.message);
+            // Update cart count in header
+            updateCartCount();
+        } else {
+            alert(data.message || 'Có lỗi xảy ra!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi thêm vào giỏ hàng! Vui lòng thử lại.');
+    })
+    .finally(() => {
+        // Re-enable button
+        btn.disabled = false;
+        btn.textContent = 'Add to Cart';
+    });
+}
+
+function updateCartCount() {
+    // Update cart count in header if exists
+    const cartCountEl = document.getElementById('cart-count');
+    if (cartCountEl) {
+        fetch('{{ route("cart.count") }}')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Cart count:', data);
+            if (data.count > 0) {
+                cartCountEl.style.display = 'inline-block';
+                cartCountEl.innerText = data.count;
+            } else {
+                cartCountEl.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error updating cart count:', error);
+        });
+    }
+}
+
+// Initialize cart count on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateCartCount();
+});
+</script>
+@endpush

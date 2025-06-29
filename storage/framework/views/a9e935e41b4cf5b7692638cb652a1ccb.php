@@ -74,6 +74,33 @@
 </header>
 <!-- End Header Area -->
 
+<script>
+// Cập nhật số lượng giỏ hàng từ server
+function updateCartCountFromServer() {
+    fetch('<?php echo e(route("cart.count")); ?>')
+    .then(response => response.json())
+    .then(data => {
+        const cartCountEl = document.getElementById('cart-count');
+        if (cartCountEl) {
+            if (data.count > 0) {
+                cartCountEl.style.display = 'inline-block';
+                cartCountEl.innerText = data.count;
+            } else {
+                cartCountEl.style.display = 'none';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error updating cart count:', error);
+    });
+}
+
+// Cập nhật khi trang load
+document.addEventListener('DOMContentLoaded', function() {
+    updateCartCountFromServer();
+});
+</script>
+
 
 
 <!-- fe scrip -->

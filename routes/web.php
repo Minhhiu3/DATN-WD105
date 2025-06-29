@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Admin\AlbumProductController;
 use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\Auth\LoginController;
@@ -19,6 +20,14 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ClientProductController::class, 'index'])->name('products');
 Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->name('client.product.show');
 Route::get('/products/filter', [ClientProductController::class, 'filterByPrice'])->name('products.filterByPrice');
+
+// Cart Routes
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::put('/cart/update', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::delete('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -147,10 +156,6 @@ Route::get('/blogs', function () {
 Route::get('/blog-detail', function () {
     return view('client.pages.blog-detail');
 })->name('blog-detail');
-
-Route::get('/cart', function () {
-    return view('client.pages.cart');
-})->name('cart');
 
 Route::get('/checkout', function () {
     return view('client.pages.checkout');
