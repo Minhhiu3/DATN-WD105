@@ -48,7 +48,7 @@ class BannerController extends Controller
         }
 
         $banner->save();
-        return redirect()->route('banner.index')->with('success', 'Banner created successfully.');
+        return redirect()->route('admin.banner.index')->with('success', 'Banner created successfully.');
     }
     public function edit(Banner $banner)
     {

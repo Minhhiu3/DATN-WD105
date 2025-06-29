@@ -54,13 +54,62 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="nav-item position-relative">
-    <a href="{{ route('cart') }}" class="cart" id="cart-icon">
-        <span class="ti-bag"></span>
-        <span id="cart-count" class="badge" style="display:none;position:absolute;top:0;right:0;">0</span>
-    </a>
+    @php
+    $cart = session('cart', []);
+    $cartCount = collect($cart)->sum('quantity');
+@endphp
+
+<a href="{{ route('cart.index') }}" class="cart position-relative" id="cart-icon">
+    <span class="ti-bag" style="font-size: 20px;"></span>
+    @if($cartCount > 0)
+        <span id="cart-count" class="badge "
+              style="position:absolute;top:-7;right:0;font-size: 15px;">
+            {{ $cartCount }}
+            
+        </span>
+    @endif
+</a>
+
     <div id="mini-cart" style="display:none;position:absolute;right:0;top:40px;z-index:1000;background:#fff;border:1px solid #eee;width:300px;padding:15px;">
-        <div id="mini-cart-items"></div>
-        <div id="mini-cart-total" class="mt-2"></div>
+        <!-- cart item -->
+         @php
+    $cart = session('cart', []);
+    $total = collect($cart)->reduce(fn($sum, $item) => $sum + $item['price'] * $item['quantity'], 0);
+@endphp
+
+@if(count($cart))
+    @foreach($cart as $id => $item)
+   
+    <div class="media mb-2 align-items-center">
+        <img src="{{ asset('storage/' . $item['thumbnail']) }}" class="mr-2 rounded" style="width: 50px; height: 50px; object-fit: cover;">
+        <div class="media-body">
+              <p>ID: {{ $id }}</p>
+            <h6 class="mb-0 text-sm">{{ $item['name'] }}</h6>
+            <small>SL: {{ $item['quantity'] }} × {{ number_format($item['price']) }}đ</small>
+        </div>
+        <form action="{{ route('cart.remove', $id) }}" method="POST" class="ml-2">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Xoá sản phẩm">
+                ✕
+            </button>
+        </form>
+    </div>
+@endforeach
+
+@else
+    <p class="text-muted text-center">Giỏ hàng trống</p>
+@endif
+        <!-- end cart item -->
+
+        <!-- cart total -->
+         @if(count($cart))
+    <div class="d-flex justify-content-between font-weight-bold border-top pt-2">
+        <span>Tổng:</span>
+        <span>{{ number_format($total) }}đ</span>
+    </div>
+    <a href="{{ route('cart.index') }}" class="btn btn-sm btn-primary btn-block mt-2">Xem giỏ hàng</a>
+@endif
+        <!-- end cart total -->
     </div>
 </li>
                         <li class="nav-item">

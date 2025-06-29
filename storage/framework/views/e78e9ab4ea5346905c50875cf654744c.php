@@ -86,39 +86,52 @@
                 <section class="lattest-product-area pb-40 category-list">
                     <div class="row">
                         <!-- single product -->
-                        <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <div class="col-lg-4 col-md-6">
-                                <div class="single-product">
-                                    <img src="<?php echo e(asset('/storage/' . $product->image)); ?>" alt="<?php echo e($product->image); ?>">
-                                    <div class="product-details">
-                                        <h6><?php echo e($product->name_product); ?></h6>
-                                        <div class="price">
-                                            <h6><?php echo e(number_format($product->price, 0, ',', '.')); ?> VNĐ</h6>
-                                        </div>
-                                        <div class="prd-bottom">
+                       <!-- single product -->
+<?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <div class="col-lg-4 col-md-6">
+        <div class="single-product">
+            <img src="<?php echo e(asset('/storage/' . $product->image)); ?>" alt="<?php echo e($product->image); ?>">
+            <div class="product-details">
+                <h6><?php echo e($product->name_product); ?></h6>
+                <div class="price">
+                    <h6><?php echo e(number_format($product->price, 0, ',', '.')); ?> VNĐ</h6>
+                </div>
+                <div class="prd-bottom">
 
-                                            <a href="" class="social-info">
-                                                <span class="ti-bag"></span>
-                                                <p class="hover-text">add to bag</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-heart"></span>
-                                                <p class="hover-text">Wishlist</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-sync"></span>
-                                                <p class="hover-text">compare</p>
-                                            </a>
-                                            <a href="<?php echo e(route('client.product.show', $product->id_product)); ?>"
-                                                class="social-info">
-                                                <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">view more</p>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    
+                    <form action="<?php echo e(route('cart.addAjax')); ?>" method="POST" class="social-info" style="display: inline-block;">
+                        <?php echo csrf_field(); ?>
+                        <input type="hidden" name="product_id" value="<?php echo e($product->id_product); ?>">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" style="border: none; background: none;">
+                            <span class="ti-bag"></span>
+                            <p class="hover-text">Thêm vào giỏ</p>
+                        </button>
+                    </form>
+
+                    
+                    <a href="#" class="social-info">
+                        <span class="lnr lnr-heart"></span>
+                        <p class="hover-text">Yêu thích</p>
+                    </a>
+
+                    
+                    <a href="#" class="social-info">
+                        <span class="lnr lnr-sync"></span>
+                        <p class="hover-text">So sánh</p>
+                    </a>
+
+                    
+                    <a href="<?php echo e(route('client.product.show', $product->id_product)); ?>" class="social-info">
+                        <span class="lnr lnr-move"></span>
+                        <p class="hover-text">Xem chi tiết</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
 
 
                     </div>

@@ -31,13 +31,63 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="nav-item position-relative">
-    <a href="<?php echo e(route('cart')); ?>" class="cart" id="cart-icon">
-        <span class="ti-bag"></span>
-        <span id="cart-count" class="badge" style="display:none;position:absolute;top:0;right:0;">0</span>
-    </a>
+    <?php
+    $cart = session('cart', []);
+    $cartCount = collect($cart)->sum('quantity');
+?>
+
+<a href="<?php echo e(route('cart.index')); ?>" class="cart position-relative" id="cart-icon">
+    <span class="ti-bag" style="font-size: 20px;"></span>
+    <?php if($cartCount > 0): ?>
+        <span id="cart-count" class="badge "
+              style="position:absolute;top:-7;right:0;font-size: 15px;">
+            <?php echo e($cartCount); ?>
+
+            
+        </span>
+    <?php endif; ?>
+</a>
+
     <div id="mini-cart" style="display:none;position:absolute;right:0;top:40px;z-index:1000;background:#fff;border:1px solid #eee;width:300px;padding:15px;">
-        <div id="mini-cart-items"></div>
-        <div id="mini-cart-total" class="mt-2"></div>
+        <!-- cart item -->
+         <?php
+    $cart = session('cart', []);
+    $total = collect($cart)->reduce(fn($sum, $item) => $sum + $item['price'] * $item['quantity'], 0);
+?>
+
+<?php if(count($cart)): ?>
+    <?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+   
+    <div class="media mb-2 align-items-center">
+        <img src="<?php echo e(asset('storage/' . $item['thumbnail'])); ?>" class="mr-2 rounded" style="width: 50px; height: 50px; object-fit: cover;">
+        <div class="media-body">
+              <p>ID: <?php echo e($id); ?></p>
+            <h6 class="mb-0 text-sm"><?php echo e($item['name']); ?></h6>
+            <small>SL: <?php echo e($item['quantity']); ?> × <?php echo e(number_format($item['price'])); ?>đ</small>
+        </div>
+        <form action="<?php echo e(route('cart.remove', $id)); ?>" method="POST" class="ml-2">
+            <?php echo csrf_field(); ?>
+            <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Xoá sản phẩm">
+                ✕
+            </button>
+        </form>
+    </div>
+<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+<?php else: ?>
+    <p class="text-muted text-center">Giỏ hàng trống</p>
+<?php endif; ?>
+        <!-- end cart item -->
+
+        <!-- cart total -->
+         <?php if(count($cart)): ?>
+    <div class="d-flex justify-content-between font-weight-bold border-top pt-2">
+        <span>Tổng:</span>
+        <span><?php echo e(number_format($total)); ?>đ</span>
+    </div>
+    <a href="<?php echo e(route('cart.index')); ?>" class="btn btn-sm btn-primary btn-block mt-2">Xem giỏ hàng</a>
+<?php endif; ?>
+        <!-- end cart total -->
     </div>
 </li>
                         <li class="nav-item">

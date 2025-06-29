@@ -17,12 +17,22 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Admin\ProductReviewController;
+use App\Http\Controllers\Client\CartController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ClientProductController::class, 'index'])->name('products');
 Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->name('client.product.show');
 Route::get('/products/filter', [ClientProductController::class, 'filterByPrice'])->name('products.filterByPrice');
+
+// ==================== GIỎ HÀNG ==================== //
+Route::prefix('cart')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add-ajax', [CartController::class, 'addAjax'])->name('cart.addAjax');
+    Route::post('/update/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::post('/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/clear', [CartController::class, 'clear'])->name('cart.clear');
+});
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -188,9 +198,9 @@ Route::get('/blog-detail', function () {
     return view('client.pages.blog-detail');
 })->name('blog-detail');
 
-Route::get('/cart', function () {
-    return view('client.pages.cart');
-})->name('cart');
+// Route::get('/cart/view', function () {
+//     return view('client.pages.cart');
+// })->name('cart');
 
 Route::get('/checkout', function () {
     return view('client.pages.checkout');
