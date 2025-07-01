@@ -122,7 +122,7 @@
                                 </div>
                                 <div class="checkout_btn_inner d-flex align-items-center">
                                     <a class="gray_btn" href="{{ route('products') }}">Tiếp tục mua sắm</a>
-                                    <a class="primary-btn" href="{{ route('checkout') }}">Thanh toán</a>
+                                    <a class="primary-btn" href="{{ route('account.checkout.form') }}">Thanh toán</a>
                                 </div>
                                 <div class="text-center mt-3">
                                     <button class="btn btn-outline-danger btn-sm" onclick="clearCart()">

@@ -22,7 +22,7 @@ yarn-error.log
 
 /storage/logs
 
-
+/storage/framework/session/*
 /storage/framework/views/*
 !/storage/framework/views/.gitignore
 
