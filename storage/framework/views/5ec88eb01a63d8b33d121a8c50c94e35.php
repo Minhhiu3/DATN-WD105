@@ -349,6 +349,11 @@ function addToCart() {
     })
     .then(data => {
         console.log('Response data:', data);
+        if (data.require_login) {
+            alert(data.message || 'Bạn cần đăng nhập để thêm vào giỏ hàng!');
+            window.location.href = '/login';
+            return;
+        }
         if (data.success) {
             alert(data.message);
             // Update cart count in header

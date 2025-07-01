@@ -28,9 +28,10 @@
                 </thead>
                 <tbody>
                     @foreach ($sizes as $size)
+                        @if($size && $size->name)
                         <tr>
-                            <td>{{ $size->id_size }}</td>
-                            <td>{{ $size->name }}</td>
+                            <td>{{ $size->id_size ?? 'N/A' }}</td>
+                            <td>{{ $size->name ?? 'N/A' }}</td>
                             <td>
                                 <a href="{{ route('admin.sizes.edit', $size->id_size) }}"
                                     class="btn btn-warning btn-sm">Sửa</a>
@@ -43,6 +44,7 @@
                                 </form>
                             </td>
                         </tr>
+                        @endif
                     @endforeach
                 </tbody>
             </table>

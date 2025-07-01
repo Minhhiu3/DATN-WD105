@@ -28,6 +28,7 @@ Route::put('/cart/update', [CartController::class, 'updateQuantity'])->name('car
 Route::delete('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
 Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
+Route::get('/cart/details', [CartController::class, 'getCartDetails'])->name('cart.details');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {

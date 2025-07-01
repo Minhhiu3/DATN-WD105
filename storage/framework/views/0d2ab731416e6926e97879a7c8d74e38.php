@@ -26,9 +26,10 @@
                 </thead>
                 <tbody>
                     <?php $__currentLoopData = $sizes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php if($size && $size->name): ?>
                         <tr>
-                            <td><?php echo e($size->id_size); ?></td>
-                            <td><?php echo e($size->name); ?></td>
+                            <td><?php echo e($size->id_size ?? 'N/A'); ?></td>
+                            <td><?php echo e($size->name ?? 'N/A'); ?></td>
                             <td>
                                 <a href="<?php echo e(route('admin.sizes.edit', $size->id_size)); ?>"
                                     class="btn btn-warning btn-sm">Sửa</a>
@@ -41,6 +42,7 @@
                                 </form>
                             </td>
                         </tr>
+                        <?php endif; ?>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
