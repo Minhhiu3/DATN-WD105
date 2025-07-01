@@ -196,8 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-
-
+@stack('scripts')
 
 </body>
 

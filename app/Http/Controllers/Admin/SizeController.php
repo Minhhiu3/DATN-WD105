@@ -12,7 +12,7 @@ class SizeController extends Controller
 {
     public function index()
     {
-        $sizes = Size::latest()->paginate();
+        $sizes = Size::orderBy('id_size', 'asc')->paginate();
         return view('admin.size.index', compact('sizes'));
     }
 
@@ -53,7 +53,7 @@ public function store(Request $request)
         return redirect()->route('admin.sizes.index')->with('success', 'Cập nhật danh mục mới thành công.');
     }
 
-    public function destroy(size $size)
+    public function destroy(Size $size)
     {
         $size->delete();
 
