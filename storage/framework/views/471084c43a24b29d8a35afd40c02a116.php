@@ -10,7 +10,7 @@
         <?php
             $id = basename(request()->url());
         ?>
-        <a href="<?php echo e(route('variants.create', ['product_id' => $id])); ?>" class="btn btn-primary">
+        <a href="<?php echo e(route('admin.variants.create', ['product_id' => $id])); ?>" class="btn btn-primary">
             Thêm mới
         </a>
     </div>
@@ -40,9 +40,9 @@
                             <td><?php echo e($variant->price); ?></td>
                             <td><?php echo e($variant->quantity); ?></td>
                             <td>
-                                <a href="<?php echo e(route('variants.edit', $variant->id_variant)); ?>"
+                                <a href="<?php echo e(route('admin.variants.edit', $variant->id_variant)); ?>"
                                     class="btn btn-warning btn-sm">Sửa</a>
-                                <form action="<?php echo e(route('variants.destroy', $variant->id_variant)); ?>" method="POST"
+                                <form action="<?php echo e(route('admin.variants.destroy', $variant->id_variant)); ?>" method="POST"
                                     style="display:inline-block;">
                                     <?php echo csrf_field(); ?>
                                     <?php echo method_field('DELETE'); ?>
