@@ -19,110 +19,100 @@
     <!-- End Banner Area -->
 
     <!--================detail Product Area =================-->
-
-    <div class="product_image_area">
-        <div class="container">
-            <div class="row s_product_inner">
-                <div class="col-lg-6">
-                    {{-- Ảnh chính --}}
-                    <div class="main-image mb-3">
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name_product }}"
-                            class="img-fluid rounded shadow-sm w-100" style="object-fit: cover; max-height: 400px;">
-                    </div>
-
-                    {{-- Album ảnh phụ --}}
-                    <div class="album-images d-flex flex-wrap gap-2">
-                        @if ($product->albumProducts && $product->albumProducts->count())
-                            @foreach ($product->albumProducts as $album)
-                                <div class="album-thumb border rounded p-1"
-                                    style="width: 100px; height: 100px; overflow: hidden;">
-                                    <img src="{{ asset('storage/' . $album->image) }}"
-                                        alt="{{ $product->name_product }} - album" class="img-fluid h-100 w-100"
-                                        style="object-fit: cover;">
-                                </div>
-                            @endforeach
-                        @else
-                            <img src="{{ asset('assets/img/product/default.jpg') }}" alt="{{ $product->name_product }}"
-                                class="img-fluid">
-                        @endif
-                    </div>
+<div class="product_image_area">
+    <div class="container">
+        <div class="row s_product_inner">
+            <!-- Ảnh sản phẩm -->
+            <div class="col-lg-6">
+                <div class="main-image mb-3">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name_product }}"
+                        class="img-fluid rounded shadow-sm w-100" style="object-fit: cover; max-height: 400px;">
                 </div>
-                <div class="col-lg-5 offset-lg-1">
-                    <div class="s_product_text">
-                        <h3>{{ $product->name_product }}</h3>
-                        <h2>{{ number_format($product->price, 0, ',', '.') }} VNĐ</h2>
-                        <ul class="list">
-                            <li>
-                                <a class="active" href="#">
-                                    <span>Danh mục</span> : {{ $product->category->name_category ?? 'Chưa phân loại' }}
-                                </a>
-                            </li>
-                            <li>
-                                <span>Tình trạng</span> :
-                                @if ($product->variants->sum('quantity') > 0)
-                                    Còn hàng ({{ $product->variants->sum('quantity') }} sản phẩm)
-                                @else
-                                    Hết hàng
-                                @endif
+                <div class="album-images d-flex flex-wrap gap-2">
+                    @if ($product->albumProducts && $product->albumProducts->count())
+                        @foreach ($product->albumProducts as $album)
+                            <div class="album-thumb border rounded p-1"
+                                style="width: 100px; height: 100px; overflow: hidden;">
+                                <img src="{{ asset('storage/' . $album->image) }}"
+                                    alt="{{ $product->name_product }} - album" class="img-fluid h-100 w-100"
+                                    style="object-fit: cover;">
+                            </div>
+                        @endforeach
+                    @else
+                        <img src="{{ asset('assets/img/product/default.jpg') }}" alt="{{ $product->name_product }}"
+                            class="img-fluid">
+                    @endif
+                </div>
+            </div>
 
-                            </li>
-                        </ul>
-                        <p>{{ $product->description }}</p>
-                        <div class="form-group d-flex align-items-center">
+            <!-- Thông tin chi tiết -->
+            <div class="col-lg-5 offset-lg-1">
+                <div class="s_product_text">
+                    <h3>{{ $product->name_product }}</h3>
+                    <h2>{{ number_format($product->price, 0, ',', '.') }} VNĐ</h2>
+                    <ul class="list">
+                        <li>
+                            <span>Danh mục</span> :
+                            {{ $product->category->name_category ?? 'Chưa phân loại' }}
+                        </li>
+                        <li>
+                            <span>Tình trạng</span> :
+                            @if ($product->variants->sum('quantity') > 0)
+                                Còn hàng ({{ $product->variants->sum('quantity') }} sản phẩm)
+                            @else
+                                Hết hàng
+                            @endif
+                        </li>
+                    </ul>
+                    <p>{{ $product->description }}</p>
+
+                    {{-- Size --}}
+                    <form action="{{ route('cart.add') }}" method="POST" class="mt-3">
+                        @csrf
+
+                        <div class="form-group d-flex align-items-center mb-3">
                             <label for="size" class="mr-2 mb-0">Size:</label>
-                            <select name="size" id="size" class="form-control w-auto">
+                            <select name="variant_id" id="size" class="form-control w-auto" required>
                                 <option value="">-- Chọn Size --</option>
                                 @foreach ($product->variants as $variant)
-                                    @if ($variant->quantity > 0)
-                                        <option value="{{ $variant->id_variant }}"
-                                            data-quantity="{{ $variant->quantity }}">
-                                            Size {{ $variant->size ? $variant->size->name : 'Không xác định' }} - Còn {{ $variant->quantity }}
-                                        </option>
-                                    @endif
+                                    <option value="{{ $variant->id_variant }}"
+                                        data-quantity="{{ $variant->quantity }}"
+                                        {{ $variant->quantity == 0 ? 'disabled' : '' }}>
+                                        Size {{ $variant->size->name ?? 'Không xác định' }}
+                                        {{ $variant->quantity > 0 ? "- Còn $variant->quantity" : '(Hết hàng)' }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="product_count">
-                            <label for="qty">Quantity:</label>
-                            <input type="text" name="qty" id="sst" maxlength="12" value="1"
-                                title="Quantity:" class="input-text qty">
-                            <button
-                                onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-                                class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
-                            <button
-                                onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) && sst > 1  ) result.value--;return false;"
-                                class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
+
+                        {{-- Số lượng --}}
+                        <div class="product_count mb-3">
+                            <label for="qty">Số lượng:</label>
+                            <input type="number" name="quantity" id="sst" min="1" value="1"
+                                class="input-text qty form-control d-inline-block w-auto">
                         </div>
 
+                        {{-- Nút thêm vào giỏ hàng + mua ngay --}}
+                        <div class="card_area d-flex align-items-center gap-3">
+                            <button type="submit" class="primary-btn">Add to Cart</button>
+                        </div>
+                    </form>
 
-                        @php
-                            $firstVariant = $product->variants->first();
-                        @endphp
-                        @if ($firstVariant)
-                            <div class="card_area d-flex align-items-center mt-3">
-                                <div class="card_area d-flex align-items-center">
-                                    <a class="primary-btn" href="#">Add to Cart</a>
-                                    <a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
-                                    <a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
-                                </div>
-                                <form action="{{ route('account.checkout.form') }}" method="GET">
-                                    @csrf
-                                    <input type="hidden" name="variant_id" id="selectedVariant"
-                                        value="{{ $firstVariant->id_variant }}">
-                                    <input type="hidden" name="quantity" id="selectedQty" value="1">
-                                    <button type="submit" class="primary-btn">Mua ngay</button>
-                                </form>
-                            </div>
-                        @else
-                            <span class="text-danger fw-bold">Hết hàng</span>
-                        @endif
+                    {{-- Mua ngay --}}
+                    <form action="{{ route('account.checkout.form') }}" method="GET" class="mt-2">
+                        @csrf
+                        <input type="hidden" name="variant_id" id="selectedVariant"
+                            value="{{ $product->variants->first()->id_variant ?? '' }}">
+                        <input type="hidden" name="quantity" id="selectedQty" value="1">
+                        <button type="submit" class="primary-btn">Mua ngay</button>
+                    </form>
 
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+</div>
+
     <!--================End detail Product Area =================-->
 
     <!--================Product Description Area =================-->
