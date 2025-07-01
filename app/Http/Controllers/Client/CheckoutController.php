@@ -16,7 +16,7 @@ class CheckoutController extends Controller
     public function showCheckoutForm(Request $request)
     {
         $request->validate([
-            'variant_id' => 'required|exists:variants,id_variant',
+            'variant_id' => 'required|exists:variant,id_variant',
             'quantity'   => 'required|integer|min:1',
         ]);
 
@@ -34,7 +34,7 @@ class CheckoutController extends Controller
     public function placeOrder(Request $request)
     {
         $request->validate([
-            'variant_id'      => 'required|exists:variants,id_variant',
+            'variant_id'      => 'required|exists:variant,id_variant',
             'quantity'        => 'required|integer|min:1',
             'payment_method'  => 'required|in:cod,vnpay',
         ]);
