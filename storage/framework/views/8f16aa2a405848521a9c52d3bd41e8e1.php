@@ -10,7 +10,7 @@
         <?php
             $id = basename(request()->url());
         ?>
-        <a href="<?php echo e(route('Ablum_products.create', ['id' => $id])); ?>" class="btn btn-primary">
+        <a href="<?php echo e(route('admin.album-products.create', ['id' => $id])); ?>" class="btn btn-primary">
             Thêm mới
         </a>
     </div>
@@ -36,7 +36,7 @@
                             <td><?php echo e($album_product->product_id); ?></td>
                             <td><img src="<?php echo e(asset('/storage/'.$album_product->image)); ?>" alt="<?php echo e($album_product->image); ?>" width="50px" height="50px"></td>
                             <td>
-                                <form action="<?php echo e(route('Ablum_products.destroy', $album_product->id_album_product)); ?>" method="POST"
+                                <form action="<?php echo e(route('admin.album-products.destroy', $album_product->id_album_product)); ?>" method="POST"
                                     style="display:inline-block;">
                                     <?php echo csrf_field(); ?>
                                     <?php echo method_field('DELETE'); ?>

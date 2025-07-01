@@ -52,12 +52,24 @@
 
     @include('client.partials.header_home')
     <main>
+
         @yield('content')
- @include('client.partials.related_product')
+ {{-- @include('client.partials.related_product') --}}
     </main>
     @include('client.partials.footer_home')
-
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    @if(session('success'))
+        window.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Thành công!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        });
+    @endif
+</script>
 
 
 

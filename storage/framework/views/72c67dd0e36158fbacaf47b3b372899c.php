@@ -1,34 +1,32 @@
-@extends('layouts.admin')
+<?php $__env->startSection('title', 'Quản lý Đơn hàng'); ?>
 
-@section('title', 'Quản lý Đơn hàng')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0">Danh sách đơn hàng</h3>
 
-            <form action="{{ route('admin.orders.index') }}"
-                    method="GET"
+            <form action="<?php echo e(route('admin.orders.index')); ?>" 
+                    method="GET" 
                     class="d-flex align-items-center ms-auto w-50 gap-2" style="margin-left: 50%">
                 <input type="date"
                     name="date"
                     class="form-control "
-                    value="{{ request('date', $date) }}" style=" width: 25%; height: 100%; margin-left: 1% " >
+                    value="<?php echo e(request('date', $date)); ?>" style=" width: 25%; height: 100%; margin-left: 1% " > 
 
                 <input type="text"
                     name="code"
                     class="form-control  "
                     placeholder="Mã đơn"
-                    value="{{ request('code', $code ?? '') }}" style=" width: 30%; height: 100%; margin-left: 1% ">
+                    value="<?php echo e(request('code', $code ?? '')); ?>" style=" width: 30%; height: 100%; margin-left: 1% ">
 
                 <button type="submit" class="btn btn-primary  " style=" width: 50px;  margin-left: 1% ">Lọc</button>
             </form>
         </div>
 
     <div class="card-body">
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+        <?php if(session('success')): ?>
+            <div class="alert alert-success"><?php echo e(session('success')); ?></div>
+        <?php endif; ?>
 
         <div class="table-responsive">
             <table class="table table-bordered table-hover">
@@ -44,15 +42,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($orders as $order)
+                    <?php $__empty_1 = true; $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr>
-                            <td>#{{ $order->id_order }}</td>
-                            <td>{{ $order->user->name ?? 'N/A' }}</td>
-                            <td>{{ number_format($order->total_amount, 0, ',', '.') }} VND</td>
-                            <td>{{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}</td>
-                            <td>{{ $order->payment_method ?? 'N/A' }}</td>
+                            <td>#<?php echo e($order->id_order); ?></td>
+                            <td><?php echo e($order->user->name ?? 'N/A'); ?></td>
+                            <td><?php echo e(number_format($order->total_amount, 0, ',', '.')); ?> VND</td>
+                            <td><?php echo e(\Carbon\Carbon::parse($order->created_at)->format('d/m/Y')); ?></td>
+                            <td><?php echo e($order->payment_method ?? 'N/A'); ?></td>
 
-                           @php
+                           <?php
                                 $statusLevels = [
                                     'pending' => 1,
                                     'processing' => 2,
@@ -62,12 +60,12 @@
                                 ];
 
                                 $currentStatus = $order->status;
-                            @endphp
+                            ?>
 
                             <td>
-                                <select class="form-control form-control-sm order-status" data-id="{{ $order->id_order }}">
-                                    @foreach ($statusLevels as $status => $level)
-                                        @php
+                                <select class="form-control form-control-sm order-status" data-id="<?php echo e($order->id_order); ?>">
+                                    <?php $__currentLoopData = $statusLevels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $status => $level): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php
                                             // Logic loại bỏ các trạng thái không hợp lệ
                                             $isInvalid = false;
 
@@ -79,54 +77,55 @@
 
                                             // Nếu đã canceled thì không cho đổi gì nữa
                                             if ($currentStatus === 'canceled' && $status !== 'canceled') $isInvalid = true;
-                                        @endphp
+                                        ?>
 
-                                        @if (!$isInvalid)
-                                            <option value="{{ $status }}" {{ $currentStatus == $status ? 'selected' : '' }}>
-                                                @switch($status)
-                                                    @case('pending') Chờ xử lý @break
-                                                    @case('processing') Đang xử lý @break
-                                                    @case('shipping') Đang giao @break
-                                                    @case('completed') Hoàn thành @break
-                                                    @case('canceled') Đã hủy @break
-                                                @endswitch
+                                        <?php if(!$isInvalid): ?>
+                                            <option value="<?php echo e($status); ?>" <?php echo e($currentStatus == $status ? 'selected' : ''); ?>>
+                                                <?php switch($status):
+                                                    case ('pending'): ?> Chờ xử lý <?php break; ?>
+                                                    <?php case ('processing'): ?> Đang xử lý <?php break; ?>
+                                                    <?php case ('shipping'): ?> Đang giao <?php break; ?>
+                                                    <?php case ('completed'): ?> Hoàn thành <?php break; ?>
+                                                    <?php case ('canceled'): ?> Đã hủy <?php break; ?>
+                                                <?php endswitch; ?>
                                             </option>
-                                        @endif
-                                    @endforeach
+                                        <?php endif; ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </td>
 
 
 
                             <td>
-                                <a href="{{ route('admin.orders.show', $order->id_order ) }}" class="btn btn-info btn-sm">Chi tiết</a>
-                                {{-- <a href="{{ route('admin.orders.edit', $order->id_order ) }}" class="btn btn-warning btn-sm">Cập nhật</a> --}}
-                             @if (in_array($order->status, ['pending', 'processing']))
-                                <a href="javascript:void(0);"
-                                class="btn btn-danger btn-sm cancel-order-btn"
-                                data-id="{{ $order->id_order }}">
+                                <a href="<?php echo e(route('admin.orders.show', $order->id_order )); ?>" class="btn btn-info btn-sm">Chi tiết</a>
+                                
+                             <?php if(in_array($order->status, ['pending', 'processing'])): ?>
+                                <a href="javascript:void(0);" 
+                                class="btn btn-danger btn-sm cancel-order-btn" 
+                                data-id="<?php echo e($order->id_order); ?>">
                                 Hủy
                                 </a>
-                            @endif
+                            <?php endif; ?>
 
 
                             </td>
                         </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="6" class="text-center">Không có đơn hàng nào.</td>
                         </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
 
-        {{-- PHÂN TRANG --}}
-        @if ($orders->hasPages())
+        
+        <?php if($orders->hasPages()): ?>
             <div class="d-flex justify-content-center mt-3">
-                {{ $orders->links('pagination::bootstrap-5') }}
+                <?php echo e($orders->links('pagination::bootstrap-5')); ?>
+
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 <script>
@@ -137,10 +136,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const status = this.value;
             const orderId = this.dataset.id;
 
-            fetch("{{ route('admin.orders.updateStatus') }}", {
+            fetch("<?php echo e(route('admin.orders.updateStatus')); ?>", {
                 method: "POST",
                 headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "X-CSRF-TOKEN": "<?php echo e(csrf_token()); ?>",
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
@@ -167,10 +166,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const orderId = this.dataset.id;
 
-            fetch("{{ route('admin.orders.cancel') }}", {
+            fetch("<?php echo e(route('admin.orders.cancel')); ?>", {
                 method: "POST",
                 headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "X-CSRF-TOKEN": "<?php echo e(csrf_token()); ?>",
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ id: orderId })
@@ -191,4 +190,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\DATN-WD105\resources\views/admin/orders/index.blade.php ENDPATH**/ ?>

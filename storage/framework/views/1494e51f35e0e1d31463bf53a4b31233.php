@@ -1,6 +1,5 @@
-@extends('layouts.client_home')
-@section('title', 'Lịch sử đơn hàng')
-@section('content')
+<?php $__env->startSection('title', 'Lịch sử đơn hàng'); ?>
+<?php $__env->startSection('content'); ?>
     <!-- Start Banner Area -->
     <section class="banner-area organic-breadcrumb">
         <div class="container">
@@ -8,9 +7,9 @@
                 <div class="col-first">
                     <h1>Lịch sử đơn hàng</h1>
                     <nav class="d-flex align-items-center">
-                        <a href="{{ route('home') }}">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="{{ route('account.profile') }}">Tài khoản<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="{{ route('account.orders') }}">Lịch sử đơn hàng</a>
+                        <a href="<?php echo e(route('home')); ?>">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="<?php echo e(route('account.profile')); ?>">Tài khoản<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="<?php echo e(route('account.orders')); ?>">Lịch sử đơn hàng</a>
                     </nav>
                 </div>
             </div>
@@ -30,21 +29,21 @@
                         </div>
                         <div class="card-body p-0">
                             <div class="list-group list-group-flush">
-                                <a href="{{ route('account.profile') }}" class="list-group-item list-group-item-action">
+                                <a href="<?php echo e(route('account.profile')); ?>" class="list-group-item list-group-item-action">
                                     <i class="fa fa-user me-2"></i>Thông tin cá nhân
                                 </a>
-                                <a href="{{ route('account.edit') }}" class="list-group-item list-group-item-action">
+                                <a href="<?php echo e(route('account.edit')); ?>" class="list-group-item list-group-item-action">
                                     <i class="fa fa-edit me-2"></i>Chỉnh sửa thông tin
                                 </a>
-                                <a href="{{ route('account.change-password') }}"
+                                <a href="<?php echo e(route('account.change-password')); ?>"
                                     class="list-group-item list-group-item-action">
                                     <i class="fa fa-lock me-2"></i>Đổi mật khẩu
                                 </a>
-                                <a href="{{ route('account.orders') }}"
+                                <a href="<?php echo e(route('account.orders')); ?>"
                                     class="list-group-item list-group-item-action active">
                                     <i class="fa fa-shopping-bag me-2"></i>Lịch sử đơn hàng
                                 </a>
-                                <a href="{{ route('account.settings') }}" class="list-group-item list-group-item-action">
+                                <a href="<?php echo e(route('account.settings')); ?>" class="list-group-item list-group-item-action">
                                     <i class="fa fa-cog me-2"></i>Cài đặt
                                 </a>
                             </div>
@@ -59,7 +58,7 @@
                             <h5><i class="fa fa-shopping-bag me-2"></i>Lịch sử đơn hàng</h5>
                         </div>
                         <div class="card-body">
-                            @if ($orders->isNotEmpty())
+                            <?php if($orders->isNotEmpty()): ?>
                                 <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
@@ -72,64 +71,65 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($orders as $order)
+                                            <?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <tr>
-                                                    <td>#{{ $order->id_order }}</td>
-                                                    <td>{{ $order->created_at?->format('d/m/Y H:i') ?? 'N/A' }}</td>
-                                                    <td>{{ number_format($order->total_amount) }} VNĐ
+                                                    <td>#<?php echo e($order->id_order); ?></td>
+                                                    <td><?php echo e($order->created_at?->format('d/m/Y H:i') ?? 'N/A'); ?></td>
+                                                    <td><?php echo e(number_format($order->total_amount)); ?> VNĐ
                                                     </td>
                                                     <td>
-                                                        @php $status = $order->status; @endphp
-                                                        @if ($status == 'pending')
+                                                        <?php $status = $order->status; ?>
+                                                        <?php if($status == 'pending'): ?>
                                                             <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                                                        @elseif ($status == 'processing')
+                                                        <?php elseif($status == 'processing'): ?>
                                                             <span class="badge bg-success text-white">Đã xác nhận</span>
-                                                        @elseif ($status == 'shipping')
+                                                        <?php elseif($status == 'shipping'): ?>
                                                             <span class="badge bg-primary text-white">Đang giao</span>
-                                                        @elseif ($status == 'completed')
+                                                        <?php elseif($status == 'completed'): ?>
                                                             <span class="badge bg-success text-white">Đã giao</span>
-                                                        @elseif ($status == 'canceled')
+                                                        <?php elseif($status == 'canceled'): ?>
                                                             <span class="badge bg-danger text-white">Đã hủy</span>
-                                                        @else
-                                                            <span class="badge ">{{ $status }}</span>
-                                                        @endif
+                                                        <?php else: ?>
+                                                            <span class="badge "><?php echo e($status); ?></span>
+                                                        <?php endif; ?>
                                                     </td>
                                                     <td>
-                                                        <a href="{{ route('account.orderDetail', $order->id_order) }}"
+                                                        <a href="<?php echo e(route('account.orderDetail', $order->id_order)); ?>"
                                                             class="btn btn-sm btn-info">
                                                             <i class="fa fa-eye"></i> Xem chi tiết
                                                         </a>
-                                                        @if ($order->status == 'pending')
+                                                        <?php if($order->status == 'pending'): ?>
                                                             <form
-                                                                action="{{ route('account.cancelOrder', $order->id_order) }}"
+                                                                action="<?php echo e(route('account.cancelOrder', $order->id_order)); ?>"
                                                                 method="POST"
                                                                 onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?')">
-                                                                @csrf
-                                                                @method('PUT')
+                                                                <?php echo csrf_field(); ?>
+                                                                <?php echo method_field('PUT'); ?>
                                                                 <button type="submit" class="btn btn-sm btn-danger">
                                                                     <i class="fa fa-recycle"></i> Hủy đơn hàng
                                                                 </button>
                                                             </form>
-                                                        @endif
+                                                        <?php endif; ?>
                                                     </td>
                                                 </tr>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </tbody>
                                     </table>
                                     <div class="mt-3">
-                                        {{ $orders->links() }}
+                                        <?php echo e($orders->links()); ?>
+
                                     </div>
                                 </div>
-                            @else
+                            <?php else: ?>
                                 <div class="text-center py-5">
                                     <i class="fa fa-shopping-bag fa-3x text-muted mb-3"></i>
                                     <h5>Chưa có đơn hàng nào</h5>
                                     <p class="text-muted">Bạn chưa có đơn hàng nào. Hãy mua sắm ngay!</p>
-                                    <a href="{{ route('products') }}" class="btn btn-primary">
+                                    <a href="<?php echo e(route('products')); ?>" class="btn btn-primary">
                                         <i class="fa fa-shopping-cart me-2"></i>Mua sắm ngay
                                     </a>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -137,4 +137,6 @@
         </div>
     </section>
     <!-- End Orders Area -->
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ACER\OneDrive\Desktop\DATN_SU2025\ShoeMart_clone\DATN-WD105\resources\views/auth/orders.blade.php ENDPATH**/ ?>

@@ -123,4 +123,4 @@
     <!--================End Checkout Area =================-->
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\DATN-WD105\resources\views/client/pages/checkout.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\ACER\OneDrive\Desktop\DATN_SU2025\ShoeMart_clone\DATN-WD105\resources\views/client/pages/checkout.blade.php ENDPATH**/ ?>
