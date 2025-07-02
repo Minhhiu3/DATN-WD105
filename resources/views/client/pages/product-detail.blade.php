@@ -1,5 +1,6 @@
 @extends('layouts.client_home')
 @section('title', 'Chi tiết sản phẩmphẩm')
+
 @section('content')
     <!-- Start Banner Area -->
     <section class="banner-area organic-breadcrumb">
@@ -94,8 +95,10 @@
 
                         {{-- Nút thêm vào giỏ hàng + mua ngay --}}
                         <div class="card_area d-flex align-items-center gap-3">
-                            <button type="submit" class="primary-btn">Add to Cart</button>
+                            <button type="submit" id="add-to-cart-btn" onclick="addToCart()" class="primary-btn">Add to Cart</button>
                         </div>
+                        <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
+
                     </form>
 
                     {{-- Mua ngay --}}
@@ -334,31 +337,26 @@
 
     <!--================End Product Description Area =================-->
 @endsection
-
 @push('scripts')
 <script>
 function addToCart() {
     const variantId = document.getElementById('size').value;
     const quantity = document.getElementById('sst').value;
-    
-    console.log('Adding to cart:', { variantId, quantity });
-    
+
     if (!variantId) {
         alert('Vui lòng chọn size!');
         return;
     }
-    
+
     if (quantity < 1) {
         alert('Số lượng phải lớn hơn 0!');
         return;
     }
 
-    // Disable button to prevent double click
     const btn = document.getElementById('add-to-cart-btn');
     btn.disabled = true;
     btn.textContent = 'Đang thêm...';
 
-    // Tạo form data thay vì JSON
     const formData = new FormData();
     formData.append('variant_id', variantId);
     formData.append('quantity', quantity);
@@ -368,44 +366,53 @@ function addToCart() {
         method: 'POST',
         body: formData
     })
-    .then(response => {
-        console.log('Response status:', response.status);
-        return response.json();
-    })
-    .then(data => {
-        console.log('Response data:', data);
-        if (data.require_login) {
-            alert(data.message || 'Bạn cần đăng nhập để thêm vào giỏ hàng!');
-            window.location.href = '/login';
+    .then(async response => {
+        let data = {};
+        try {
+            data = await response.json();
+        } catch (err) {
+            console.error('Không thể parse JSON:', err);
+        }
+
+        if (!response.ok) {
+            if (response.status === 422 && data.errors) {
+                const messages = Object.values(data.errors).flat().join(', ');
+                alert(messages);
+            } else {
+                alert(data.message || 'Có lỗi xảy ra khi thêm vào giỏ!');
+            }
             return;
         }
+
+        if (data.require_login) {
+            alert(data.message || 'Bạn cần đăng nhập!');
+            setTimeout(() => window.location.href = '/login', 1000);
+            return;
+        }
+
         if (data.success) {
-            alert(data.message);
-            // Update cart count in header
+            alert(data.message || 'Đã thêm vào giỏ hàng!');
             updateCartCount();
         } else {
-            alert(data.message || 'Có lỗi xảy ra!');
+            alert(data.message || 'Thêm vào giỏ hàng thất bại!');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('Có lỗi xảy ra khi thêm vào giỏ hàng! Vui lòng thử lại.');
+        console.error('Lỗi khi gửi yêu cầu:', error);
+        alert('Lỗi không xác định. Vui lòng thử lại.');
     })
     .finally(() => {
-        // Re-enable button
         btn.disabled = false;
         btn.textContent = 'Add to Cart';
     });
 }
 
 function updateCartCount() {
-    // Update cart count in header if exists
     const cartCountEl = document.getElementById('cart-count');
     if (cartCountEl) {
         fetch('{{ route("cart.count") }}')
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
-            console.log('Cart count:', data);
             if (data.count > 0) {
                 cartCountEl.style.display = 'inline-block';
                 cartCountEl.innerText = data.count;
@@ -413,15 +420,15 @@ function updateCartCount() {
                 cartCountEl.style.display = 'none';
             }
         })
-        .catch(error => {
-            console.error('Error updating cart count:', error);
+        .catch(err => {
+            console.error('Lỗi cập nhật giỏ hàng:', err);
         });
     }
 }
 
-// Initialize cart count on page load
-document.addEventListener('DOMContentLoaded', function() {
-    updateCartCount();
-});
+document.addEventListener('DOMContentLoaded', updateCartCount);
 </script>
 @endpush
+
+
+
