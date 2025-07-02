@@ -1,32 +1,46 @@
-/.phpunit.cache
+# Node
 /node_modules
+/npm-debug.log
+/yarn-error.log
+
+# Build / Public
 /public/build
 /public/hot
 /public/storage
-/storage/*.key
+
+# Vendor & env
 /vendor
 .env
 .env.backup
 .env.production
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
 auth.json
-npm-debug.log
-yarn-error.log
+
+# PHPUnit
+/.phpunit.cache
+.phpunit.result.cache
+
+# IDEs & Dev tools
 /.fleet
 /.idea
 /.vscode
 
+# Homestead
+Homestead.json
+Homestead.yaml
 
-/storge/logs/laravel.log
-/storage/logs
+# Laravel storage (ignore generated files, keep needed dirs)
+/storage/*.key
+/storage/logs/*
+/storage/logs/laravel.log
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/framework/views/.gitignore
+/storage/logs/.gitignore
 
-/storage/*
+# But keep the following for Laravel to work
 !/storage/app
 !/storage/framework
 !/storage/framework/cache
 !/storage/framework/sessions
 !/storage/framework/views
 !/storage/logs
-
