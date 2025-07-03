@@ -136,7 +136,7 @@ public function cancelOrder($id)
         ->where('user_id', Auth::id())
         ->firstOrFail();
 
-    if ($order->status != '0') {
+    if ($order->status != 'pending') {
         return redirect()->back()->with('error', 'Đơn hàng không thể hủy!');
     }
 
@@ -151,7 +151,7 @@ public function cancelOrder($id)
     }
 
 
-    $order->status = 'đã hủy';
+    $order->status = 'canceled';
     $order->save();
 
     return redirect()->back()->with('success', 'Đơn hàng đã được hủy');

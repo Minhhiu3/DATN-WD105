@@ -9,6 +9,7 @@
     </div>
     <div class="card-body">
 
+
  @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -18,6 +19,7 @@
                 </ul>
             </div>
         @endif
+
         <form action="{{ route('admin.sizes.store') }}" method="POST">
             @csrf
             <div class="mb-3">

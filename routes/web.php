@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Admin\AlbumProductController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\OrderController;
@@ -16,12 +17,22 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Admin\ProductReviewController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ClientProductController::class, 'index'])->name('products');
 Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->name('client.product.show');
 Route::get('/products/filter', [ClientProductController::class, 'filterByPrice'])->name('products.filterByPrice');
+
+// Cart Routes
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::put('/cart/update', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::delete('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
+Route::get('/cart/details', [CartController::class, 'getCartDetails'])->name('cart.details');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -145,6 +156,37 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.discounts.update',
         'destroy' => 'admin.discounts.destroy',
     ]);
+    Route::get('orders', [OrderController::class, 'index'])
+         ->name('admin.orders.index');
+
+    // Hiển thị chi tiết 1 đơn hàng
+    Route::get('orders/{order}', [OrderController::class, 'show'])
+         ->name('admin.orders.show');
+
+    // // Trang edit (nếu dùng)
+    // Route::get('orders/{order}/edit', [OrderController::class, 'edit'])
+    //      ->name('admin.orders.edit');
+
+    // // Cập nhật (PUT)
+    // Route::put('orders/{order}', [OrderController::class, 'update'])
+    //      ->name('admin.orders.update');
+
+    // AJAX: cập nhật trạng thái
+    Route::post('orders/update-status', [OrderController::class, 'updateStatus'])
+         ->name('admin.orders.updateStatus');
+
+    // AJAX: hủy đơn hàng
+    Route::post('orders/cancel', [OrderController::class, 'cancel'])
+         ->name('admin.orders.cancel');
+
+
+
+    Route::get('reviews', [ProductReviewController::class, 'index'])
+         ->name('admin.reviews.index');
+    Route::post('/reviews/update-status', [ProductReviewController::class, 'updateStatus'])->name('admin.reviews.updateStatus');
+    Route::post('/reviews/update-status', [ProductReviewController::class, 'updateStatus'])->name('admin.reviews.updateStatus');
+    Route::delete('/reviews/{id_review}', [ProductReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+
 });
 
 // Client Routes
@@ -155,11 +197,6 @@ Route::get('/blogs', function () {
 Route::get('/blog-detail', function () {
     return view('client.pages.blog-detail');
 })->name('blog-detail');
-
-Route::get('/cart', function () {
-    return view('client.pages.cart');
-})->name('cart');
-
-Route::get('/checkout', function () {
-    return view('client.pages.checkout');
-})->name('checkout');
+// Route::get('/checkout', function () {
+//     return view('client.pages.checkout');
+// })->name('checkout');

@@ -58,10 +58,43 @@
         <span class="ti-bag"></span>
         <span id="cart-count" class="badge" style="display:none;position:absolute;top:0;right:0;">0</span>
     </a>
+
+    <!-- mini cảt -->
     <div id="mini-cart" style="display:none;position:absolute;right:0;top:40px;z-index:1000;background:#fff;border:1px solid #eee;width:300px;padding:15px;">
-        <div id="mini-cart-items"></div>
-        <div id="mini-cart-total" class="mt-2"></div>
-    </div>
+    @if($cartItems->count() > 0)
+        @php $total = 0; @endphp
+        @foreach($cartItems as $item)
+            @php
+                $variant = $item->variant ?? $item['variant'];
+                $product = $variant->product ?? null;
+                $size = $variant->size ?? null;
+                $quantity = $item->quantity ?? $item['quantity'];
+                $price = $variant->price ?? 0;
+                $itemTotal = $price * $quantity;
+                $total += $itemTotal;
+            @endphp
+            <div class="d-flex justify-content-between align-items-start mb-2 border-bottom pb-2">
+                <div>
+                    <strong>{{ $product->name_product ?? 'Sản phẩm' }}</strong><br>
+                    <small>SL: {{ $quantity }} - Size: {{ $size->name ?? 'N/A' }}</small>
+                </div>
+                <div class="text-right">
+                    <small>{{ number_format($price, 0, ',', '.') }}₫</small>
+                </div>
+            </div>
+        @endforeach
+        <div class="mt-2 font-weight-bold text-right">
+            Tổng: {{ number_format($total, 0, ',', '.') }}₫
+        </div>
+        <div class="text-right mt-2">
+            <a href="{{ route('cart') }}" class="btn btn-sm btn-primary">Xem giỏ hàng</a>
+        </div>
+    @else
+        <p class="text-center mb-0">Giỏ hàng trống</p>
+    @endif
+</div>
+
+    
 </li>
                         <li class="nav-item">
                             <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
@@ -95,6 +128,33 @@
     </div>
 </header>
 <!-- End Header Area -->
+
+<script>
+// Cập nhật số lượng giỏ hàng từ server
+function updateCartCountFromServer() {
+    fetch('{{ route("cart.count") }}')
+    .then(response => response.json())
+    .then(data => {
+        const cartCountEl = document.getElementById('cart-count');
+        if (cartCountEl) {
+            if (data.count > 0) {
+                cartCountEl.style.display = 'inline-block';
+                cartCountEl.innerText = data.count;
+            } else {
+                cartCountEl.style.display = 'none';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error updating cart count:', error);
+    });
+}
+
+// Cập nhật khi trang load
+document.addEventListener('DOMContentLoaded', function() {
+    updateCartCountFromServer();
+});
+</script>
 
 
 
