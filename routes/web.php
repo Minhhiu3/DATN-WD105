@@ -163,4 +163,3 @@ Route::get('/cart', function () {
 Route::get('/checkout', function () {
     return view('client.pages.checkout');
 })->name('checkout');
-

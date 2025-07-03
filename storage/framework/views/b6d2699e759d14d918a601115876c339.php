@@ -36,9 +36,15 @@
 
 </head>
 <style>
-.dropdown-cart:hover #mini-cart {
-    display: block;
-}
+
+     #mini-cart {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        display: none;
+    }
+    .nav-item.position-relative:hover #mini-cart,
+    .nav-item.position-relative:focus-within #mini-cart {
+        display: block !important;
+    }
 </style>
 
 <body>
@@ -46,12 +52,24 @@
 
     <?php echo $__env->make('client.partials.header_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <main>
+
         <?php echo $__env->yieldContent('content'); ?>
-        <?php echo $__env->make('client.partials.related_product', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+ 
     </main>
     <?php echo $__env->make('client.partials.footer_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    <?php if(session('success')): ?>
+        window.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Thành công!',
+                text: "<?php echo e(session('success')); ?>",
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        });
+    <?php endif; ?>
+</script>
 
 
 
@@ -72,8 +90,116 @@
     </script>
     <script src="<?php echo e(asset('assets/js/gmaps.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/main.js')); ?>"></script>
+    <!-- add to cart scrip -->
+<script>
+
+function addToCart(product) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    const index = cart.findIndex(
+        item => item.id === product.id && item.size === product.size
+    );
+
+    if (index !== -1) {
+        cart[index].quantity += product.quantity;
+    } else {
+        cart.push(product);
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+    console.log('Sản phẩm đã được thêm vào giỏ hàng:', product);
+}
+
+function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCountEl = document.getElementById('cart-count');
+
+    if (cartCountEl) {
+        if (totalQuantity > 0) {
+            cartCountEl.style.display = 'inline-block';
+            cartCountEl.innerText = totalQuantity;
+        } else {
+            cartCountEl.style.display = 'none';
+        }
+    }
+
+    renderMiniCart(cart);
+}
+
+function renderMiniCart(cart) {
+    const container = document.getElementById('mini-cart-items');
+    const totalEl = document.getElementById('mini-cart-total');
+
+    if (!container || !totalEl) return;
+
+    container.innerHTML = '';
+    let total = 0;
+
+    if (cart.length === 0) {
+        container.innerHTML = '<p class="text-center">Giỏ hàng trống</p>';
+        totalEl.innerText = '';
+        return;
+    }
+
+    cart.forEach((item, index) => {
+        total += item.price * item.quantity;
+        const el = document.createElement('div');
+        el.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
+        el.innerHTML = `
+            <div>
+                <strong>${item.name}</strong><br>
+                <small>SL: ${item.quantity} - Size: ${item.size}</small>
+            </div>
+            <div class="text-right">
+                <small>${item.price.toLocaleString()}₫</small><br>
+                <button class="btn btn-sm btn-danger btn-delete-item" data-index="${index}">&times;</button>
+            </div>
+        `;
+        container.appendChild(el);
+    });
+
+    totalEl.innerText = `Tổng: ${total.toLocaleString()}₫`;
+
+    document.querySelectorAll('.btn-delete-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const index = this.getAttribute('data-index');
+            removeFromCart(index);
+        });
+    });
+}
+
+function removeFromCart(index) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+}
+
+// Tự động hiển thị giỏ hàng từ localStorage khi load lại trang
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartCount();
+    document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const product = {
+                id: this.getAttribute('data-id'),
+                name: this.getAttribute('data-name'),
+                price: parseInt(this.getAttribute('data-price')),
+                size: this.getAttribute('data-size'),
+                quantity: 1
+            };
+            addToCart(product);
+        });
+    });
+});
+</script>
+
+
 
 
 </body>
 
-</html><?php /**PATH E:\xampp\htdocs\DATN-WD105\resources\views/layouts/client_home.blade.php ENDPATH**/ ?>
+</html>
+<?php /**PATH E:\xampp\htdocs\DATN-WD105\resources\views/layouts/client_home.blade.php ENDPATH**/ ?>

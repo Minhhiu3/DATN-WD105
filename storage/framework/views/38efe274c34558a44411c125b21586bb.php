@@ -22,6 +22,24 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
+
+        <!-- ql size -->
+        <li class="nav-item">
+            <a href="<?php echo e(url('/admin/sizes')); ?>"
+                class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+                <i class="fa-solid fa-layer-group"></i>
+                <p>Quản lý size</p>
+            </a>
+        </li>
+        
+        <!-- ql nguoi dung -->
+        <li class="nav-item">
+            <a href="<?php echo e(route('admin.users.index')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+                <i class="nav-icon fas fa-users"></i>
+                <p>Quản lý người dùng</p>
+            </a>    
+        </li>
+        
         <!-- ql banner -->
         <li class="nav-item">
             <a href="<?php echo e(url('/admin/banner')); ?>"
@@ -33,14 +51,14 @@
 
         <!-- ql đơn hànghàng -->
         <li class="nav-item">
-            <a href="<?php echo e(url('/#')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+            <a href="<?php echo e(url('#')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                 <i class="fa-solid fa-truck"></i>
                 <p>Quản lý đơn hàng</p>
             </a>
         </li>
         <!-- ql voucher -->
         <li class="nav-item">
-            <a href="<?php echo e(url('/#')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+            <a href="<?php echo e(url('/admin/discounts')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                 <i class="fa-solid fa-ticket"></i>
                 <p>Quản lý mã giảm giá</p>
             </a>
@@ -62,4 +80,5 @@
             </li>
     </ul>
 </nav>
-<!-- /.sidebar-menu --><?php /**PATH E:\xampp\htdocs\DATN-WD105\resources\views/admin/partials/sidebar.blade.php ENDPATH**/ ?>
+<!-- /.sidebar-menu -->
+<?php /**PATH E:\xampp\htdocs\DATN-WD105\resources\views/admin/partials/sidebar.blade.php ENDPATH**/ ?>
