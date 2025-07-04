@@ -32,4 +32,4 @@ class CartItem extends Model
     {
         return $this->variant->price * $this->quantity;
     }
-} 
+}

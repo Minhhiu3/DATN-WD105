@@ -43,6 +43,7 @@
                 <thead>
                     <tr>
                         <th>Sản phẩm</th>
+                        <th>Size</th>
                         <th>Số lượng</th>
                         <th>Giá</th>
                         <th>Thành tiền</th>
@@ -53,9 +54,10 @@
                     @foreach ($order->orderItems as $item)
 <tr>
     <td>{{ $item->variant->product->name_product ?? 'Không có sản phẩm' }}</td>
+    <td>{{$item->variant->size->name}}</td>
     <td>{{ $item->quantity }}</td>
-    <td>{{ number_format($item->variant->product->price) }} VNĐ</td>
-    <td>{{ number_format($order->total_amount) }} VNĐ</td>
+    <td>{{ number_format($item->variant->price) }} VNĐ</td>
+    <td>{{ number_format($item->quantity*$item->variant->price) }} VNĐ</td>
 </tr>
 @endforeach
                 </tbody>
