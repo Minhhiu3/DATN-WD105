@@ -31,11 +31,10 @@ Homestead.yaml
 # Laravel storage (ignore generated files, keep needed dirs)
 /storage/*.key
 /storage/logs/*
-/storage/logs/laravel.log
+!/storage/logs/.gitignore
 /storage/framework/sessions/*
 /storage/framework/views/*
-/storage/framework/views/.gitignore
-/storage/logs/.gitignore
+!/storage/framework/views/.gitignore
 
 # But keep the following for Laravel to work
 !/storage/app
