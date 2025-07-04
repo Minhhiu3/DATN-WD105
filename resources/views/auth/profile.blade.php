@@ -134,7 +134,7 @@
                                     <i class="fa fa-sign-out me-2"></i>Đăng xuất
                                 </button>
                             </form>
-                            
+
                             @if($user->role && $user->role->name === 'Admin')
                                 <a href="{{ route('admin.dashboard') }}" method="POST" class="btn btn-danger">
                                     <i class="fa fa-cogs me-2"></i>Admin Panel
@@ -148,4 +148,4 @@
     </div>
 </section>
 <!-- End Profile Area -->
-@endsection 
+@endsection
