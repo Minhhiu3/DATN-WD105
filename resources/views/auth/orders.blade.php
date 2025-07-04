@@ -67,14 +67,15 @@
                                                 <th>Mã đơn hàng</th>
                                                 <th>Ngày đặt</th>
                                                 <th>Tổng tiền</th>
-                                                <th>Trạng thái</th>
+                                                <th>Trạng thái Đơn Hàng</th>
+                                                <th>Trạng thái thanh toán</th>
                                                 <th>Thao tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($orders as $order)
                                                 <tr>
-                                                    <td>#{{ $order->id_order }}</td>
+                                                    <td>{{ $order->order_code }}</td>
                                                     <td>{{ $order->created_at?->format('d/m/Y H:i') ?? 'N/A' }}</td>
                                                     <td>{{ number_format($order->total_amount) }} VNĐ
                                                     </td>
@@ -93,6 +94,19 @@
                                                         @else
                                                             <span class="badge ">{{ $status }}</span>
                                                         @endif
+                                                    </td>
+                                                    <td>
+                                                         @php $payment_status = $order->payment_status; @endphp
+                                                        @if ($payment_status == 'unpaid')
+                                                            <span class="badge bg-warning text-dark">Chưa thanh toán</span>
+                                                        @elseif($payment_status == 'paid')
+                                                            <span class="badge bg-success text-white">Đã thanh toán</span>
+                                                             @else
+                                                            <span class="badge ">{{ $payment_status }}</span>
+                                                        @endif
+
+
+
                                                     </td>
                                                     <td>
                                                         <a href="{{ route('account.orderDetail', $order->id_order) }}"

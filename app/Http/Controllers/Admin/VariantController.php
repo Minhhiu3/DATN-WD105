@@ -104,7 +104,7 @@ class VariantController extends Controller
     {
         $variant = Variant::findOrFail($id_variant);
         $id_product = $variant->product_id;
-        $variant->forceDelete();
+        $variant->delete();
 
     return redirect()->route('admin.variants.show', $id_product)->with('success', 'Thêm biến thể thành công!');
     }

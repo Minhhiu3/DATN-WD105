@@ -9,6 +9,7 @@ use App\Models\Variant;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -74,12 +75,12 @@ class CartController extends Controller
             }
 
             return response()->json([
-                'success' => true, 
+                'success' => true,
                 'message' => 'Đã thêm vào giỏ hàng',
                 'cart_count' => $this->getCartCountPrivate()
             ]);
         } catch (\Exception $e) {
-            \Log::error('Add to cart error: ' . $e->getMessage());
+            Log::error('Add to cart error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Lỗi server: ' . $e->getMessage()], 500);
         }
     }
@@ -93,7 +94,7 @@ class CartController extends Controller
             ]);
 
             $variant = Variant::find($request->variant_id);
-            
+
             if (!$variant) {
                 return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại']);
             }
@@ -101,7 +102,7 @@ class CartController extends Controller
             // Kiểm tra số lượng tồn kho
             if ($request->quantity > $variant->quantity) {
                 return response()->json([
-                    'success' => false, 
+                    'success' => false,
                     'message' => 'Số lượng vượt quá tồn kho. Chỉ còn ' . $variant->quantity . ' sản phẩm'
                 ]);
             }
@@ -112,7 +113,7 @@ class CartController extends Controller
                     $cartItem = CartItem::where('cart_id', $cart->id_cart)
                         ->where('variant_id', $request->variant_id)
                         ->first();
-                    
+
                     if ($cartItem) {
                         $cartItem->quantity = $request->quantity;
                         $cartItem->save();
@@ -125,7 +126,7 @@ class CartController extends Controller
             } else {
                 $cart = session('cart', collect());
                 $existingItem = $cart->firstWhere('variant_id', $request->variant_id);
-                
+
                 if ($existingItem) {
                     $cart = $cart->map(function ($item) use ($request) {
                         if ($item['variant_id'] == $request->variant_id) {
@@ -141,7 +142,7 @@ class CartController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Cập nhật số lượng thành công']);
         } catch (\Exception $e) {
-            \Log::error('Update cart quantity error: ' . $e->getMessage());
+            Log::error('Update cart quantity error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Lỗi server: ' . $e->getMessage()], 500);
         }
     }
@@ -159,7 +160,7 @@ class CartController extends Controller
                     $deleted = CartItem::where('cart_id', $cart->id_cart)
                         ->where('variant_id', $request->variant_id)
                         ->delete();
-                    
+
                     if ($deleted > 0) {
                         return response()->json(['success' => true, 'message' => 'Đã xóa sản phẩm khỏi giỏ hàng']);
                     } else {
@@ -175,7 +176,7 @@ class CartController extends Controller
                     return $item['variant_id'] != $request->variant_id;
                 });
                 session(['cart' => $cart]);
-                
+
                 if ($cart->count() < $initialCount) {
                     return response()->json(['success' => true, 'message' => 'Đã xóa sản phẩm khỏi giỏ hàng']);
                 } else {
@@ -183,7 +184,7 @@ class CartController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            \Log::error('Remove from cart error: ' . $e->getMessage());
+            Log::error('Remove from cart error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Lỗi server: ' . $e->getMessage()], 500);
         }
     }
@@ -204,7 +205,7 @@ class CartController extends Controller
                 return response()->json(['success' => true, 'message' => 'Đã xóa tất cả sản phẩm khỏi giỏ hàng']);
             }
         } catch (\Exception $e) {
-            \Log::error('Clear cart error: ' . $e->getMessage());
+            Log::error('Clear cart error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Lỗi server: ' . $e->getMessage()], 500);
         }
     }
@@ -245,7 +246,7 @@ class CartController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            \Log::error('Get cart details error: ' . $e->getMessage());
+            Log::error('Get cart details error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Lỗi server: ' . $e->getMessage()], 500);
         }
     }
@@ -261,7 +262,7 @@ class CartController extends Controller
             $cart = session('cart', collect());
             return $cart->sum('quantity');
         }
-        
+
         return 0;
     }
 
@@ -269,4 +270,4 @@ class CartController extends Controller
     {
         return response()->json(['count' => $this->getCartCountPrivate()]);
     }
-} 
+}

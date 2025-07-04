@@ -16,7 +16,6 @@ class ProductSeeder extends Seeder
         //
         Product::factory()
             ->count(10)
-
             ->hasAlbumProducts(4)
             ->create();
     }
