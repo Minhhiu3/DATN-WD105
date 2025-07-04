@@ -136,7 +136,7 @@
                                     <i class="fa fa-sign-out me-2"></i>Đăng xuất
                                 </button>
                             </form>
-                            
+
                             <?php if($user->role && $user->role->name === 'Admin'): ?>
                                 <a href="<?php echo e(route('admin.dashboard')); ?>" method="POST" class="btn btn-danger">
                                     <i class="fa fa-cogs me-2"></i>Admin Panel
@@ -150,5 +150,6 @@
     </div>
 </section>
 <!-- End Profile Area -->
-<?php $__env->stopSection(); ?> 
+<?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\DATN-WD105\resources\views/auth/profile.blade.php ENDPATH**/ ?>
