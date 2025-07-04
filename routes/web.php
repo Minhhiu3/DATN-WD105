@@ -59,6 +59,9 @@ Route::prefix('account')->middleware('auth')->group(function () {
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('account.placeOrder');
 Route::put('/account/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
 Route::get('/account/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
+Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
+Route::post('/place-order-cart', [CheckoutController::class, 'placeOrderFromCart'])->name('account.placeOrder.cart');
+
 });
 
 

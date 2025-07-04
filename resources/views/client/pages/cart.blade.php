@@ -61,18 +61,18 @@
                                         </td>
                                         <td>
                                             <div class="product_count">
-                                                <input type="number" name="qty" value="{{ $quantity }}" 
-                                                    class="input-text qty" 
-                                                    min="1" 
+                                                <input type="number" name="qty" value="{{ $quantity }}"
+                                                    class="input-text qty"
+                                                    min="1"
                                                     max="{{ $variant->quantity }}"
                                                     data-variant-id="{{ $variant->id_variant }}"
                                                     data-price="{{ $price }}"
                                                     onchange="updateQuantity({{ $variant->id_variant }}, this.value, {{ $variant->quantity }})">
-                                                <button onclick="changeQuantity({{ $variant->id_variant }}, 1, {{ $variant->quantity }})" 
+                                                <button onclick="changeQuantity({{ $variant->id_variant }}, 1, {{ $variant->quantity }})"
                                                     class="increase items-count" type="button">
                                                     <i class="lnr lnr-chevron-up"></i>
                                                 </button>
-                                                <button onclick="changeQuantity({{ $variant->id_variant }}, -1, {{ $variant->quantity }})" 
+                                                <button onclick="changeQuantity({{ $variant->id_variant }}, -1, {{ $variant->quantity }})"
                                                     class="reduced items-count" type="button">
                                                     <i class="lnr lnr-chevron-down"></i>
                                                 </button>
@@ -92,7 +92,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div class="row justify-content-end">
                         <div class="col-lg-4">
                             <div class="card_area">
@@ -100,7 +100,7 @@
                                     <h4>Tổng cộng giỏ hàng</h4>
                                     <div class="d-flex justify-content-between mb-2">
                                         <span>Tổng tiền hàng:</span>
-                                        <span id="subtotal">{{ number_format($cartItems->sum(function($item) { 
+                                        <span id="subtotal">{{ number_format($cartItems->sum(function($item) {
                                             $variant = $item->variant ?? $item['variant'];
                                             $quantity = $item->quantity ?? $item['quantity'];
                                             return $variant->price * $quantity;
@@ -113,7 +113,7 @@
                                     <hr>
                                     <div class="d-flex justify-content-between mb-3">
                                         <strong>Tổng thanh toán:</strong>
-                                        <strong id="total">{{ number_format($cartItems->sum(function($item) { 
+                                        <strong id="total">{{ number_format($cartItems->sum(function($item) {
                                             $variant = $item->variant ?? $item['variant'];
                                             $quantity = $item->quantity ?? $item['quantity'];
                                             return $variant->price * $quantity;
@@ -122,7 +122,10 @@
                                 </div>
                                 <div class="checkout_btn_inner d-flex align-items-center">
                                     <a class="gray_btn" href="{{ route('products') }}">Tiếp tục mua sắm</a>
-                                    <a class="primary-btn" href="{{ route('account.checkout.form') }}">Thanh toán</a>
+                                    {{-- <a class="primary-btn" href="{{ route('account.checkout.form') }}">Thanh toán</a> --}}
+                                    <form action="{{ route('account.checkout.cart') }}" method="GET" class="d-inline-block">
+    <button type="submit" class="primary-btn">Thanh toán</button>
+</form>
                                 </div>
                                 <div class="text-center mt-3">
                                     <button class="btn btn-outline-danger btn-sm" onclick="clearCart()">
@@ -151,7 +154,7 @@
 function changeQuantity(variantId, change, maxQuantity) {
     const input = document.querySelector(`input[data-variant-id="${variantId}"]`);
     let newQuantity = parseInt(input.value) + change;
-    
+
     if (newQuantity < 1) newQuantity = 1;
     if (newQuantity > maxQuantity) {
         newQuantity = maxQuantity;
@@ -159,7 +162,7 @@ function changeQuantity(variantId, change, maxQuantity) {
     } else {
         hideQuantityError(variantId);
     }
-    
+
     input.value = newQuantity;
     updateQuantity(variantId, newQuantity, maxQuantity);
 }
@@ -170,18 +173,18 @@ function updateQuantity(variantId, quantity, maxQuantity) {
         showQuantityError(variantId, 'Số lượng phải lớn hơn 0');
         return;
     }
-    
+
     if (quantity > maxQuantity) {
         showQuantityError(variantId, `Chỉ còn ${maxQuantity} sản phẩm trong kho`);
         return;
     }
-    
+
     hideQuantityError(variantId);
-    
+
     // Show loading state
     const input = document.querySelector(`input[data-variant-id="${variantId}"]`);
     input.disabled = true;
-    
+
     fetch('{{ route("cart.update") }}', {
         method: 'PUT',
         headers: {
@@ -217,23 +220,23 @@ function updateItemTotal(variantId, quantity) {
     const row = document.querySelector(`tr[data-variant-id="${variantId}"]`);
     const priceElement = row.querySelector('.item-price');
     const totalElement = row.querySelector('.item-total');
-    
+
     const price = parseFloat(priceElement.textContent.replace(/[^\d]/g, ''));
     const total = price * quantity;
-    
+
     totalElement.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
 }
 
 function updateCartTotals() {
     let subtotal = 0;
     const rows = document.querySelectorAll('tbody tr');
-    
+
     rows.forEach(row => {
         const totalElement = row.querySelector('.item-total');
         const total = parseFloat(totalElement.textContent.replace(/[^\d]/g, ''));
         subtotal += total;
     });
-    
+
     document.getElementById('subtotal').textContent = subtotal.toLocaleString('vi-VN') + ' VNĐ';
     document.getElementById('total').textContent = subtotal.toLocaleString('vi-VN') + ' VNĐ';
 }
@@ -255,7 +258,7 @@ function removeFromCart(variantId) {
     if (confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
         const row = document.querySelector(`tr[data-variant-id="${variantId}"]`);
         row.style.opacity = '0.5';
-        
+
         fetch('{{ route("cart.remove") }}', {
             method: 'DELETE',
             headers: {
@@ -271,7 +274,7 @@ function removeFromCart(variantId) {
             if (data.success) {
                 row.remove();
                 updateCartTotals();
-                
+
                 // Check if cart is empty
                 const remainingItems = document.querySelectorAll('tbody tr');
                 if (remainingItems.length === 0) {
@@ -298,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const variantId = this.dataset.variantId;
             const quantity = parseInt(this.value);
             const maxQuantity = parseInt(this.max);
-            
+
             if (quantity < 1) {
                 this.value = 1;
                 updateQuantity(variantId, 1, maxQuantity);
@@ -454,25 +457,25 @@ function clearCart() {
     .table-responsive {
         font-size: 14px;
     }
-    
+
     .media img {
         width: 60px !important;
         height: 60px !important;
     }
-    
+
     .product_count {
         max-width: 100px;
     }
-    
+
     .product_count input {
         width: 50px;
     }
-    
+
     .btn-sm {
         padding: 4px 8px;
         font-size: 12px;
     }
-    
+
     .cart-summary {
         padding: 15px;
     }

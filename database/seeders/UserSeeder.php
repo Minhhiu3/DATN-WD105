@@ -22,14 +22,14 @@ class UserSeeder extends Seeder
             'role_id' => 1, // Admin role
         ]);
 
-        // User::create([
-        //     'name' => 'Nguyễn Văn A',
-        //     'account_name' => 'user1',
-        //     'email' => 'user1@example.com',
-        //     'phone_number' => '0987654321',
-        //     'password' => Hash::make('password'),
-        //     'role_id' => 2, // User role
-        // ]);
+        User::create([
+            'name' => 'Nguyễn Văn A',
+            'account_name' => 'user1',
+            'email' => 'user1@example.com',
+            'phone_number' => '0987654321',
+            'password' => Hash::make('123456'),
+            'role_id' => 2, // User role
+        ]);
 
         // User::create([
         //     'name' => 'Trần Thị B',
@@ -40,4 +40,4 @@ class UserSeeder extends Seeder
         //     'role_id' => 3, // Staff role
         // ]);
     }
-} 
+}

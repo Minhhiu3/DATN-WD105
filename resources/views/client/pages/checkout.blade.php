@@ -21,12 +21,12 @@
     <!--================Checkout Area =================-->
     <section class="checkout_area section_gap">
         @if ($errors->any())
-    <div class="alert alert-danger">
-        @foreach ($errors->all() as $error)
-            <p>{{ $error }}</p>
-        @endforeach
-    </div>
-@endif
+            <div class="alert alert-danger">
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
         <div class="container">
             {{-- <div class="returning_customer">
                 <div class="check_title">
@@ -90,49 +90,26 @@
                                     value="{{ old('email', auth()->user()->email ?? '') }}" disabled>
                                 {{-- <span class="placeholder" data-placeholder="Email"></span> --}}
                             </div>
-                            {{-- <div class="col-md-12 form-group p_star">
-                                <select class="country_select">
-                                    <option value="1">Country</option>
-                                    <option value="2">Country</option>
-                                    <option value="4">Country</option>
+                            <!-- Province -->
+                            <div class="col-md-12 form-group p_star">
+                                <select class="form-control" id="provinceSelect">
+                                    <option value="">Chọn Tỉnh/Thành</option>
+                                </select>
+                            </div>
+
+                            <!-- District -->
+                            <div class="col-md-12 form-group p_star">
+                                <select class="form-control"   id="districtSelect">
+                                    <option value="">Chọn Xã/Phường</option>
                                 </select>
                             </div>
                             <div class="col-md-12 form-group p_star">
-                                <input type="text" class="form-control" id="add1" name="add1">
-                                <span class="placeholder" data-placeholder="Address line 01"></span>
-                            </div> --}}
-                            {{-- <div class="col-md-12 form-group p_star">
                                 <input type="text" class="form-control" id="add2" name="add2">
                                 <span class="placeholder" data-placeholder="Địa chỉ"></span>
-                            </div> --}}
-                            {{-- <div class="col-md-12 form-group p_star">
-                                <input type="text" class="form-control" id="city" name="city">
-                                <span class="placeholder" data-placeholder="Town/City"></span>
-                            </div> --}}
-                            {{-- <div class="col-md-12 form-group p_star">
-                                <select class="country_select">
-                                    <option value="1">District</option>
-                                    <option value="2">District</option>
-                                    <option value="4">District</option>
-                                </select>
-                            </div> --}}
-                            {{-- <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" id="zip" name="zip" placeholder="Postcode/ZIP">
-                            </div> --}}
-                            {{-- <div class="col-md-12 form-group">
-                                <div class="creat_account">
-                                    <input type="checkbox" id="f-option2" name="selector">
-                                    <label for="f-option2">Create an account?</label>
-                                </div>
-                            </div> --}}
-                            {{-- <div class="col-md-12 form-group">
-                                <div class="creat_account">
-                                    <h3>Shipping Details</h3>
-                                    <input type="checkbox" id="f-option3" name="selector">
-                                    <label for="f-option3">Ship to a different address?</label>
-                                </div>
-                                <textarea class="form-control" name="message" id="message" rows="1" placeholder="Order Notes"></textarea>
-                            </div> --}}
+                            </div>
+
+
+
                         </form>
                     </div>
                     <div class="col-lg-6">
@@ -205,5 +182,63 @@
             </div>
         </div>
     </section>
+    <script>
+   document.addEventListener("DOMContentLoaded", function () {
+    const provinceSelect = document.getElementById('provinceSelect');
+    const districtSelect = document.getElementById('districtSelect');
+
+    if (!provinceSelect || !districtSelect) {
+        console.error("Không tìm thấy provinceSelect hoặc districtSelect");
+        return;
+    }
+
+    async function loadProvinces() {
+        try {
+            provinceSelect.innerHTML = '<option value="">Đang tải...</option>';
+            const res = await fetch('https://vietnamlabs.com/api/vietnamprovince');
+            const data = await res.json();
+            console.log(data); // Kiểm tra dữ liệu API
+            provinceSelect.innerHTML = '<option value="">Chọn Tỉnh/Thành</option>';
+            data.forEach(province => { // Sửa từ data.data thành data
+                const opt = document.createElement("option");
+                opt.value = province.id;
+                opt.text = province.province;
+                provinceSelect.appendChild(opt);
+            });
+        } catch (error) {
+            console.error("Lỗi khi tải tỉnh/thành:", error);
+            provinceSelect.innerHTML = '<option value="">Lỗi khi tải</option>';
+        }
+    }
+
+    async function loadDistricts(provinceId) {
+        try {
+            districtSelect.innerHTML = '<option value="">Đang tải...</option>';
+            const res = await fetch(`https://vietnamlabs.com/api/vietnamprovince/districts/${provinceId}`);
+            const data = await res.json();
+            districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+            data.data.forEach(district => { // Giả định API districts trả về data.data
+                const opt = document.createElement("option");
+                opt.value = district.name;
+                opt.text = district.name;
+                districtSelect.appendChild(opt);
+            });
+        } catch (error) {
+            console.error("Lỗi khi tải quận/huyện:", error);
+            districtSelect.innerHTML = '<option value="">Lỗi khi tải</option>';
+        }
+    }
+
+    loadProvinces();
+    provinceSelect.addEventListener('change', function () {
+        const provinceId = this.value;
+        if (provinceId) {
+            loadDistricts(provinceId);
+        } else {
+            districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+        }
+    });
+});
+    </script>
     <!--================End Checkout Area =================-->
 @endsection
