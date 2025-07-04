@@ -12,14 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('shipping_addresses', function (Blueprint $table) {
-                 $table->id();
-            $table->unsignedBigInteger('order_id');
-            $table->string('province');//tỉnh/tp
-            $table->string('ward');//phường,xã
-            $table->string('address'); // chi tiết như số nhà, ngõ, phố
-            $table->timestamps();
-            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
-        });
+    $table->id();
+    $table->unsignedInteger('order_id'); // đúng kiểu so với orders
+    $table->string('province');
+    $table->string('ward');
+    $table->string('address');
+    $table->timestamps();
+
+    $table->foreign('order_id')->references('id_order')->on('orders')->onDelete('cascade');
+});
+
     }
 
     /**
