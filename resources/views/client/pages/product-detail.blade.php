@@ -339,9 +339,11 @@
 @endsection
 @push('scripts')
 <script>
-function addToCart() {
-    const variantId = document.getElementById('size').value;
-    const quantity = document.getElementById('sst').value;
+function addToCart(event) {
+    event.preventDefault(); // Ngăn reload/truy cập /cart/add
+
+    const variantId = document.getElementById('size')?.value;
+    const quantity = document.getElementById('sst')?.value;
 
     if (!variantId) {
         alert('Vui lòng chọn size!');
@@ -367,11 +369,14 @@ function addToCart() {
         body: formData
     })
     .then(async response => {
+        const text = await response.text();
         let data = {};
+
         try {
-            data = await response.json();
+            data = JSON.parse(text);
         } catch (err) {
-            console.error('Không thể parse JSON:', err);
+            alert(text); // Nếu không phải JSON thì hiện raw text
+            return;
         }
 
         if (!response.ok) {
@@ -429,6 +434,3 @@ function updateCartCount() {
 document.addEventListener('DOMContentLoaded', updateCartCount);
 </script>
 @endpush
-
-
-
