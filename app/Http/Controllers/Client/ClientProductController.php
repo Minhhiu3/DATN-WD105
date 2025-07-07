@@ -10,13 +10,18 @@ use Illuminate\Http\Request;
 
 class ClientProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
 
         $sizes = Size::all();
         $categories = Category::all();
-        $products = Product::with(['category', 'albumProducts'])->latest()->paginate(9);
-        return view('client.pages.products', compact('products', 'categories', 'sizes'));    }
+        $keyword = $request->input('keyword');
+        $products = Product::with(['category', 'albumProducts'])
+        ->when($keyword,function($query,$keyword){
+            $query->where('name_product', 'like', "%$keyword%");
+        })
+        ->latest()->paginate(9);
+        return view('client.pages.products', compact('products', 'categories', 'sizes','keyword'));    }
   public function show($id)
 {
     $product = Product::with('category','variants', 'albumProducts')->findOrFail($id);

@@ -12,27 +12,25 @@
         <div class="row fullscreen align-items-center justify-content-start">
             <div class="col-lg-12">
                 <div class="active-banner-slider owl-carousel">
-                    <!-- single-slide -->
-
                     <?php $__currentLoopData = $banners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $banner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="row single-slide align-items-center d-flex">
-                        <div class="col-lg-5 col-md-6">
-                            <div class="banner-content">
-                                <h1><?php echo e($banner->name ?? 'Bộ sưu tập mới của Nike!'); ?></h1>
-                               
+                        <div class="single-slide row align-items-center d-flex">
+                            <div class="col-lg-5 col-md-6">
+                                <div class="banner-content">
+                                    <h1><?php echo e($banner->name ?? 'Bộ sưu tập mới!'); ?></h1>
+                                </div>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="banner-img">
+                                    <img class="img-fluid" src="<?php echo e(asset('storage/' . $banner->image)); ?>"
+                                        style="max-height: 400px; object-fit: cover;" alt="<?php echo e($banner->name); ?>">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-7">
-                            <div class="banner-img">
-                                <img class="img-fluid" src="<?php echo e(asset('storage/' . $banner->image)); ?>"
-                                    style="max-height: 400px; object-fit: cover;" alt="<?php echo e($banner->name); ?>">
-                            </div>
-                        </div>
-                    </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
         </div>
+    </div>
 </section>
 <!-- End banner Area -->
 <!-- End banner Area -->
@@ -162,63 +160,47 @@
             </div>
             <div class="row">
 
+                
+                  <!-- single product -->
+                        <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="single-product">
+                                    <img src="<?php echo e(asset('/storage/' . $product->image)); ?>" alt="<?php echo e($product->image); ?>">
+                                    <div class="product-details">
+                                        <h6><?php echo e($product->name_product); ?></h6>
+                                        <div class="price">
+                                            <h6><?php echo e(number_format($product->price, 0, ',', '.')); ?> VNĐ</h6>
+                                        </div>
+                                        <div class="prd-bottom">
 
-
-                <!-- single product -->
-
-
-
-                <!-- single product -->
-                <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-product">
-
-                        
-
-                       <img src="<?php echo e(asset('/storage/'.$product->image)); ?>" alt="<?php echo e($product->image); ?>">
-
-
-                        <div class="product-details">
-                            <h6><?php echo e($product->name_product); ?></h6>
-                            <div class="price">
-                                <h6><?php echo e(number_format($product->price, 0, ',', '.')); ?> VNĐ</h6>
+                                            <a href="" class="social-info">
+                                                <span class="ti-bag"></span>
+                                                <p class="hover-text">add to bag</p>
+                                            </a>
+                                            <a href="" class="social-info">
+                                                <span class="lnr lnr-heart"></span>
+                                                <p class="hover-text">Wishlist</p>
+                                            </a>
+                                            <a href="" class="social-info">
+                                                <span class="lnr lnr-sync"></span>
+                                                <p class="hover-text">compare</p>
+                                            </a>
+                                            <a href="<?php echo e(route('client.product.show', $product->id_product)); ?>"
+                                                class="social-info">
+                                                <span class="lnr lnr-move"></span>
+                                                <p class="hover-text">view more</p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="prd-bottom">
-                                <a href="javascript:void(0);" class="social-info add-to-cart-btn"
-                                    data-id="<?php echo e($product->id_product); ?>" data-name="<?php echo e($product->name_product); ?>"
-                                    data-price="<?php echo e($product->price); ?>" data-size="M">
-                                    <span class="ti-bag"></span>
-                                    <p class="hover-text">Thêm vào giỏ hàng</p>
-                                </a>
-                                <a href="#" class="social-info">
-                                    <span class="lnr lnr-heart"></span>
-                                    <p class="hover-text">Danh sách yêu thích</p>
-                                </a>
-                                <a href="#" class="social-info">
-                                    <span class="lnr lnr-sync"></span>
-                                    <p class="hover-text">So sánh</p>
-                                </a>
-                                <a href="<?php echo e(route('client.product.show', $product->id_product)); ?>" class="social-info">
-                                    <span class="lnr lnr-move"></span>
-                                    <p class="hover-text">Chi tiết</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
 
             </div>
         </div>
     </div>
 
-
-
-
-
-
-
-
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH E:\xampp\htdocs\DATN-WD105\resources\views/client/pages/home.blade.php ENDPATH**/ ?>

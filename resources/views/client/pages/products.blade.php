@@ -97,7 +97,7 @@
                 <section class="lattest-product-area pb-40 category-list">
                     <div class="row">
                         <!-- single product -->
-                        @foreach ($products as $product)
+                         @forelse($products as $product)
                             <div class="col-lg-4 col-md-6">
                                 <div class="single-product">
                                     <img src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
@@ -125,11 +125,16 @@
                                                 <span class="lnr lnr-move"></span>
                                                 <p class="hover-text">view more</p>
                                             </a>
+                                            
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+            <div class="col-12">
+                <p class="text-muted">Không tìm thấy sản phẩm nào phù hợp.</p>
+            </div>
+        @endforelse
 
 
                     </div>
