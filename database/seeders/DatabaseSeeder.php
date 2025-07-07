@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Role;
+use App\Models\Size;
 use App\Models\User;
 
 class DatabaseSeeder extends Seeder
@@ -18,14 +19,21 @@ class DatabaseSeeder extends Seeder
     {
         // Tạo roles mặc định
         $this->createDefaultRoles();
-        
+
         // Tạo admin user mặc định
         $this->createDefaultAdmin();
-        
+
         // Chạy các seeder khác
         $this->call([
-            BannerSeeder::class,
+            RoleSeeder::class,
+            UserSeeder::class,
+          CategorySeeder::class,
+           SizeSeeder::class,
             ProductSeeder::class,
+            VariantSeeder::class,
+
+
+
         ]);
     }
 
@@ -69,7 +77,7 @@ class DatabaseSeeder extends Seeder
     private function createDefaultAdmin()
     {
         $adminRole = Role::where('name', 'Admin')->first();
-        
+
         if ($adminRole) {
             User::firstOrCreate(
                 ['email' => 'admin@example.com'],

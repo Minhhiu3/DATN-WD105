@@ -12,8 +12,10 @@ class Order extends Model
     protected $primaryKey = 'id_order';
     protected $fillable = [
         'user_id',
+         'order_code',
         'total_amount',
         'payment_method',
+        'payment_status',
         'status',
     ];
 
