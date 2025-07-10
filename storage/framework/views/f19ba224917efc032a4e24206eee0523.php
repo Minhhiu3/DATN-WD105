@@ -68,40 +68,45 @@
                     <p><?php echo e($product->description); ?></p>
 
                     
-                    <form action="<?php echo e(route('cart.add')); ?>" method="POST" class="mt-3">
-                        <?php echo csrf_field(); ?>
+<?php if(auth()->guard()->guest()): ?>
+    
+    <a href="<?php echo e(route('login')); ?>" class="primary-btn">Đăng nhập để thêm vào giỏ</a>
+<?php else: ?>
+    
+    <form action="<?php echo e(route('cart.add')); ?>" method="POST" class="mt-3">
+        <?php echo csrf_field(); ?>
 
-                        <div class="form-group d-flex align-items-center mb-3">
-                            <label for="size" class="mr-2 mb-0">Size:</label>
-                            <select name="variant_id" id="size" class="form-control w-auto" required>
-                                <option value="">-- Chọn Size --</option>
-                                <?php $__currentLoopData = $product->variants; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $variant): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($variant->id_variant); ?>"
-                                        data-quantity="<?php echo e($variant->quantity); ?>"
-                                        <?php echo e($variant->quantity == 0 ? 'disabled' : ''); ?>>
-                                        Size <?php echo e($variant->size->name ?? 'Không xác định'); ?>
+        <div class="form-group d-flex align-items-center mb-3">
+            <label for="size" class="mr-2 mb-0">Size:</label>
+            <select name="variant_id" id="size" class="form-control w-auto" required>
+                <option value="">-- Chọn Size --</option>
+                <?php $__currentLoopData = $product->variants; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $variant): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($variant->id_variant); ?>"
+                        data-quantity="<?php echo e($variant->quantity); ?>"
+                        <?php echo e($variant->quantity == 0 ? 'disabled' : ''); ?>>
+                        Size <?php echo e($variant->size->name ?? 'Không xác định'); ?>
 
-                                        <?php echo e($variant->quantity > 0 ? "- Còn $variant->quantity" : '(Hết hàng)'); ?>
+                        <?php echo e($variant->quantity > 0 ? "- Còn $variant->quantity" : '(Hết hàng)'); ?>
 
-                                    </option>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </select>
-                        </div>
+                    </option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+        </div>
 
-                        
-                        <div class="product_count mb-3">
-                            <label for="qty">Số lượng:</label>
-                            <input type="number" name="quantity" id="sst" min="1" value="1"
-                                class="input-text qty form-control d-inline-block w-auto">
-                        </div>
+        <div class="product_count mb-3">
+            <label for="qty">Số lượng:</label>
+            <input type="number" name="quantity" id="sst" min="1" value="1"
+                class="input-text qty form-control d-inline-block w-auto">
+        </div>
 
-                        
-                        <div class="card_area d-flex align-items-center gap-3">
-                            <button type="submit" id="add-to-cart-btn" onclick="addToCart()" class="primary-btn">Add to Cart</button>
-                        </div>
-                        <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
+        <div class="card_area d-flex align-items-center gap-3">
+            <button type="submit" class="primary-btn">Add to Cart</button>
+        </div>
 
-                    </form>
+        <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
+    </form>
+<?php endif; ?>
+
 
                     
                     <form action="<?php echo e(route('account.checkout.form')); ?>" method="GET" class="mt-2">

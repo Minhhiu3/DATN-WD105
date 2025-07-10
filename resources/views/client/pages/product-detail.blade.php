@@ -68,38 +68,43 @@
                     <p>{{ $product->description }}</p>
 
                     {{-- Size --}}
-                    <form action="{{ route('cart.add') }}" method="POST" class="mt-3">
-                        @csrf
+@guest
+    {{-- Nếu chưa đăng nhập --}}
+    <a href="{{ route('login') }}" class="primary-btn">Đăng nhập để thêm vào giỏ</a>
+@else
+    {{-- Nếu đã đăng nhập --}}
+    <form action="{{ route('cart.add') }}" method="POST" class="mt-3">
+        @csrf
 
-                        <div class="form-group d-flex align-items-center mb-3">
-                            <label for="size" class="mr-2 mb-0">Size:</label>
-                            <select name="variant_id" id="size" class="form-control w-auto" required>
-                                <option value="">-- Chọn Size --</option>
-                                @foreach ($product->variants as $variant)
-                                    <option value="{{ $variant->id_variant }}"
-                                        data-quantity="{{ $variant->quantity }}"
-                                        {{ $variant->quantity == 0 ? 'disabled' : '' }}>
-                                        Size {{ $variant->size->name ?? 'Không xác định' }}
-                                        {{ $variant->quantity > 0 ? "- Còn $variant->quantity" : '(Hết hàng)' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+        <div class="form-group d-flex align-items-center mb-3">
+            <label for="size" class="mr-2 mb-0">Size:</label>
+            <select name="variant_id" id="size" class="form-control w-auto" required>
+                <option value="">-- Chọn Size --</option>
+                @foreach ($product->variants as $variant)
+                    <option value="{{ $variant->id_variant }}"
+                        data-quantity="{{ $variant->quantity }}"
+                        {{ $variant->quantity == 0 ? 'disabled' : '' }}>
+                        Size {{ $variant->size->name ?? 'Không xác định' }}
+                        {{ $variant->quantity > 0 ? "- Còn $variant->quantity" : '(Hết hàng)' }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-                        {{-- Số lượng --}}
-                        <div class="product_count mb-3">
-                            <label for="qty">Số lượng:</label>
-                            <input type="number" name="quantity" id="sst" min="1" value="1"
-                                class="input-text qty form-control d-inline-block w-auto">
-                        </div>
+        <div class="product_count mb-3">
+            <label for="qty">Số lượng:</label>
+            <input type="number" name="quantity" id="sst" min="1" value="1"
+                class="input-text qty form-control d-inline-block w-auto">
+        </div>
 
-                        {{-- Nút thêm vào giỏ hàng + mua ngay --}}
-                        <div class="card_area d-flex align-items-center gap-3">
-                            <button type="submit" id="add-to-cart-btn" onclick="addToCart()" class="primary-btn">Add to Cart</button>
-                        </div>
-                        <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
+        <div class="card_area d-flex align-items-center gap-3">
+            <button type="submit" class="primary-btn">Add to Cart</button>
+        </div>
 
-                    </form>
+        <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
+    </form>
+@endguest
+
 
                     {{-- Mua ngay --}}
                     <form action="{{ route('account.checkout.form') }}" method="GET" class="mt-2">
