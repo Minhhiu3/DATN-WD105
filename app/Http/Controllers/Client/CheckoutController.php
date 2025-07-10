@@ -46,10 +46,15 @@ class CheckoutController extends Controller
     public function placeOrder(Request $request)
     {
         $request->validate([
-            'variant_id'      => 'required|exists:variant,id_variant',
-            'quantity'        => 'required|integer|min:1',
-            'payment_method'  => 'required|in:cod,vnpay',
-        ]);
+    'variant_id'      => 'required|exists:variant,id_variant',
+    'quantity'        => 'required|integer|min:1',
+    'payment_method'  => 'required|in:cod,vnpay',
+    'province'        => 'required|string',
+    'district'        => 'required|string',
+    'ward'            => 'required|string',
+    'address'         => 'required|string',
+]);
+
 
         try {
             DB::beginTransaction();
@@ -68,6 +73,11 @@ class CheckoutController extends Controller
                 'status'         => 'pending',
                 'payment_method' => $request->payment_method,
                 'payment_status' => 'unpaid',
+                'province' => $request->province,
+                'district' => $request->district,
+                'ward'     => $request->ward,
+                'address'  => $request->address,
+
                 'total_amount'   => $variant->price * $request->quantity,
                 'created_at'     => now(),
             ]);
@@ -131,8 +141,13 @@ public function placeOrderFromCart(Request $request)
         return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
     }
 
+    // Validate địa chỉ và phương thức thanh toán
     $request->validate([
         'payment_method' => 'required|in:cod,vnpay',
+   'province'        => 'required|string',
+    'district'        => 'required|string',
+    'ward'            => 'required|string',
+    'address'         => 'required|string',
     ]);
 
     DB::beginTransaction();
@@ -156,6 +171,7 @@ public function placeOrderFromCart(Request $request)
 
         $orderCode = $this->generateOrderCode();
 
+        // ✅ Lưu địa chỉ vào bảng orders
         $order = Order::create([
             'user_id'        => $user->id_user,
             'order_code'     => $orderCode,
@@ -163,6 +179,10 @@ public function placeOrderFromCart(Request $request)
             'payment_method' => $request->payment_method,
             'payment_status' => 'unpaid',
             'total_amount'   => $totalAmount,
+            'province'       => $request->province,
+            'district'       => $request->district,
+            'ward'           => $request->ward,
+            'address'        => $request->address,
             'created_at'     => now(),
         ]);
 
@@ -177,7 +197,6 @@ public function placeOrderFromCart(Request $request)
             $item->variant->decrement('quantity', $item->quantity);
         }
 
-        // Xoá toàn bộ gio hang
         CartItem::where('cart_id', $cart->id_cart)->delete();
 
         DB::commit();
@@ -187,4 +206,5 @@ public function placeOrderFromCart(Request $request)
         return redirect()->back()->withErrors('Lỗi đặt hàng: ' . $e->getMessage());
     }
 }
+
 }

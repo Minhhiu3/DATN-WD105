@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -191,6 +192,56 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::delete('/reviews/{id_review}', [ProductReviewController::class, 'destroy'])->name('admin.reviews.destroy');
 
 });
+
+//call api ben thu 3
+// Route lấy danh sách tỉnh
+Route::get('/api/vl/provinces', function () {
+    $response = Http::get('https://vietnamlabs.com/api/vietnamprovince');
+
+    if ($response->successful()) {
+        $data = $response->json();
+
+        return response()->json([
+            'success' => true,
+            'data' => $data['data']['data'] ?? []
+        ]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Không thể lấy tỉnh/thành'], 500);
+});
+
+// Route lấy quận/huyện theo mã tỉnh
+Route::get('/api/vl/districts/{provinceCode}', function ($provinceCode) {
+    $response = Http::get("https://vietnamlabs.com/api/vietnamprovince/district/$provinceCode");
+
+    if ($response->successful()) {
+        $data = $response->json();
+        return response()->json([
+            'success' => true,
+            'data' => $data['data'] ?? []
+        ]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Không thể lấy quận/huyện'], 500);
+});
+
+// Route lấy phường/xã theo mã quận/huyện
+Route::get('/api/vl/wards/{districtCode}', function ($districtCode) {
+    $response = Http::get("https://vietnamlabs.com/api/vietnamprovince/commune/$districtCode");
+
+    if ($response->successful()) {
+        $data = $response->json();
+        return response()->json([
+            'success' => true,
+            'data' => $data['data'] ?? []
+        ]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Không thể lấy phường/xã'], 500);
+});
+
+
+
 
 // Client Routes
 Route::get('/blogs', function () {
