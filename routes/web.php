@@ -251,8 +251,6 @@ Route::get('/blogs', function () {
 Route::get('/blog-detail', function () {
     return view('client.pages.blog-detail');
 })->name('blog-detail');
-
 // Route::get('/checkout', function () {
 //     return view('client.pages.checkout');
 // })->name('checkout');
-

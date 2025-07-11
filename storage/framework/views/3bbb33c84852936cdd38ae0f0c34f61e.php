@@ -4,7 +4,7 @@
         <nav class="navbar navbar-expand-lg navbar-light main_box">
             <div class="container">
                 <!-- Brand and toggle get grouped for better mobile display -->
-                <a class="navbar-brand logo_h" href="{{ route('home') }}"><img src="{{ asset('assets/img/logo.png') }}"
+                <a class="navbar-brand logo_h" href="<?php echo e(route('home')); ?>"><img src="<?php echo e(asset('assets/img/logo.png')); ?>"
                         alt=""></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Chuyển đổi điều hướng">
@@ -15,29 +15,30 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
                     <ul class="nav navbar-nav menu_nav ml-auto">
-                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
-                        <li class="nav-item "><a class="nav-link" href="{{ route('products') }}">Cửa hàng</a></li>
+                        <li class="nav-item"><a class="nav-link" href="<?php echo e(route('home')); ?>">Trang chủ</a></li>
+                        <li class="nav-item "><a class="nav-link" href="<?php echo e(route('products')); ?>">Cửa hàng</a></li>
 
-                        <li class="nav-item"><a class="nav-link" href="{{ route('blogs') }}">Tin tức</a></li>
+                        <li class="nav-item"><a class="nav-link" href="<?php echo e(route('blogs')); ?>">Tin tức</a></li>
 
                         <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
-                        @guest
-                            <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
-                        @endguest
-                        @auth
+                        <?php if(auth()->guard()->guest()): ?>
+                            <li class="nav-item"><a class="nav-link" href="<?php echo e(route('login')); ?>">Đăng nhập</a></li>
+                        <?php endif; ?>
+                        <?php if(auth()->guard()->check()): ?>
                             <li class="nav-item">
                                 <span class="nav-link">
-                                    <!-- <a href="{{ route('account.profile') }}"> <i class="fa fa-user"></i> {{ Auth::user()->name }} </a> -->
-                                    <a href="{{ route('account.profile') }}" style="color: black;">
-                                        <i class="fa fa-user"></i> {{ Auth::user()->name }}
+                                    <!-- <a href="<?php echo e(route('account.profile')); ?>"> <i class="fa fa-user"></i> <?php echo e(Auth::user()->name); ?> </a> -->
+                                    <a href="<?php echo e(route('account.profile')); ?>" style="color: black;">
+                                        <i class="fa fa-user"></i> <?php echo e(Auth::user()->name); ?>
+
                                     </a>
                                 </span>
                             </li>
-                        @endauth
+                        <?php endif; ?>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="nav-item position-relative">
-                            <a href="{{ route('cart') }}" class="cart" id="cart-icon">
+                            <a href="<?php echo e(route('cart')); ?>" class="cart" id="cart-icon">
                                 <span class="ti-bag"></span>
                                 <span id="cart-count" class="badge"
                                     style="display:none;position:absolute;top:0;right:0;">0</span>
@@ -46,10 +47,10 @@
                             <!-- mini cảt -->
                             <div id="mini-cart"
                                 style="display:none;position:absolute;right:0;top:40px;z-index:1000;background:#fff;border:1px solid #eee;width:300px;padding:15px;">
-                                @if ($cartItems->count() > 0)
-                                    @php $total = 0; @endphp
-                                    @foreach ($cartItems as $item)
-                                        @php
+                                <?php if($cartItems->count() > 0): ?>
+                                    <?php $total = 0; ?>
+                                    <?php $__currentLoopData = $cartItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php
                                             $variant = $item->variant ?? $item['variant'];
                                             $product = $variant->product ?? null;
                                             $size = $variant->size ?? null;
@@ -57,28 +58,28 @@
                                             $price = $variant->price ?? 0;
                                             $itemTotal = $price * $quantity;
                                             $total += $itemTotal;
-                                        @endphp
+                                        ?>
                                         <div
                                             class="d-flex justify-content-between align-items-start mb-2 border-bottom pb-2">
                                             <div>
-                                                <strong>{{ $product->name_product ?? 'Sản phẩm' }}</strong><br>
-                                                <small>SL: {{ $quantity }} - Size:
-                                                    {{ $size->name ?? 'N/A' }}</small>
+                                                <strong><?php echo e($product->name_product ?? 'Sản phẩm'); ?></strong><br>
+                                                <small>SL: <?php echo e($quantity); ?> - Size:
+                                                    <?php echo e($size->name ?? 'N/A'); ?></small>
                                             </div>
                                             <div class="text-right">
-                                                <small>{{ number_format($price, 0, ',', '.') }}₫</small>
+                                                <small><?php echo e(number_format($price, 0, ',', '.')); ?>₫</small>
                                             </div>
                                         </div>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     <div class="mt-2 font-weight-bold text-right">
-                                        Tổng: {{ number_format($total, 0, ',', '.') }}₫
+                                        Tổng: <?php echo e(number_format($total, 0, ',', '.')); ?>₫
                                     </div>
                                     <div class="text-right mt-2">
-                                        <a href="{{ route('cart') }}" class="btn btn-sm btn-primary">Xem giỏ hàng</a>
+                                        <a href="<?php echo e(route('cart')); ?>" class="btn btn-sm btn-primary">Xem giỏ hàng</a>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <p class="text-center mb-0">Giỏ hàng trống</p>
-                                @endif
+                                <?php endif; ?>
                             </div>
 
 
@@ -97,8 +98,8 @@
     </div>
     <div class="search_input" id="search_input_box">
         <div class="container">
-            <form class="d-flex justify-content-between" action="{{ route('products') }}" method="GET">
-                <input type="text" name="keyword" value="{{request('keyword')}}" class="form-control" id="search_input" placeholder="Tìm kiếm tại đây">
+            <form class="d-flex justify-content-between" action="<?php echo e(route('products')); ?>" method="GET">
+                <input type="text" name="keyword" value="<?php echo e(request('keyword')); ?>" class="form-control" id="search_input" placeholder="Tìm kiếm tại đây">
                 <button type="submit" class="btn"></button>
                 <span class="lnr lnr-cross" id="close_search" title="Đóng tìm kiếm"></span>
             </form>
@@ -110,7 +111,7 @@
 <script>
     // Cập nhật số lượng giỏ hàng từ server
     function updateCartCountFromServer() {
-        fetch('{{ route('cart.count') }}')
+        fetch('<?php echo e(route('cart.count')); ?>')
             .then(response => response.json())
             .then(data => {
                 const cartCountEl = document.getElementById('cart-count');
@@ -137,3 +138,4 @@
 
 
 <!-- fe scrip -->
+<?php /**PATH E:\xampp\htdocs\DATN-WD105\resources\views/client/partials/header_home.blade.php ENDPATH**/ ?>
