@@ -13,6 +13,7 @@ return new class extends Migration
 {
     Schema::table('orders', function (Blueprint $table) {
         $table->integer('shipping_fee')->default(30000);
+        $table->integer('grand_total')->nullable();
     });
 }
 

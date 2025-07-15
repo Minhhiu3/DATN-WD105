@@ -77,7 +77,13 @@
                                                 <tr>
                                                     <td>{{ $order->order_code }}</td>
                                                     <td>{{ $order->created_at?->format('d/m/Y H:i') ?? 'N/A' }}</td>
-                                                    <td>{{ number_format($order->total_amount) }} VNĐ
+                                                    @php
+                                                        $shippingFee = $order->shipping_fee ; // Mặc định 30,000 nếu null
+                                                        $grandTotal = $order->total_amount + $shippingFee;
+                                                    @endphp
+
+                                                    <td>{{ number_format($grandTotal, 0, ',', '.') }} VNĐ</td>
+
                                                     </td>
                                                     <td>
                                                         @php $status = $order->status; @endphp
