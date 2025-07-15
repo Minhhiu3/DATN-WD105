@@ -36,32 +36,19 @@
                 </div>
                 <div class="sidebar-filter mt-50 ">
                     <div class="top-filter-head ">Lọc</div>
-                    {{-- <div class="common-filter">
-						<div class="head">Brand</div>
-						<form action="#">
-							<ul>
-								<li class="filter-list"><input class="pixel-radio" type="radio" id="apple" name="brand"><label for="apple">Apple<span>(29)</span></label></li>
-								<li class="filter-list"><input class="pixel-radio" type="radio" id="asus" name="brand"><label for="asus">Asus<span>(29)</span></label></li>
-								<li class="filter-list"><input class="pixel-radio" type="radio" id="gionee" name="brand"><label for="gionee">Gionee<span>(19)</span></label></li>
-								<li class="filter-list"><input class="pixel-radio" type="radio" id="micromax" name="brand"><label for="micromax">Micromax<span>(19)</span></label></li>
-								<li class="filter-list"><input class="pixel-radio" type="radio" id="samsung" name="brand"><label for="samsung">Samsung<span>(19)</span></label></li>
-							</ul>
-						</form>
-					</div> --}}
-                    <div class="common-filter ">
-                        <div class="head">Size</div>
 
-                        <ul class="main-categories sidebar-categories">
-                            @foreach ($sizes as $size)
-                                <li class="main-nav-list">
-                                    <a href="#">
-                                        {{ $size->name }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    <div class="common-filter">
+                 <div class="common-filter">
+    <div class="head">Size</div>
+
+    <div class="d-flex flex-wrap gap-2">
+        @foreach ($sizes as $size)
+            <button type="button" class="btn btn-outline-dark size-square">
+                {{ $size->name }}
+            </button>
+        @endforeach
+    </div>
+</div>
+                    <div class="common-filter mb-5">
                         <div class="head">Price</div>
                         <form method="get" action="{{route('products.filterByPrice')}}">
                             <select name="price_range" onchange="this.form.submit()" id="">
@@ -104,9 +91,20 @@
                                     <img src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
                                     <div class="product-details">
                                         <h6>{{ $product->name_product }}</h6>
-                                        <div class="price">
-                                            <h6>{{ number_format($product->price, 0, ',', '.') }} VNĐ</h6>
-                                        </div>
+                                       @php
+    $minPrice = $product->variants->min('price');
+    $maxPrice = $product->variants->max('price');
+@endphp
+
+<div class="price">
+    @if ($minPrice === null)
+        <h6>Đang cập nhật</h6>
+    @elseif ($minPrice == $maxPrice)
+        <h6>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</h6>
+    @else
+        <h6>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</h6>
+    @endif
+</div>
                                         <div class="prd-bottom">
 
                                             <a href="" class="social-info">
@@ -126,7 +124,7 @@
                                                 <span class="lnr lnr-move"></span>
                                                 <p class="hover-text">view more</p>
                                             </a>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -156,59 +154,5 @@
         </div>
     </div>
 
-    <!-- Start related-product Area -->
-    {{-- <section class="related-product-area section_gap">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-6 text-center">
-                    <div class="section-title">
-                        <h1>Deals of the Week</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore
-                            magna aliqua.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-9">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-4 col-sm-6 mb-20">
-                            <div class="single-related-product d-flex">
-                                <a href="#"><img src="{{ 'assets/img/r1.jpg' }}" alt=""></a>
-                                <div class="desc">
-                                    <a href="#" class="title">Black lace Heels</a>
-                                    <div class="price">
-                                        <h6>$189.00</h6>
-                                        <h6 class="l-through">$210.00</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="col-lg-4 col-md-4 col-sm-6">
-                            <div class="single-related-product d-flex">
-                                <a href="#"><img src="{{ 'assets/img/r9.jpg' }}" alt=""></a>
-                                <div class="desc">
-                                    <a href="#" class="title">Black lace Heels</a>
-                                    <div class="price">
-                                        <h6>$189.00</h6>
-                                        <h6 class="l-through">$210.00</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="ctg-right">
-                        <a href="#" target="_blank">
-                            <img class="img-fluid d-block mx-auto" src="img/category/c5.jpg" alt="">
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> --}}
-    <!-- End related-product Area -->
 @endsection

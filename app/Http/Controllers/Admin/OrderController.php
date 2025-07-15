@@ -170,7 +170,7 @@ public function update(Request $request, $order_id)
 
         $order = Order::findOrFail($request->id);
 
-        if ($order->status !== 'canceled') {
+        if ($order->status !== 'pending' && $order->status !== 'canceled') {
             $order->status = 'canceled';
             $order->save();
             return response()->json(['success' => true, 'message' => 'Đã hủy đơn hàng!']);

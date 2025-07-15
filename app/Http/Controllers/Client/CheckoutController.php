@@ -169,7 +169,27 @@ class CheckoutController extends Controller
                 $totalAmount += $variant->price * $item->quantity;
             }
 
-            $orderCode = $this->generateOrderCode();
+
+            $totalAmount += $variant->price * $item->quantity;
+        }
+
+        $orderCode = $this->generateOrderCode();
+
+
+        $order = Order::create([
+            'user_id'        => $user->id_user,
+            'order_code'     => $orderCode,
+            'status'         => 'pending',
+            'payment_method' => $request->payment_method,
+            'payment_status' => 'unpaid',
+            'total_amount'   => $totalAmount,
+            'province'       => $request->province,
+            'district'       => $request->district,
+            'ward'           => $request->ward,
+            'address'        => $request->address,
+            'created_at'     => now(),
+        ]);
+
 
             // ✅ Lưu địa chỉ vào bảng orders
             $order = Order::create([
@@ -198,10 +218,15 @@ class CheckoutController extends Controller
                     'created_at' => now(),
                 ]);
 
-                $item->variant->decrement('quantity', $item->quantity);
-            }
 
-            CartItem::where('cart_id', $cart->id_cart)->delete();
+        DB::commit();
+        return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->withErrors( $e->getMessage());
+    }
+}
+
 
             DB::commit();
             return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
