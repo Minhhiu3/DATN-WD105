@@ -82,11 +82,7 @@ class CartController extends Controller
                 ]);
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Đã thêm vào giỏ hàng',
-                'cart_count' => $this->getCartCountPrivate()
-            ]);
+            return redirect()->back()->with('success', 'Đã thêm vào giỏ hàng');
         } catch (\Exception $e) {
             Log::error('Add to cart error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Lỗi server: ' . $e->getMessage()], 500);
@@ -221,6 +217,7 @@ class CartController extends Controller
     public function getCartDetails()
     {
         try {
+             $shippingFee = 30000; 
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
                 if ($cart) {
@@ -243,14 +240,16 @@ class CartController extends Controller
                 $total += $variant->price * $quantity;
                 $itemCount += $quantity;
             }
-
+            $grandTotal = $total + $shippingFee;
             return response()->json([
                 'success' => true,
                 'data' => [
                     'items' => $cartItems,
                     'total' => $total,
+                    'shipping_fee' => $shippingFee,
+                    'grand_total'=> $grandTotal,
                     'item_count' => $itemCount,
-                    'formatted_total' => number_format($total, 0, ',', '.') . ' VNĐ'
+                    'formatted_total' => number_format($grandTotal, 0, ',', '.') . ' VNĐ'
                 ]
             ]);
         } catch (\Exception $e) {

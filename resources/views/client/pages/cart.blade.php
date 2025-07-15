@@ -108,7 +108,7 @@
                                     </div>
                                     <div class="d-flex justify-content-between mb-2">
                                         <span>Phí vận chuyển:</span>
-                                        <span id="shipping">0 VNĐ</span>
+                                        <span id="shipping">30.000 VNĐ</span>
                                     </div>
                                     <hr>
                                     <div class="d-flex justify-content-between mb-3">
@@ -117,7 +117,7 @@
                                             $variant = $item->variant ?? $item['variant'];
                                             $quantity = $item->quantity ?? $item['quantity'];
                                             return $variant->price * $quantity;
-                                        }), 0, ',', '.') }} VNĐ</strong>
+                                        })+ 30000, 0, ',', '.') }} VNĐ</strong>
                                     </div>
                                 </div>
                                 <div class="checkout_btn_inner d-flex align-items-center">

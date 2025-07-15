@@ -32,21 +32,19 @@
                         @csrf
 
                         <!-- Thông tin người dùng -->
-                        <div class="col-md-6 form-group p_star">
-                            <label><b>Họ và tên</b></label>
-                            <input type="text" class="form-control" value="{{ auth()->user()->name }}" disabled>
+                        <div class="col-md-12 form-group">
+                            <label><b>Tên người nhận</b></label>
+                            <input type="text" name="name" class="form-control" value="{{ auth()->user()->name }}" required>
                         </div>
-
-                        <div class="col-md-6 form-group p_star">
+                         <div class="col-md-12 form-group">
                             <label><b>Số điện thoại</b></label>
-                            <input type="text" class="form-control" value="{{ auth()->user()->phone_number }}" disabled>
+                           <input type="text" name="phone" class="form-control" value="{{ auth()->user()->phone_number }}" required>
                         </div>
-
-                        <div class="col-md-12 form-group p_star">
+                         <div class="col-md-12 form-group">
                             <label><b>Email</b></label>
-                            <input type="text" class="form-control" value="{{ auth()->user()->email }}" disabled>
-                        </div>
+                             <input type="text" name="email" class="form-control" value="{{ auth()->user()->email }}" required>
 
+                        </div>
                         <!-- Địa chỉ -->
                         <div class="col-md-12 form-group">
                             <label><b>Tỉnh/Thành</b></label>
@@ -87,27 +85,33 @@
                     </form>
                 </div>
 
-                <div class="col-lg-6">
-                    <div class="order_box">
-                        <h2>Đơn hàng của bạn</h2>
-                        <ul class="list">
-                            @foreach ($cartItems as $item)
-                                <li>
-                                    <b>{{ $item->variant->product->name_product }} (Size {{ $item->variant->size->name ?? 'N/A' }})</b>
-                                    <span class="middle">x {{ $item->quantity }}</span>
-                                    <span class="last">{{ number_format($item->variant->price * $item->quantity, 0, ',', '.') }} VNĐ</span>
-                                </li>
-                            @endforeach
-                        </ul>
+               <div class="col-lg-6">
+    <div class="order_box">
+        <h2>Đơn hàng của bạn</h2>
+        <ul class="list">
+            @foreach ($cartItems as $item)
+                <li>
+                    <b>{{ $item->variant->product->name_product }} (Size {{ $item->variant->size->name ?? 'N/A' }})</b>
+                    <span class="middle">x {{ $item->quantity }}</span>
+                    <span class="last">{{ number_format($item->variant->price * $item->quantity, 0, ',', '.') }} VNĐ</span>
+                </li>
+            @endforeach
+        </ul>
 
-                        @php
-                            $total = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
-                        @endphp
-                        <ul class="list list_2">
-                            <li><a href="#">Tổng cộng <span>{{ number_format($total, 0, ',', '.') }} VNĐ</span></a></li>
-                        </ul>
-                    </div>
-                </div>
+        @php
+            $subTotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
+            $shippingFee = 30000;
+            $grandTotal = $subTotal + $shippingFee;
+        @endphp
+
+        <ul class="list list_2">
+            <li><a href="#">Tạm tính <span>{{ number_format($subTotal, 0, ',', '.') }} VNĐ</span></a></li>
+            <li><a href="#">Phí vận chuyển <span>{{ number_format($shippingFee, 0, ',', '.') }} VNĐ</span></a></li>
+            <li><a href="#">Tổng thanh toán <span>{{ number_format($grandTotal, 0, ',', '.') }} VNĐ</span></a></li>
+        </ul>
+    </div>
+</div>
+
             </div>
         </div>
     </div>
