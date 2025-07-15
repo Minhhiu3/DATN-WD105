@@ -32,10 +32,10 @@
             </p>
             <p><strong>Phương thức thanh toán:</strong> {{ $order->payment_method}} </p>
             <h3>Thông tin người đặt</h3>
-            <p><strong>Tên:</strong>{{$order->user->name}}</p>
-             <p><strong>Số điện thoại:</strong>{{$order->user->phone_number}}</p>
-              <p><strong>Email:</strong>{{$order->user->email}}</p>
-               <p><strong>Địa chỉ:</strong></p>
+            <p><strong>Tên:</strong>{{$order->name}}</p>
+             <p><strong>Số điện thoại:</strong>{{$order->phone}}</p>
+              <p><strong>Email:</strong>{{$order->email}}</p>
+               <p><strong>Địa chỉ:</strong>{{$order->fullAddress()}}</p>
 <p>@foreach ($order->orderItems as $item)
     @endforeach</p>
         <div class="table-responsive mt-4">

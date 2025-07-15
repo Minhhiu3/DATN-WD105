@@ -64,19 +64,16 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($order_id)
-    {
+   public function show($order_id)
+{
+    $order = Order::findOrFail($order_id);
+    $order_items = OrderItem::with(['variant.size', 'variant.product'])
+        ->where('order_id', $order_id)
+        ->get();
 
-        $order = Order::findOrFail($order_id);
-        $user = User::findOrFail($order->user_id);
-        $order_items = OrderItem::with(['variant.size', 'variant.product'])
-            ->where('order_id', $order_id)
-            ->get();
+    return view('admin.orders.show', compact('order', 'order_items'));
+}
 
-
-        return view('admin.orders.show', compact('user', 'order_items'));
-
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -116,26 +113,55 @@ public function update(Request $request, $order_id)
 }
 
     public function updateStatus(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|exists:orders,id_order',
-            'status' => 'required|in:pending,processing,shipping,completed,canceled',
-        ]);
+{
+    $request->validate([
+        'id' => 'required|exists:orders,id_order',
+        'status' => 'required|in:pending,processing,shipping,completed,canceled',
+    ]);
 
-        $order = Order::findOrFail($request->id);
-          foreach ($order->orderItems as $item) {
-        $product = $item-> variant;
+    $order = Order::findOrFail($request->id);
 
-        if ($product) {
-            $product->quantity += $item->quantity;
-            $product->save();
+    $statusLevels = [
+        'pending'    => 1,
+        'processing' => 2,
+        'shipping'   => 3,
+        'completed'  => 4,
+        'canceled'   => 5,
+    ];
+
+    $currentStatus = $order->status;
+    $newStatus = $request->status;
+
+    $currentLevel = $statusLevels[$currentStatus];
+    $newLevel = $statusLevels[$newStatus];
+
+    // Trường hợp đã completed hoặc canceled → không thay đổi được nữa
+    if (in_array($currentStatus, ['completed', 'canceled'])) {
+        return response()->json(['success' => false, 'message' => 'Đơn hàng đã hoàn tất hoặc hủy, không thể thay đổi.']);
+    }
+
+    // Chỉ cho phép giữ nguyên hoặc chuyển đúng 1 cấp tiếp theo
+    if ($newLevel != $currentLevel && $newLevel != $currentLevel + 1) {
+        return response()->json(['success' => false, 'message' => 'Không được nhảy cóc trạng thái.']);
+    }
+
+    // Nếu chuyển sang canceled, trả hàng về kho
+    if ($newStatus === 'canceled') {
+        foreach ($order->orderItems as $item) {
+            $variant = $item->variant;
+            if ($variant) {
+                $variant->quantity += $item->quantity;
+                $variant->save();
+            }
         }
     }
-        $order->status = $request->status;
-        $order->save();
 
-        return response()->json(['success' => true, 'message' => 'Trạng thái đã cập nhật']);
-    }
+    $order->status = $newStatus;
+    $order->save();
+
+    return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái thành công!']);
+}
+
     public function cancel(Request $request)
     {
         $request->validate([

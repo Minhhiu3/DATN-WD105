@@ -17,10 +17,11 @@
                 {{-- Thông tin người dùng --}}
                 <h5>🧍 Thông tin khách hàng</h5>
                 <ul>
-                    <li><strong>Tên:</strong> {{ $user->name ?? 'N/A' }}</li>
-                    <li><strong>Email:</strong> {{ $user->email ?? 'N/A' }}</li>
-                    <li><strong>Số điện thoại:</strong> {{ $user->phone_number }}</li>
-                    <li><strong>Địa chỉ:</strong> {{ $user->phone_number }}</li>
+                   <li><strong>Tên:</strong> {{ $order->name }}</li>
+                <li><strong>Email:</strong> {{ $order->email }}</li>
+                <li><strong>Số điện thoại:</strong> {{ $order->phone }}</li>
+                <li><strong>Địa chỉ:</strong> {{ $order->fullAddress() }}</li>
+
                 </ul>
                 
             </div>

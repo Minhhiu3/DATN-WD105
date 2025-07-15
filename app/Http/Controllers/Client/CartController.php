@@ -74,11 +74,7 @@ class CartController extends Controller
                 ]);
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Đã thêm vào giỏ hàng',
-                'cart_count' => $this->getCartCountPrivate()
-            ]);
+            return redirect()->back()->with('success', 'Đã thêm vào giỏ hàng');
         } catch (\Exception $e) {
             Log::error('Add to cart error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Lỗi server: ' . $e->getMessage()], 500);

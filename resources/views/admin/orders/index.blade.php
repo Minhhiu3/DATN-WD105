@@ -3,6 +3,51 @@
 @section('title', 'Quản lý Đơn hàng')
 
 @section('content')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const statusSelects = document.querySelectorAll('.order-status');
+
+    statusSelects.forEach(select => {
+        select.addEventListener('change', function () {
+            const orderId = this.getAttribute('data-id');
+            const newStatus = this.value;
+
+            if (confirm('Bạn có chắc chắn muốn chuyển trạng thái đơn hàng này?')) {
+                // Gửi AJAX để cập nhật
+                fetch('{{ route('admin.orders.updateStatus') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        id: orderId,
+                        status: newStatus
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                        location.reload();
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Có lỗi xảy ra!');
+                });
+            } else {
+                // Nếu không đồng ý, quay về trạng thái cũ
+                location.reload();
+            }
+        });
+    });
+});
+</script>
+
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0">Danh sách đơn hàng</h3>
