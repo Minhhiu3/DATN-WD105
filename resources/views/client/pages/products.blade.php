@@ -1,6 +1,7 @@
 @extends('layouts.client_home')
 @section('title', 'Sản Phẩm')
 @section('content')
+
     <!-- Start Banner Area -->
     <section class="banner-area organic-breadcrumb">
         <div class="container">
@@ -115,8 +116,8 @@
                                                 <p class="hover-text">Wishlist</p>
                                             </a>
                                             <a href="" class="social-info">
-                                                <span class="lnr lnr-sync"></span>
-                                                <p class="hover-text">compare</p>
+                                                <span class="ti-shopping-cart"></span>
+                                                <p class="hover-text" type="submit">Add to cart</p>
                                             </a>
                                             <a href="{{ route('client.product.show', $product->id_product) }}"
                                                 class="social-info">

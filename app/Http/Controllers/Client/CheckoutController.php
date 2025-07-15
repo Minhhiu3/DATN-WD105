@@ -36,24 +36,24 @@ class CheckoutController extends Controller
 
     // Xử lý đặt hàng
     private function generateOrderCode()
-{
-    do {
-        $code = 'SM' . strtoupper(Str::random(6));
-    } while (Order::where('order_code', $code)->exists());
+    {
+        do {
+            $code = 'SM' . strtoupper(Str::random(6));
+        } while (Order::where('order_code', $code)->exists());
 
-    return $code;
-}
+        return $code;
+    }
     public function placeOrder(Request $request)
     {
         $request->validate([
-    'variant_id'      => 'required|exists:variant,id_variant',
-    'quantity'        => 'required|integer|min:1',
-    'payment_method'  => 'required|in:cod,vnpay',
-    'province'        => 'required|string',
-    'district'        => 'required|string',
-    'ward'            => 'required|string',
-    'address'         => 'required|string',
-]);
+            'variant_id'      => 'required|exists:variant,id_variant',
+            'quantity'        => 'required|integer|min:1',
+            'payment_method'  => 'required|in:cod,vnpay',
+            'province'        => 'required|string',
+            'district'        => 'required|string',
+            'ward'            => 'required|string',
+            'address'         => 'required|string',
+        ]);
 
 
         try {
@@ -69,7 +69,7 @@ class CheckoutController extends Controller
             $orderCode = $this->generateOrderCode();
             $order = Order::create([
                 'user_id'        => $user->id_user,
-                 'order_code'     => $orderCode,
+                'order_code'     => $orderCode,
                 'status'         => 'pending',
                 'payment_method' => $request->payment_method,
                 'payment_status' => 'unpaid',
@@ -101,70 +101,74 @@ class CheckoutController extends Controller
         }
     }
     //mua từ giỏ hàng
-public function checkoutCart()
-{
-    $user = Auth::user();
+    public function checkoutCart()
+    {
+        $user = Auth::user();
 
-    // Lấy cart của user
-    $cart = Cart::where('user_id', $user->id_user)->first();
+        // Lấy cart của user
+        $cart = Cart::where('user_id', $user->id_user)->first();
 
-    if (!$cart) {
-        return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
+        if (!$cart) {
+            return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
+        }
+
+        // Lấy cart items kèm variant, product, size
+        $cartItems = CartItem::with(['variant.product', 'variant.size'])
+            ->where('cart_id', $cart->id_cart)
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
+        }
+
+        return view('client.pages.checkout_cart', compact('cartItems'));
     }
+    public function placeOrderFromCart(Request $request)
+    {
+        $user = Auth::user();
 
-    // Lấy cart items kèm variant, product, size
-    $cartItems = CartItem::with(['variant.product', 'variant.size'])
-        ->where('cart_id', $cart->id_cart)
-        ->get();
+        $cart = Cart::where('user_id', $user->id_user)->first();
 
-    if ($cartItems->isEmpty()) {
-        return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
-    }
+        if (!$cart) {
+            return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
+        }
 
-    return view('client.pages.checkout_cart', compact('cartItems'));
-}
-public function placeOrderFromCart(Request $request)
-{
-    $user = Auth::user();
+        $cartItems = CartItem::with('variant.product')
+            ->where('cart_id', $cart->id_cart)
+            ->get();
 
-    $cart = Cart::where('user_id', $user->id_user)->first();
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
+        }
 
-    if (!$cart) {
-        return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
-    }
+        // Validate địa chỉ và phương thức thanh toán
+        $request->validate([
+            'payment_method' => 'required|in:cod,vnpay',
+            'province'        => 'required|string',
+            'district'        => 'required|string',
+            'ward'            => 'required|string',
+            'address'         => 'required|string',
+        ]);
 
-    $cartItems = CartItem::with('variant.product')
-        ->where('cart_id', $cart->id_cart)
-        ->get();
+        DB::beginTransaction();
 
-    if ($cartItems->isEmpty()) {
-        return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
-    }
+        try {
+            $totalAmount = 0;
 
-    // Validate địa chỉ và phương thức thanh toán
-    $request->validate([
-        'payment_method' => 'required|in:cod,vnpay',
-   'province'        => 'required|string',
-    'district'        => 'required|string',
-    'ward'            => 'required|string',
-    'address'         => 'required|string',
-    ]);
+            foreach ($cartItems as $item) {
+                $variant = $item->variant;
 
-    DB::beginTransaction();
+                if (!$variant) {
+                    throw new \Exception("Sản phẩm không tồn tại.");
+                }
 
-    try {
-        $totalAmount = 0;
+                if ($variant->quantity < $item->quantity) {
+                    throw new \Exception("Sản phẩm {$variant->product->name_product} không đủ hàng.");
+                }
 
-        foreach ($cartItems as $item) {
-            $variant = $item->variant;
-
-            if (!$variant) {
-                throw new \Exception("Sản phẩm không tồn tại.");
+                $totalAmount += $variant->price * $item->quantity;
             }
 
-            if ($variant->quantity < $item->quantity) {
-                throw new \Exception("Sản phẩm {$variant->product->name_product} không đủ hàng.");
-            }
 
             $totalAmount += $variant->price * $item->quantity;
         }
@@ -186,18 +190,34 @@ public function placeOrderFromCart(Request $request)
             'created_at'     => now(),
         ]);
 
-        foreach ($cartItems as $item) {
-            OrderItem::create([
-                'order_id'   => $order->id_order,
-                'variant_id' => $item->variant_id,
-                'quantity'   => $item->quantity,
-                'created_at' => now(),
+
+            // ✅ Lưu địa chỉ vào bảng orders
+            $order = Order::create([
+                'user_id'        => $user->id_user,
+                'name'           => $request->name,   // <-- thêm
+                'phone'          => $request->phone,  // <-- thêm
+                'email'          => $request->email,  // <-- thêm
+                'order_code'     => $orderCode,
+                'status'         => 'pending',
+                'payment_method' => $request->payment_method,
+                'payment_status' => 'unpaid',
+                'total_amount'   => $totalAmount,
+                'province'       => $request->province,
+                'district'       => $request->district,
+                'ward'           => $request->ward,
+                'address'        => $request->address,
+                'created_at'     => now(),
             ]);
 
-            $item->variant->decrement('quantity', $item->quantity);
-        }
 
-        CartItem::where('cart_id', $cart->id_cart)->delete();
+            foreach ($cartItems as $item) {
+                OrderItem::create([
+                    'order_id'   => $order->id_order,
+                    'variant_id' => $item->variant_id,
+                    'quantity'   => $item->quantity,
+                    'created_at' => now(),
+                ]);
+
 
         DB::commit();
         return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
@@ -207,4 +227,12 @@ public function placeOrderFromCart(Request $request)
     }
 }
 
+
+            DB::commit();
+            return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors('Lỗi đặt hàng: ' . $e->getMessage());
+        }
+    }
 }

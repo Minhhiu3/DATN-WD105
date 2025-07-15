@@ -66,26 +66,33 @@
                                                 <th>Mã đơn hàng</th>
                                                 <th>Ngày đặt</th>
                                                 <th>Tổng tiền</th>
-                                                <th>Trạng thái</th>
+                                                <th>Trạng thái Đơn Hàng</th>
+                                                <th>Trạng thái thanh toán</th>
                                                 <th>Thao tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <tr>
-                                                    <td>#<?php echo e($order->id_order); ?></td>
+                                                    <td><?php echo e($order->order_code); ?></td>
                                                     <td><?php echo e($order->created_at?->format('d/m/Y H:i') ?? 'N/A'); ?></td>
-                                                    <td><?php echo e(number_format($order->orderItems->sum('total_amount'))); ?> VNĐ
+                                                    <?php
+                                                        $shippingFee = $order->shipping_fee ; // Mặc định 30,000 nếu null
+                                                        $grandTotal = $order->total_amount + $shippingFee;
+                                                    ?>
+
+                                                    <td><?php echo e(number_format($grandTotal, 0, ',', '.')); ?> VNĐ</td>
+
                                                     </td>
                                                     <td>
                                                         <?php $status = $order->status; ?>
                                                         <?php if($status == 'pending'): ?>
                                                             <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                                                        <?php elseif($status == 'confirmed'): ?>
+                                                        <?php elseif($status == 'processing'): ?>
                                                             <span class="badge bg-success text-white">Đã xác nhận</span>
                                                         <?php elseif($status == 'shipping'): ?>
                                                             <span class="badge bg-primary text-white">Đang giao</span>
-                                                        <?php elseif($status == 'delivered'): ?>
+                                                        <?php elseif($status == 'completed'): ?>
                                                             <span class="badge bg-success text-white">Đã giao</span>
                                                         <?php elseif($status == 'canceled'): ?>
                                                             <span class="badge bg-danger text-white">Đã hủy</span>
@@ -94,11 +101,24 @@
                                                         <?php endif; ?>
                                                     </td>
                                                     <td>
+                                                         <?php $payment_status = $order->payment_status; ?>
+                                                        <?php if($payment_status == 'unpaid'): ?>
+                                                            <span class="badge bg-warning text-dark">Chưa thanh toán</span>
+                                                        <?php elseif($payment_status == 'paid'): ?>
+                                                            <span class="badge bg-success text-white">Đã thanh toán</span>
+                                                             <?php else: ?>
+                                                            <span class="badge "><?php echo e($payment_status); ?></span>
+                                                        <?php endif; ?>
+
+
+
+                                                    </td>
+                                                    <td>
                                                         <a href="<?php echo e(route('account.orderDetail', $order->id_order)); ?>"
                                                             class="btn btn-sm btn-info">
                                                             <i class="fa fa-eye"></i> Xem chi tiết
                                                         </a>
-                                                        <?php if($order->status == 'chờ xác nhận'): ?>
+                                                        <?php if($order->status == 'pending'): ?>
                                                             <form
                                                                 action="<?php echo e(route('account.cancelOrder', $order->id_order)); ?>"
                                                                 method="POST"
