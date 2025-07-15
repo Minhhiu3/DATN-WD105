@@ -63,9 +63,8 @@ class CartController extends Controller
                 ->where('variant_id', $request->variant_id)
                 ->first();
 
-            if ($cartItem) {
-                // $cartItem->quantity += $request->quantity;
-                  $totalQty = $cartItem->quantity + $request->quantity;
+       if ($cartItem) {
+    $totalQty = $cartItem->quantity + $request->quantity;
 
     if ($totalQty > $variant->quantity) {
         return response()->json([
@@ -73,8 +72,10 @@ class CartController extends Controller
             'message' => 'Số lượng hàng không đủ. Chỉ còn ' . $variant->quantity . ' sản phẩm'
         ]);
     }
-                $cartItem->save();
-            } else {
+
+    $cartItem->quantity = $totalQty;
+    $cartItem->save();
+} else {
                 CartItem::create([
                     'cart_id' => $cart->id_cart,
                     'variant_id' => $request->variant_id,
@@ -82,7 +83,10 @@ class CartController extends Controller
                 ]);
             }
 
-            return redirect()->back()->with('success', 'Đã thêm vào giỏ hàng');
+           return response()->json([
+    'success' => true,
+    'message' => 'Đã thêm vào giỏ hàng!'
+]);
         } catch (\Exception $e) {
             Log::error('Add to cart error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Lỗi server: ' . $e->getMessage()], 500);
@@ -217,7 +221,7 @@ class CartController extends Controller
     public function getCartDetails()
     {
         try {
-             $shippingFee = 30000; 
+             $shippingFee = 30000;
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
                 if ($cart) {

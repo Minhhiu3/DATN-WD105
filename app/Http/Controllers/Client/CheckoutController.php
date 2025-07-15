@@ -154,7 +154,7 @@ class CheckoutController extends Controller
 
         try {
             $totalAmount = 0;
-
+$grand_total =0;
             foreach ($cartItems as $item) {
                 $variant = $item->variant;
 
@@ -169,9 +169,11 @@ class CheckoutController extends Controller
                 $totalAmount += $variant->price * $item->quantity;
             }
 
+$shippingFee = 30000;
+           $grand_total =  $totalAmount +$shippingFee;
             $orderCode = $this->generateOrderCode();
 
-        // ✅ Lưu địa chỉ vào bảng orders
+
         $order = Order::create([
             'user_id'        => $user->id_user,
             'order_code'     => $orderCode,
@@ -183,6 +185,7 @@ class CheckoutController extends Controller
             'district'       => $request->district,
             'ward'           => $request->ward,
             'address'        => $request->address,
+            'grand_total'=> $grand_total,
             'created_at'     => now(),
         ]);
 

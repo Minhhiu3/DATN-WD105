@@ -35,7 +35,12 @@
             <p><strong>Tên:</strong>{{$order->user->name}}</p>
              <p><strong>Số điện thoại:</strong>{{$order->user->phone_number}}</p>
               <p><strong>Email:</strong>{{$order->user->email}}</p>
-               <p><strong>Địa chỉ:</strong></p>
+              <p><strong>Địa chỉ:</strong>
+    {{ $order->address }},
+    {{ $order->ward }},
+    {{ $order->district }},
+    {{ $order->province }}
+</p>
 <p>@foreach ($order->orderItems as $item)
     @endforeach</p>
         <div class="table-responsive mt-4">

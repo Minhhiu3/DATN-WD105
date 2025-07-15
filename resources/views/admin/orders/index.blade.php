@@ -3,238 +3,355 @@
 @section('title', 'Quản lý Đơn hàng')
 
 @section('content')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const statusSelects = document.querySelectorAll('.order-status');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusSelects = document.querySelectorAll('.order-status');
+            const paymentStatusSelects = document.querySelectorAll('.order-payment-status');
 
-    statusSelects.forEach(select => {
-        select.addEventListener('change', function () {
-            const orderId = this.getAttribute('data-id');
-            const newStatus = this.value;
 
-            if (confirm('Bạn có chắc chắn muốn chuyển trạng thái đơn hàng này?')) {
-                // Gửi AJAX để cập nhật
-                fetch('{{ route('admin.orders.updateStatus') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        id: orderId,
-                        status: newStatus
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        location.reload();
+
+            statusSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const orderId = this.getAttribute('data-id');
+                    const newStatus = this.value;
+
+                    if (confirm('Bạn có chắc chắn muốn chuyển trạng thái đơn hàng này?')) {
+                        // Gửi AJAX để cập nhật
+                        fetch('{{ route('admin.orders.updateStatus') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    id: orderId,
+                                    status: newStatus
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert(data.message);
+                                    location.reload();
+                                } else {
+                                    alert(data.message);
+                                    location.reload();
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                alert('Có lỗi xảy ra!');
+                            });
                     } else {
-                        alert(data.message);
+                        // Nếu không đồng ý, quay về trạng thái cũ
                         location.reload();
                     }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Có lỗi xảy ra!');
                 });
-            } else {
-                // Nếu không đồng ý, quay về trạng thái cũ
-                location.reload();
-            }
+            });
+            paymentStatusSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const orderId = this.getAttribute('data-id');
+                    const newPaymentStatus = this.value;
+
+                    if (confirm('Bạn có chắc chắn muốn cập nhật trạng thái thanh toán?')) {
+                        fetch('{{ route('admin.orders.updatePaymentStatus') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    id: orderId,
+                                    payment_status: newPaymentStatus
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                alert(data.message);
+                                location.reload();
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                alert('Có lỗi xảy ra khi cập nhật trạng thái thanh toán!');
+                            });
+                    } else {
+                        location.reload();
+                    }
+                });
+            });
+
         });
-    });
-});
-</script>
+    </script>
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0">Danh sách đơn hàng</h3>
 
-            <form action="{{ route('admin.orders.index') }}"
-                    method="GET"
-                    class="d-flex align-items-center ms-auto w-50 gap-2" style="margin-left: 50%">
-                <input type="date"
-                    name="date"
-                    class="form-control "
-                    value="{{ request('date', $date) }}" style=" width: 25%; height: 100%; margin-left: 1% " >
+            <form action="{{ route('admin.orders.index') }}" method="GET"
+                class="d-flex align-items-center ms-auto w-50 gap-2" style="margin-left: 50%">
+                <input type="date" name="date" class="form-control " value="{{ request('date', $date) }}"
+                    style=" width: 25%; height: 100%; margin-left: 1% ">
 
-                <input type="text"
-                    name="code"
-                    class="form-control  "
-                    placeholder="Mã đơn"
+                <input type="text" name="code" class="form-control  " placeholder="Mã đơn"
                     value="{{ request('code', $code ?? '') }}" style=" width: 30%; height: 100%; margin-left: 1% ">
 
                 <button type="submit" class="btn btn-primary  " style=" width: 50px;  margin-left: 1% ">Lọc</button>
             </form>
         </div>
 
-    <div class="card-body">
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+        <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Mã đơn</th>
-                        <th>Khách hàng</th>
-                        <th>Tổng tiền</th>
-                        <th>Ngày đặt</th>
-                        <th>Phương thức thanh toán</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($orders as $order)
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
                         <tr>
-                            <td>#{{ $order->id_order }}</td>
-                            <td>{{ $order->user->name ?? 'N/A' }}</td>
-                           <td>{{ number_format($order->total_amount + $order->shipping_fee, 0, ',', '.') }} VND</td>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Tổng tiền</th>
+                            <th>Ngày đặt</th>
+                            <th>Phương thức thanh toán</th>
+                            <th>Trạng thái đơn hàng</th>
+                            <th>Trạng thái thanh toán</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($orders as $order)
+                            <tr>
+                                <td>{{ $order->order_code }}</td>
+                                <td>{{ $order->user->name ?? 'N/A' }}</td>
+                                <td>{{ number_format($order->total_amount + $order->shipping_fee, 0, ',', '.') }} VND</td>
 
-                            <td>{{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}</td>
-                            <td>{{ $order->payment_method ?? 'N/A' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}</td>
+                                <td>{{ $order->payment_method ?? 'N/A' }}</td>
 
-                           @php
-                                $statusLevels = [
-                                    'pending' => 1,
-                                    'processing' => 2,
-                                    'shipping' => 3,
-                                    'completed' => 4,
-                                    'canceled' => 5,
-                                ];
+                                @php
+                                    $statusLevels = [
+                                        'pending' => 1,
+                                        'processing' => 2,
+                                        'shipping' => 3,
+                                        'completed' => 4,
+                                        'canceled' => 5,
+                                    ];
 
-                                $currentStatus = $order->status;
-                            @endphp
+                                    $currentStatus = $order->status;
+                                    $payment_statusLevels = [
+                                        'unpaid' => 1,
+                                        'paid' => 2,
+                                        'canceled' => 3,
+                                    ];
 
-                            <td>
-                                <select class="form-control form-control-sm order-status" data-id="{{ $order->id_order }}">
-                                    @foreach ($statusLevels as $status => $level)
-                                        @php
-                                            // Logic loại bỏ các trạng thái không hợp lệ
-                                            $isInvalid = false;
+                                    $payment_currentStatus = $order->payment_status;
+                                @endphp
 
-                                            // Không cho chọn trạng thái thấp hơn hiện tại
-                                            if ($level < $statusLevels[$currentStatus]) $isInvalid = true;
+                                <td>
+                                    <select class="form-control form-control-sm order-status"
+                                        data-id="{{ $order->id_order }}">
+                                        @foreach ($statusLevels as $status => $level)
+                                            @php
+                                                // Logic loại bỏ các trạng thái không hợp lệ
+                                                $isInvalid = false;
+                                                if ($level > $statusLevels[$currentStatus] + 1) {
+                                                    $isInvalid = true;
+                                                }
+                                                // Không cho chọn trạng thái thấp hơn hiện tại
+                                                if ($level < $statusLevels[$currentStatus]) {
+                                                    $isInvalid = true;
+                                                }
 
-                                            // Nếu đã completed thì không được quay lại canceled
-                                            if ($currentStatus === 'completed' && $status === 'canceled') $isInvalid = true;
+                                                // Nếu đã completed thì không được quay lại canceled
+                                                if ($currentStatus === 'completed' && $status === 'canceled') {
+                                                    $isInvalid = true;
+                                                }
 
-                                            // Nếu đã canceled thì không cho đổi gì nữa
-                                            if ($currentStatus === 'canceled' && $status !== 'canceled') $isInvalid = true;
-                                        @endphp
+                                                // Nếu đã canceled thì không cho đổi gì nữa
+                                                if ($currentStatus === 'canceled' && $status !== 'canceled') {
+                                                    $isInvalid = true;
+                                                }
+                                            @endphp
 
-                                        @if (!$isInvalid)
-                                            <option value="{{ $status }}" {{ $currentStatus == $status ? 'selected' : '' }}>
-                                                @switch($status)
-                                                    @case('pending') Chờ xử lý @break
-                                                    @case('processing') Đang xử lý @break
-                                                    @case('shipping') Đang giao @break
-                                                    @case('completed') Hoàn thành @break
-                                                    @case('canceled') Đã hủy @break
-                                                @endswitch
-                                            </option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </td>
+                                            @if (!$isInvalid)
+                                                <option value="{{ $status }}"
+                                                    {{ $currentStatus == $status ? 'selected' : '' }}>
+                                                    @switch($status)
+                                                        @case('pending')
+                                                            Chờ xử lý
+                                                        @break
+
+                                                        @case('processing')
+                                                            Đang xử lý
+                                                        @break
+
+                                                        @case('shipping')
+                                                            Đang giao
+                                                        @break
+
+                                                        @case('completed')
+                                                            Hoàn thành
+                                                        @break
+
+                                                        {{-- @case('canceled') Đã hủy @break --}}
+                                                    @endswitch
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control form-control-sm order-payment-status"
+                                        data-id="{{ $order->id_order }}">
+                                        @foreach ($payment_statusLevels as $payment_status => $level)
+                                            @php
+                                                // Logic loại bỏ các trạng thái không hợp lệ
+                                                $isInvalid = false;
+                                                if ($level > $payment_statusLevels[$payment_currentStatus] + 1) {
+                                                    $isInvalid = true;
+                                                }
+                                                // Không cho chọn trạng thái thấp hơn hiện tại
+                                                if ($level < $payment_statusLevels[$payment_currentStatus]) {
+                                                    $isInvalid = true;
+                                                }
+
+                                                // // Nếu đã completed thì không được quay lại canceled
+                                                if (
+                                                    $payment_currentStatus === 'unpaid' &&
+                                                    $payment_status === 'canceled'
+                                                ) {
+                                                    $isInvalid = true;
+                                                }
+
+                                                // Nếu đã canceled thì không cho đổi gì nữa
+                                                if (
+                                                    $payment_currentStatus === 'canceled' &&
+                                                    $payment_status !== 'canceled'
+                                                ) {
+                                                    $isInvalid = true;
+                                                }
+                                            @endphp
+
+                                            @if (!$isInvalid)
+                                                <option value="{{ $payment_status }}"
+                                                    {{ $payment_currentStatus == $payment_status ? 'selected' : '' }}>
+                                                    @switch($payment_status)
+                                                        @case('unpaid')
+                                                            Chưa thanh toán
+                                                        @break
+
+                                                        @case('paid')
+                                                            Đã thanh toán
+                                                        @break
+
+                                                        @case('canceled')
+                                                            Hoàn tiền
+                                                        @break
+
+                                                        {{-- @case('canceled') Đã hủy @break --}}
+                                                    @endswitch
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </td>
 
 
 
-                            <td>
-                                <a href="{{ route('admin.orders.show', $order->id_order ) }}" class="btn btn-info btn-sm">Chi tiết</a>
-                                {{-- <a href="{{ route('admin.orders.edit', $order->id_order ) }}" class="btn btn-warning btn-sm">Cập nhật</a> --}}
-                             @if (in_array($order->status, ['pending', 'processing']))
+                                <td>
+                                    <a href="{{ route('admin.orders.show', $order->id_order) }}"
+                                        class="btn btn-info btn-sm">Chi tiết</a>
+                                    {{-- <a href="{{ route('admin.orders.edit', $order->id_order ) }}" class="btn btn-warning btn-sm">Cập nhật</a> --}}
+                                    {{-- @if (in_array($order->status, ['pending', 'processing']))
                                 <a href="javascript:void(0);"
                                 class="btn btn-danger btn-sm cancel-order-btn"
                                 data-id="{{ $order->id_order }}">
                                 Hủy
                                 </a>
-                            @endif
+                            @endif --}}
 
 
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center">Không có đơn hàng nào.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                                </td>
+                            </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">Không có đơn hàng nào.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-        {{-- PHÂN TRANG --}}
-        @if ($orders->hasPages())
-            <div class="d-flex justify-content-center mt-3">
-                {{ $orders->links('pagination::bootstrap-5') }}
+                {{-- PHÂN TRANG --}}
+                @if ($orders->hasPages())
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $orders->links('pagination::bootstrap-5') }}
+                    </div>
+                @endif
             </div>
-        @endif
-    </div>
-</div>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Xử lý đổi trạng thái
-    document.querySelectorAll('.order-status').forEach(select => {
-        select.addEventListener('change', function () {
-            const status = this.value;
-            const orderId = this.dataset.id;
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Xử lý đổi trạng thái
+                document.querySelectorAll('.order-status').forEach(select => {
+                    select.addEventListener('change', function() {
+                        const status = this.value;
+                        const orderId = this.dataset.id;
 
-            fetch("{{ route('admin.orders.updateStatus') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    id: orderId,
-                    status: status,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                if (data.success) location.reload();
-            })
-            .catch(error => {
-                alert("Lỗi khi cập nhật!");
-                console.error(error);
+                        fetch("{{ route('admin.orders.updateStatus') }}", {
+                                method: "POST",
+                                headers: {
+                                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    id: orderId,
+                                    status: status,
+                                }),
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                alert(data.message);
+                                if (data.success) location.reload();
+                            })
+                            .catch(error => {
+                                alert("Lỗi khi cập nhật!");
+                                console.error(error);
+                            });
+                    });
+                });
+
+                // Xử lý hủy đơn hàng
+                document.querySelectorAll('.cancel-order-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) return;
+
+                        const orderId = this.dataset.id;
+
+                        fetch("{{ route('admin.orders.cancel') }}", {
+                                method: "POST",
+                                headers: {
+                                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    id: orderId
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                alert(data.message);
+                                if (data.success) location.reload();
+                            })
+                            .catch(error => {
+                                alert("Lỗi khi hủy đơn!");
+                                console.error(error);
+                            });
+                    });
+                });
             });
-        });
-    });
-
-    // Xử lý hủy đơn hàng
-    document.querySelectorAll('.cancel-order-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) return;
-
-            const orderId = this.dataset.id;
-
-            fetch("{{ route('admin.orders.cancel') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ id: orderId })
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message);
-                if (data.success) location.reload();
-            })
-            .catch(error => {
-                alert("Lỗi khi hủy đơn!");
-                console.error(error);
-            });
-        });
-    });
-});
-</script>
+        </script>
 
 
 
-@endsection
+    @endsection

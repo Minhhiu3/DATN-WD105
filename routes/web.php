@@ -178,6 +178,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     // AJAX: cập nhật trạng thái
     Route::post('orders/update-status', [OrderController::class, 'updateStatus'])
          ->name('admin.orders.updateStatus');
+           Route::post('orders/update-payment-status', [OrderController::class, 'updatePaymentStatus'])
+         ->name('admin.orders.updatePaymentStatus');
 
     // AJAX: hủy đơn hàng
     Route::post('orders/cancel', [OrderController::class, 'cancel'])
