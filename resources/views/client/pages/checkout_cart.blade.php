@@ -85,27 +85,33 @@
                     </form>
                 </div>
 
-                <div class="col-lg-6">
-                    <div class="order_box">
-                        <h2>Đơn hàng của bạn</h2>
-                        <ul class="list">
-                            @foreach ($cartItems as $item)
-                                <li>
-                                    <b>{{ $item->variant->product->name_product }} (Size {{ $item->variant->size->name ?? 'N/A' }})</b>
-                                    <span class="middle">x {{ $item->quantity }}</span>
-                                    <span class="last">{{ number_format($item->variant->price * $item->quantity, 0, ',', '.') }} VNĐ</span>
-                                </li>
-                            @endforeach
-                        </ul>
+               <div class="col-lg-6">
+    <div class="order_box">
+        <h2>Đơn hàng của bạn</h2>
+        <ul class="list">
+            @foreach ($cartItems as $item)
+                <li>
+                    <b>{{ $item->variant->product->name_product }} (Size {{ $item->variant->size->name ?? 'N/A' }})</b>
+                    <span class="middle">x {{ $item->quantity }}</span>
+                    <span class="last">{{ number_format($item->variant->price * $item->quantity, 0, ',', '.') }} VNĐ</span>
+                </li>
+            @endforeach
+        </ul>
 
-                        @php
-                            $total = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
-                        @endphp
-                        <ul class="list list_2">
-                            <li><a href="#">Tổng cộng <span>{{ number_format($total, 0, ',', '.') }} VNĐ</span></a></li>
-                        </ul>
-                    </div>
-                </div>
+        @php
+            $subTotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
+            $shippingFee = 30000;
+            $grandTotal = $subTotal + $shippingFee;
+        @endphp
+
+        <ul class="list list_2">
+            <li><a href="#">Tạm tính <span>{{ number_format($subTotal, 0, ',', '.') }} VNĐ</span></a></li>
+            <li><a href="#">Phí vận chuyển <span>{{ number_format($shippingFee, 0, ',', '.') }} VNĐ</span></a></li>
+            <li><a href="#">Tổng thanh toán <span>{{ number_format($grandTotal, 0, ',', '.') }} VNĐ</span></a></li>
+        </ul>
+    </div>
+</div>
+
             </div>
         </div>
     </div>

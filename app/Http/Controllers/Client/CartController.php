@@ -209,6 +209,7 @@ class CartController extends Controller
     public function getCartDetails()
     {
         try {
+             $shippingFee = 30000; 
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
                 if ($cart) {
@@ -231,14 +232,16 @@ class CartController extends Controller
                 $total += $variant->price * $quantity;
                 $itemCount += $quantity;
             }
-
+            $grandTotal = $total + $shippingFee;
             return response()->json([
                 'success' => true,
                 'data' => [
                     'items' => $cartItems,
                     'total' => $total,
+                    'shipping_fee' => $shippingFee,
+                    'grand_total'=> $grandTotal,
                     'item_count' => $itemCount,
-                    'formatted_total' => number_format($total, 0, ',', '.') . ' VNĐ'
+                    'formatted_total' => number_format($grandTotal, 0, ',', '.') . ' VNĐ'
                 ]
             ]);
         } catch (\Exception $e) {

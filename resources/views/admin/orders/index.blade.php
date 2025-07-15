@@ -93,7 +93,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         <tr>
                             <td>#{{ $order->id_order }}</td>
                             <td>{{ $order->user->name ?? 'N/A' }}</td>
-                            <td>{{ number_format($order->total_amount, 0, ',', '.') }} VND</td>
+                           <td>{{ number_format($order->total_amount + $order->shipping_fee, 0, ',', '.') }} VND</td>
+
                             <td>{{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}</td>
                             <td>{{ $order->payment_method ?? 'N/A' }}</td>
 

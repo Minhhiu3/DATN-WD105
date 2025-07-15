@@ -18,6 +18,7 @@ class Order extends Model
     'phone', // thêm vào đây (hoặc 'phone_number' nếu đúng cột)
     'email',
     'order_code',
+    'shipping_fee',
     'total_amount',
     'payment_method',
     'payment_status',
