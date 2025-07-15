@@ -36,9 +36,12 @@
             <p><strong>Tên:</strong>{{$order->user->name}}</p>
              <p><strong>Số điện thoại:</strong>{{$order->user->phone_number}}</p>
               <p><strong>Email:</strong>{{$order->user->email}}</p>
-               <p><strong>Địa chỉ:</strong>   {{ $order->address }},{{ $order->ward }},
+              <p><strong>Địa chỉ:</strong>
+    {{ $order->address }},
+    {{ $order->ward }},
     {{ $order->district }},
-    {{ $order->province }}</p>
+    {{ $order->province }}
+</p>
 
 <p>@foreach ($order->orderItems as $item)
     @endforeach</p>
@@ -67,7 +70,7 @@
                 </tbody>
             </table>
         </div>
-        
+
        <div class="mt-3 text-end">
    <p><strong>Tạm tính:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} VNĐ</p>
 <p><strong>Phí vận chuyển:</strong> {{ number_format($order->shipping_fee ?? 30000, 0, ',', '.') }} VNĐ</p>

@@ -154,7 +154,7 @@ class CheckoutController extends Controller
 
         try {
             $totalAmount = 0;
-
+$grand_total =0;
             foreach ($cartItems as $item) {
                 $variant = $item->variant;
 
@@ -170,10 +170,10 @@ class CheckoutController extends Controller
             }
 
 
-            $totalAmount += $variant->price * $item->quantity;
-        }
+$shippingFee = 30000;
+           $grand_total =  $totalAmount +$shippingFee;
+            $orderCode = $this->generateOrderCode();
 
-        $orderCode = $this->generateOrderCode();
 
 
         $order = Order::create([
@@ -187,28 +187,9 @@ class CheckoutController extends Controller
             'district'       => $request->district,
             'ward'           => $request->ward,
             'address'        => $request->address,
+            'grand_total'=> $grand_total,
             'created_at'     => now(),
         ]);
-
-
-            // ✅ Lưu địa chỉ vào bảng orders
-            $order = Order::create([
-                'user_id'        => $user->id_user,
-                'name'           => $request->name,   // <-- thêm
-                'phone'          => $request->phone,  // <-- thêm
-                'email'          => $request->email,  // <-- thêm
-                'order_code'     => $orderCode,
-                'status'         => 'pending',
-                'payment_method' => $request->payment_method,
-                'payment_status' => 'unpaid',
-                'total_amount'   => $totalAmount,
-                'province'       => $request->province,
-                'district'       => $request->district,
-                'ward'           => $request->ward,
-                'address'        => $request->address,
-                'created_at'     => now(),
-            ]);
-
 
             foreach ($cartItems as $item) {
                 OrderItem::create([
@@ -228,11 +209,12 @@ class CheckoutController extends Controller
 }
 
 
-            DB::commit();
-            return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->withErrors('Lỗi đặt hàng: ' . $e->getMessage());
-        }
+        DB::commit();
+        return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->withErrors('Lỗi đặt hàng: ' . $e->getMessage());
     }
+}
+
 }

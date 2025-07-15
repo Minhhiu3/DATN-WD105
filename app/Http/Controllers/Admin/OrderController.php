@@ -161,6 +161,22 @@ public function update(Request $request, $order_id)
 
     return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái thành công!']);
 }
+ public function updatePaymentStatus(Request $request)
+{
+    $request->validate([
+        'id' => 'required|exists:orders,id_order',
+        'payment_status' => 'required|in:unpaid,paid,canceled',
+    ]);
+
+    $order = Order::findOrFail($request->id);
+    $order->payment_status = $request->payment_status;
+    $order->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Cập nhật trạng thái thanh toán thành công!',
+    ]);
+}
 
     public function cancel(Request $request)
     {

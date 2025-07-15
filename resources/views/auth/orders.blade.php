@@ -77,12 +77,12 @@
                                                 <tr>
                                                     <td>{{ $order->order_code }}</td>
                                                     <td>{{ $order->created_at?->format('d/m/Y H:i') ?? 'N/A' }}</td>
-                                                    @php
+                                                    {{-- @php
                                                         $shippingFee = $order->shipping_fee ; // Mặc định 30,000 nếu null
                                                         $grandTotal = $order->total_amount + $shippingFee;
-                                                    @endphp
+                                                    @endphp --}}
 
-                                                    <td>{{ number_format($grandTotal, 0, ',', '.') }} VNĐ</td>
+                                                    <td>{{ number_format($order->grand_total, 0, ',', '.') }} VNĐ</td>
 
                                                     </td>
                                                     <td>
@@ -107,6 +107,10 @@
                                                             <span class="btn btn-sm btn-warning text-black">Chưa thanh toán</span>
                                                         @elseif($payment_status == 'paid')
                                                             <span class="btn btn-sm btn-success text-white">Đã thanh toán</span>
+
+                                                                  @elseif($payment_status == 'canceled')
+                                                            <span class="btn btn-sm btn-danger text-white">Đã hoàn tiền</span>
+
                                                              @else
                                                             <span class="btn btn-sm btn-light text-black">{{ $payment_status }}</span>
                                                         @endif

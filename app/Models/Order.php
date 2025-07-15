@@ -14,9 +14,6 @@ class Order extends Model
 
     protected $fillable = [
     'user_id',
-    'name',
-    'phone', // thêm vào đây (hoặc 'phone_number' nếu đúng cột)
-    'email',
     'order_code',
     'shipping_fee',
     'total_amount',
@@ -27,6 +24,7 @@ class Order extends Model
     'district',
     'ward',
     'address',
+    'grand_total',
     'created_at',
 ];
 
