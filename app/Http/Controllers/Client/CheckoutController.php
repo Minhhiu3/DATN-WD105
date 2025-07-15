@@ -171,7 +171,7 @@ public function placeOrderFromCart(Request $request)
 
         $orderCode = $this->generateOrderCode();
 
-        // ✅ Lưu địa chỉ vào bảng orders
+
         $order = Order::create([
             'user_id'        => $user->id_user,
             'order_code'     => $orderCode,
@@ -203,7 +203,7 @@ public function placeOrderFromCart(Request $request)
         return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
     } catch (\Exception $e) {
         DB::rollBack();
-        return redirect()->back()->withErrors('Lỗi đặt hàng: ' . $e->getMessage());
+        return redirect()->back()->withErrors( $e->getMessage());
     }
 }
 

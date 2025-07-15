@@ -5789,5 +5789,14 @@ label {
   .footer-text a,
   .footer-text i {
     color: #ffba00; }
+  .size-btn.active {
+        background-color: #000;
+        color: #fff;
+        border-color: #000;
+    }
 
+    .size-btn.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
 /*# sourceMappingURL=main.css.map */
