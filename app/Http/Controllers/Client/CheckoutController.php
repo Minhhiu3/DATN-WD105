@@ -169,9 +169,11 @@ $grand_total =0;
                 $totalAmount += $variant->price * $item->quantity;
             }
 
+
 $shippingFee = 30000;
            $grand_total =  $totalAmount +$shippingFee;
             $orderCode = $this->generateOrderCode();
+
 
 
         $order = Order::create([
@@ -197,10 +199,15 @@ $shippingFee = 30000;
                     'created_at' => now(),
                 ]);
 
-                $item->variant->decrement('quantity', $item->quantity);
-            }
 
-            CartItem::where('cart_id', $cart->id_cart)->delete();
+        DB::commit();
+        return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->withErrors( $e->getMessage());
+    }
+}
+
 
         DB::commit();
         return redirect()->route('home')->with('success', 'Đặt hàng thành công!');

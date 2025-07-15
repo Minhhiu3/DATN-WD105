@@ -32,6 +32,7 @@
             </p>
             <p ><strong >Phương thức thanh toán:</strong> <span  class=" btn btn-sm btn-light text-black"> {{ $order->payment_method}}</span> </p>
             <h3>Thông tin người đặt</h3>
+
             <p><strong>Tên:</strong>{{$order->user->name}}</p>
              <p><strong>Số điện thoại:</strong>{{$order->user->phone_number}}</p>
               <p><strong>Email:</strong>{{$order->user->email}}</p>
@@ -41,6 +42,7 @@
     {{ $order->district }},
     {{ $order->province }}
 </p>
+
 <p>@foreach ($order->orderItems as $item)
     @endforeach</p>
         <div class="table-responsive mt-4">

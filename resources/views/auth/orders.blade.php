@@ -107,8 +107,10 @@
                                                             <span class="btn btn-sm btn-warning text-black">Chưa thanh toán</span>
                                                         @elseif($payment_status == 'paid')
                                                             <span class="btn btn-sm btn-success text-white">Đã thanh toán</span>
+
                                                                   @elseif($payment_status == 'canceled')
                                                             <span class="btn btn-sm btn-danger text-white">Đã hoàn tiền</span>
+
                                                              @else
                                                             <span class="btn btn-sm btn-light text-black">{{ $payment_status }}</span>
                                                         @endif

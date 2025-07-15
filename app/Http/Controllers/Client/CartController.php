@@ -63,8 +63,10 @@ class CartController extends Controller
                 ->where('variant_id', $request->variant_id)
                 ->first();
 
+
        if ($cartItem) {
     $totalQty = $cartItem->quantity + $request->quantity;
+
 
     if ($totalQty > $variant->quantity) {
         return response()->json([
@@ -73,9 +75,11 @@ class CartController extends Controller
         ]);
     }
 
+
     $cartItem->quantity = $totalQty;
     $cartItem->save();
 } else {
+
                 CartItem::create([
                     'cart_id' => $cart->id_cart,
                     'variant_id' => $request->variant_id,
