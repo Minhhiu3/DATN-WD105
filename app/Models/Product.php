@@ -41,6 +41,13 @@ class Product extends Model
     /**
      * Get the category that owns the product.
      */
+
+
+
+
+
+
+     
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id', 'id_category');

@@ -19,6 +19,23 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Admin\ProductReviewController;
+use App\Http\Controllers\Client\PaymentController;
+
+//clear cache : http://127.0.0.1:8000/clear-cache
+//php artisan config:cache
+//php artisan route:cache
+//php artisan view:cache
+
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/clear-cache', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    return '✅ Cache cleared!';
+});
+
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -239,6 +256,14 @@ Route::get('/api/vl/wards/{districtCode}', function ($districtCode) {
 
     return response()->json(['success' => false, 'message' => 'Không thể lấy phường/xã'], 500);
 });
+
+// Thanh toán VNPay (dùng trong CheckoutController)
+Route::post('/payment/vnpay/request', [CheckoutController::class, 'handleVNPayCheckout'])->name('payment.vnpay.request');
+Route::get('/payment/vnpay/return', [CheckoutController::class, 'vnpayReturn'])->name('payment.vnpay.return');
+
+// Static client pages
+Route::get('/blogs', fn() => view('client.pages.blogs'))->name('blogs');
+Route::get('/blog-detail', fn() => view('client.pages.blog-detail'))->name('blog-detail');
 
 
 
