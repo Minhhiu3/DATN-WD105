@@ -28,7 +28,7 @@
             <div class="row">
                 <div class="col-lg-6">
                     <h3>Chi tiết thanh toán</h3>
-                    <form id="checkout-form" class="row contact_form" action="{{ route('account.placeOrder.cart') }}" method="POST">
+                    <form id="checkout-form" class="row contact_form" method="POST">
                         @csrf
 
                         <!-- Thông tin người dùng -->
@@ -77,27 +77,14 @@
                         <!-- Tổng tiền -->
                         <input type="hidden" name="amount" value="{{ $total }}">
 
-                        <!-- Thanh toán -->
-                        <div class="col-md-12 form-group mt-4">
-                            <label><b>Phương thức thanh toán</b></label><br>
-
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment_method" id="payment_cod" value="cod" checked>
-                                <label class="form-check-label" for="payment_cod">
-                                    Thanh toán khi nhận hàng (COD)
-                                </label>
-                            </div>
-
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment_method" id="payment_vnpay" value="vnpay">
-                                <label class="form-check-label" for="payment_vnpay">
-                                    Thanh toán qua VNPay
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-12 text-right mt-3">
-                            <button type="submit" class="primary-btn">Xác nhận đặt hàng</button>
+                        <!-- Hai nút thanh toán riêng -->
+                        <div class="col-md-12 form-group mt-4 d-flex justify-content-between">
+                            <button type="submit" formaction="{{ route('account.placeOrder.cart') }}" class="btn btn-primary">
+                                Đặt hàng (COD)
+                            </button>
+                            <button type="submit" formaction="{{ route('payment.vnpay.request') }}" class="btn btn-success">
+                                Thanh toán VNPay
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -127,58 +114,4 @@
         </div>
     </div>
 </section>
-
-<!-- Script xử lý thanh toán -->
-<script>
-    const checkoutForm = document.getElementById("checkout-form");
-    const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
-    const submitButton = checkoutForm.querySelector('button[type="submit"]');
-
-    function updateFormActionAndButtonText() {
-        const selected = document.querySelector('input[name="payment_method"]:checked').value;
-        if (selected === "vnpay") {
-            checkoutForm.setAttribute('action', '{{ route('payment.vnpay.request') }}');
-            submitButton.innerText = "Thanh toán với VNPay";
-        } else {
-            checkoutForm.setAttribute('action', '{{ route('account.placeOrder.cart') }}');
-            submitButton.innerText = "Xác nhận đặt hàng (COD)";
-        }
-    }
-
-    // Gán event listener
-    paymentRadios.forEach(radio => {
-        radio.addEventListener('change', updateFormActionAndButtonText);
-    });
-
-    // Cập nhật action + button text khi load trang
-    updateFormActionAndButtonText();
-
-    // Gửi dữ liệu nếu là VNPay
-    checkoutForm.addEventListener("submit", function(e) {
-        const selected = document.querySelector('input[name="payment_method"]:checked').value;
-        if (selected === "vnpay") {
-            e.preventDefault();
-            const form = this;
-            const formData = new FormData(form);
-            fetch("{{ route('payment.vnpay.request') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": '{{ csrf_token() }}'
-                },
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data?.redirect_url) {
-                    // CHỈ DÙNG window.location.href, KHÔNG fetch tới VNPay!
-                    window.location.href = data.redirect_url;
-                } else {
-                    alert("Có lỗi khi khởi tạo thanh toán VNPay");
-                }
-            })
-            .catch(() => alert("Không thể kết nối tới máy chủ."));
-        }
-    });
-</script>
-
 @endsection
