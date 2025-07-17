@@ -19,6 +19,18 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Admin\ProductReviewController;
+use App\Http\Controllers\PaymentController;
+
+//clear  http://127.0.0.1:8000/clear-cache
+Route::get('/clear-cache', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    return '✅ Cache cleared!';
+});
+
+
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -240,6 +252,9 @@ Route::get('/api/vl/wards/{districtCode}', function ($districtCode) {
     return response()->json(['success' => false, 'message' => 'Không thể lấy phường/xã'], 500);
 });
 
+
+//vnpayment
+Route::post('/payment/vnpay/request', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay.request');
 
 
 

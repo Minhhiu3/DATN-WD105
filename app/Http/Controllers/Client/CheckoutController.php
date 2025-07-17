@@ -121,7 +121,13 @@ public function checkoutCart()
         return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
     }
 
-    return view('client.pages.checkout_cart', compact('cartItems'));
+    // Tính tổng tiền
+    $total = $cartItems->sum(function($item) {
+        return $item->variant->price * $item->quantity;
+    });
+
+    // Truyền $total ra view
+    return view('client.pages.checkout_cart', compact('cartItems', 'total'));
 }
 public function placeOrderFromCart(Request $request)
 {

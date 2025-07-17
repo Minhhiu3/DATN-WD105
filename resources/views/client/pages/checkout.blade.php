@@ -41,6 +41,7 @@
             @csrf
             <input type="hidden" name="variant_id" value="{{ $variant->id_variant }}">
             <input type="hidden" name="quantity" value="{{ $quantity }}">
+            <input type="hidden" name="amount" value="{{ $variant->price * $quantity }}">
 
             <div class="col-lg-6">
                 <h3>Chi tiết thanh toán</h3>
@@ -225,6 +226,54 @@ document.addEventListener("DOMContentLoaded", function () {
     loadProvinces();
 });
 </script> -->
+
+<script>
+    const checkoutForm = document.querySelector("form.contact_form");
+    const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+    const submitButton = checkoutForm.querySelector('button[type="submit"]');
+
+    function updateFormActionAndButtonText() {
+        const selected = document.querySelector('input[name="payment_method"]:checked').value;
+        if (selected === "vnpay") {
+            checkoutForm.setAttribute('action', '{{ route('payment.vnpay.request') }}');
+            submitButton.innerText = "Thanh toán với VNPay";
+        } else {
+            checkoutForm.setAttribute('action', '{{ route('account.placeOrder') }}');
+            submitButton.innerText = "Đặt Hàng (COD)";
+        }
+    }
+
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', updateFormActionAndButtonText);
+    });
+
+    updateFormActionAndButtonText();
+
+    checkoutForm.addEventListener("submit", function(e) {
+        const selected = document.querySelector('input[name="payment_method"]:checked').value;
+        if (selected === "vnpay") {
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+            fetch("{{ route('payment.vnpay.request') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": '{{ csrf_token() }}'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data?.redirect_url) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert("Có lỗi khi khởi tạo thanh toán VNPay");
+                }
+            })
+            .catch(() => alert("Không thể kết nối tới máy chủ."));
+        }
+    });
+</script>
 
 
     <!--================End Checkout Area =================-->
