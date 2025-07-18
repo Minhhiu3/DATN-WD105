@@ -19,6 +19,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Admin\ProductReviewController;
+use App\Http\Controllers\PaymentController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -58,10 +59,13 @@ Route::prefix('account')->middleware('auth')->group(function () {
     Route::get('/settings', [AccountController::class, 'settings'])->name('account.settings');
  Route::get('/checkout-form', [CheckoutController::class, 'showCheckoutForm'])->name('account.checkout.form');
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('account.placeOrder');
-Route::put('/account/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
-Route::get('/account/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
+Route::put('/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
+Route::get('/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
 Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
 Route::post('/place-order-cart', [CheckoutController::class, 'placeOrderFromCart'])->name('account.placeOrder.cart');
+Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment'])->name('account.vnpay.payment'); // VNPAY payment route
+Route::get('/payment/vnpay/{order}', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay');
+Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
 
 });
 

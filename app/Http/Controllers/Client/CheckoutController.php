@@ -77,7 +77,6 @@ class CheckoutController extends Controller
                 'district' => $request->district,
                 'ward'     => $request->ward,
                 'address'  => $request->address,
-
                 'total_amount'   => $variant->price * $request->quantity,
                 'created_at'     => now(),
             ]);
@@ -94,8 +93,13 @@ class CheckoutController extends Controller
             $variant->decrement('quantity', $request->quantity);
 
             DB::commit();
-            return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
-        } catch (\Exception $e) {
+                if ($request->payment_method === 'cod') {
+                    return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+                }
+      if ($request->payment_method === 'vnpay') {
+    return redirect()->route('payment.vnpay', ['order' => $order->id_order]);
+}
+                } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()->withErrors('Lỗi xử lý đơn hàng: ' . $e->getMessage());
         }
@@ -158,8 +162,8 @@ $grand_total =0;
             foreach ($cartItems as $item) {
                 $variant = $item->variant;
 
-                if (!$variant) {
-                    throw new \Exception("Sản phẩm không tồn tại.");
+                if (!$variant || $variant->deleted_at) {
+                    throw new \Exception("Sản phẩm {$variant->product->name_product} không tồn tại hoặc đã ngừng bán. Vui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán");
                 }
 
                 if ($variant->quantity < $item->quantity) {
@@ -203,10 +207,16 @@ $shippingFee = 30000;
             CartItem::where('cart_id', $cart->id_cart)->delete();
 
         DB::commit();
-        return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+        // return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+                   if ($request->payment_method === 'cod') {
+                    return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+                }
+      if ($request->payment_method === 'vnpay') {
+    return redirect()->route('payment.vnpay', ['order' => $order->id_order]);
+}
     } catch (\Exception $e) {
         DB::rollBack();
-        return redirect()->back()->withErrors('Lỗi đặt hàng: ' . $e->getMessage());
+        return redirect()->back()->withErrors( $e->getMessage());
     }
 }
 

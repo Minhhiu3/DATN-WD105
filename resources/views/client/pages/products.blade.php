@@ -7,11 +7,11 @@
         <div class="container">
             <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
                 <div class="col-first">
-                    <h1>Shop Category page</h1>
+                    <h1>Cửa Hàng</h1>
                     <nav class="d-flex align-items-center">
-                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="category.html">Fashon Category</a>
+                        <a href="#">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="#">Cửa hàng</a>
+
                     </nav>
                 </div>
             </div>

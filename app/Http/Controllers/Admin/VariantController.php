@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
+use App\Models\CartItem;
 use App\Models\Variant;
 use App\Models\Product;
 use App\Models\Size;
@@ -104,6 +105,7 @@ class VariantController extends Controller
     {
         $variant = Variant::findOrFail($id_variant);
         $id_product = $variant->product_id;
+        // CartItem::where('variant_id', $id_variant)->delete();
         $variant->delete();
 
     return redirect()->route('admin.variants.show', $id_product)->with('success', 'Thêm biến thể thành công!');

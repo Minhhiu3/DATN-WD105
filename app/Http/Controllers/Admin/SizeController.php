@@ -55,8 +55,16 @@ public function store(Request $request)
 
     public function destroy(Size $size)
     {
-        $size->delete();
+          // Kiểm tra nếu size đang được dùng trong bất kỳ Variant nào
+    if ($size->variants()->exists()) {
+        return redirect()->route('admin.sizes.index')
+            ->with('error', 'Không thể xóa size vì đang được sử dụng trong các biến thể sản phẩm.Vui lòng xóa các biến thể trước');
+    }
 
-        return redirect()->route('admin.sizes.index')->with('success', 'Xóa danh mục thành công.');
+    // Nếu không có liên kết, thì xóa
+    $size->delete();
+
+    return redirect()->route('admin.sizes.index')
+        ->with('success', 'Xóa size thành công.');
     }
 }
