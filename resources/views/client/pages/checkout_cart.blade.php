@@ -32,19 +32,20 @@
                         @csrf
 
                         <!-- Thông tin người dùng -->
-                        <div class="col-md-12 form-group">
-                            <label><b>Tên người nhận</b></label>
-                            <input type="text" name="name" class="form-control" value="{{ auth()->user()->name }}" required>
-                        </div>
-                         <div class="col-md-12 form-group">
-                            <label><b>Số điện thoại</b></label>
-                           <input type="text" name="phone" class="form-control" value="{{ auth()->user()->phone_number }}" required>
-                        </div>
-                         <div class="col-md-12 form-group">
-                            <label><b>Email</b></label>
-                             <input type="text" name="email" class="form-control" value="{{ auth()->user()->email }}" required>
+                     <div class="form-group">
+                    <label><b>Họ và tên</b></label>
+                    <input type="text" class="form-control" value="{{ auth()->user()->name }}" disabled>
+                </div>
 
-                        </div>
+                <div class="form-group">
+                    <label><b>Số điện thoại</b></label>
+                    <input type="text" class="form-control" value="{{ auth()->user()->phone_number }}" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label><b>Email</b></label>
+                    <input type="text" class="form-control" value="{{ auth()->user()->email }}" disabled>
+                </div>
                         <!-- Địa chỉ -->
                         <div class="col-md-12 form-group">
                             <label><b>Tỉnh/Thành</b></label>

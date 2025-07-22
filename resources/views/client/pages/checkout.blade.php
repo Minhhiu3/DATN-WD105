@@ -50,7 +50,8 @@
             <div class="col-lg-6">
                 <h3>Chi tiết thanh toán</h3>
 
-                <div class="form-group">
+                      <!-- Thông tin người dùng -->
+                     <div class="form-group">
                     <label><b>Họ và tên</b></label>
                     <input type="text" class="form-control" value="{{ auth()->user()->name }}" disabled>
                 </div>
