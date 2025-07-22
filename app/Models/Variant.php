@@ -21,7 +21,7 @@ class Variant extends Model
     ];
     public function product()
 {
-    return $this->belongsTo(Product::class, 'product_id', 'id_product');
+    return $this->belongsTo(Product::class, 'product_id', 'id_product')->withTrashed();
 }
 
 public function size()

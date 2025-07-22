@@ -36,6 +36,11 @@
             <input type="text" placeholder="Nhập mã giảm giá">
             <a class="tp_btn" href="#">OK</a>
         </div>
+ {{-- <form  method="POST">
+            @csrf
+
+            <button type="submit" class="primary-btn w-100 mt-3" formaction="{{ route('account.vnpay.payment') }}">VN PAY</button>
+        </form> --}}
 
         <form action="{{ route('account.placeOrder') }}" method="POST" class="row contact_form">
             @csrf
@@ -115,12 +120,15 @@
                 </div>
             </div>
         </form>
+
+
+
     </div>
 </section>
 <!--================End Checkout Area =================-->
 
 
-<!--     
+<!--
   <script>
 document.addEventListener("DOMContentLoaded", function () {
     const provinceSelect = document.getElementById('provinceSelect');

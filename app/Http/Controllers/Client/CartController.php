@@ -50,7 +50,7 @@ class CartController extends Controller
 
             $variant = Variant::with(['product', 'size'])->find($request->variant_id);
 
-            if (!$variant) {
+            if (!$variant || $variant->deleted_at) {
                 return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại']);
             }
 
@@ -107,10 +107,9 @@ class CartController extends Controller
 
             $variant = Variant::find($request->variant_id);
 
-            if (!$variant) {
-                return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại']);
+            if (!$variant || !$variant->product || $variant->deleted_at) {
+                return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại hoặc ngưng bán, vui lòng xóa khỏi giỏ hàng']);
             }
-
             // Kiểm tra số lượng tồn kho
             if ($request->quantity > $variant->quantity) {
                 return response()->json([

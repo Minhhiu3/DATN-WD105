@@ -17,13 +17,37 @@
                 {{-- Thông tin người dùng --}}
                 <h5>🧍 Thông tin khách hàng</h5>
                 <ul>
-                   <li><strong>Tên:</strong> {{ $order->name }}</li>
-                <li><strong>Email:</strong> {{ $order->email }}</li>
-                <li><strong>Số điện thoại:</strong> {{ $order->phone }}</li>
+                   <li><strong>Tên:</strong> {{ $order->user->name }}</li>
+                <li><strong>Email:</strong> {{ $order->user->email }}</li>
+                <li><strong>Số điện thoại:</strong> {{ $order->user->phone_number }}</li>
                 <li><strong>Địa chỉ:</strong> {{ $order->fullAddress() }}</li>
-
+  <li><strong>Trạng thái đơn hàng:</strong>  @php $status = $order->status; @endphp
+                                                        @if ($status == 'pending')
+                                                            <span class="btn btn-sm btn-warning text-black">Chờ xác nhận</span>
+                                                        @elseif ($status == 'processing')
+                                                            <span class="btn btn-sm btn-primary text-white">Đã xác nhận</span>
+                                                        @elseif ($status == 'shipping')
+                                                            <span class="btn btn-sm btn-info text-white">Đang giao</span>
+                                                        @elseif ($status == 'completed')
+                                                            <span class="btn btn-sm btn-success text-white">Đã giao</span>
+                                                        @elseif ($status == 'canceled')
+                                                            <span class="btn btn-sm btn-danger text-white">Đã hủy</span>
+                                                        @else
+                                                            <span class="btn btn-sm btn-light text-black">{{ $status }}</span>
+                                                        @endif</li>
+    <li><strong>Trạng thái thanh toán:</strong>  @php $payment_status = $order->payment_status; @endphp
+                                                        @if ($payment_status == 'unpaid')
+                                                            <span class="btn btn-sm btn-warning text-black">Chưa thanh toán</span>
+                                                        @elseif($payment_status == 'paid')
+                                                            <span class="btn btn-sm btn-success text-white">Đã thanh toán</span>
+                                                                  @elseif($payment_status == 'canceled')
+                                                            <span class="btn btn-sm btn-danger text-white">Đã hoàn tiền</span>
+                                                             @else
+                                                            <span class="btn btn-sm btn-light text-black">{{ $payment_status }}</span>
+                                                        @endif</li>
+       <li><strong>Phương thức thanh toán:</strong> {{ $order->payment_method }}</li>
                 </ul>
-                
+
             </div>
 
             <div class="border p-3 mb-4 rounded shadow-sm">
@@ -42,8 +66,8 @@
                 </tr>
             </thead>
             <tbody>
-                @php 
-                    $tongTien = 0; 
+                @php
+                    $tongTien = 0;
                 @endphp
                 @foreach ($order_items as $item)
                     @php

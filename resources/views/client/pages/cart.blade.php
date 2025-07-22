@@ -19,25 +19,29 @@
 
     <!--================Cart Area =================-->
     <section class="cart_area">
-        <div class="container">
-            <div class="cart_inner">
-                @if($cartItems->count() > 0)
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Sản phẩm</th>
-                                    <th scope="col">Giá</th>
-                                    <th scope="col">Số lượng</th>
-                                    <th scope="col">Tổng</th>
-                                    <th scope="col">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($cartItems as $item)
+    <div class="container">
+        <div class="cart_inner">
+            @if($cartItems->count() > 0)
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Sản phẩm</th>
+                                <th scope="col">Giá</th>
+                                <th scope="col">Số lượng</th>
+                                <th scope="col">Tổng</th>
+                                <th scope="col">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($cartItems as $item)
+                                @php
+                                    $variant = $item->variant ?? $item['variant'] ?? null;
+                                    $product = $variant?->product ?? null;
+                                @endphp
+
+                                @if ($variant && $product)
                                     @php
-                                        $variant = $item->variant ?? $item['variant'];
-                                        $product = $variant->product;
                                         $size = $variant->size;
                                         $quantity = $item->quantity ?? $item['quantity'];
                                         $price = $variant->price;
@@ -88,64 +92,85 @@
                                             </button>
                                         </td>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                @else
+                                    <tr class="text-danger">
+                                        <td colspan="5">
+                                            Sản phẩm này không còn tồn tại hoặc đã bị xóa.
+                                            <button class="btn btn-sm btn-danger" onclick="removeFromCart({{ $item->variant_id ?? $item['variant_id'] ?? 0 }})">
+                                                Xóa khỏi giỏ hàng
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="row justify-content-end">
-                        <div class="col-lg-4">
-                            <div class="card_area">
-                                <div class="cart-summary">
-                                    <h4>Tổng cộng giỏ hàng</h4>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span>Tổng tiền hàng:</span>
-                                        <span id="subtotal">{{ number_format($cartItems->sum(function($item) {
-                                            $variant = $item->variant ?? $item['variant'];
+                <div class="row justify-content-end">
+                    <div class="col-lg-4">
+                        <div class="card_area">
+                            <div class="cart-summary">
+                                <h4>Tổng cộng giỏ hàng</h4>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tổng tiền hàng:</span>
+                                    <span id="subtotal">
+                                        {{ number_format($cartItems->sum(function($item) {
+                                            $variant = $item->variant ?? $item['variant'] ?? null;
+                                            $product = $variant?->product ?? null;
+                                            if (!$variant || !$product) return 0;
                                             $quantity = $item->quantity ?? $item['quantity'];
                                             return $variant->price * $quantity;
-                                        }), 0, ',', '.') }} VNĐ</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span>Phí vận chuyển:</span>
-                                        <span id="shipping">30.000 VNĐ</span>
-                                    </div>
-                                    <hr>
-                                    <div class="d-flex justify-content-between mb-3">
-                                        <strong>Tổng thanh toán:</strong>
-                                        <strong id="total">{{ number_format($cartItems->sum(function($item) {
-                                            $variant = $item->variant ?? $item['variant'];
-                                            $quantity = $item->quantity ?? $item['quantity'];
-                                            return $variant->price * $quantity;
-                                        })+ 30000, 0, ',', '.') }} VNĐ</strong>
-                                    </div>
+                                        }), 0, ',', '.') }} VNĐ
+                                    </span>
                                 </div>
-                                <div class="checkout_btn_inner d-flex align-items-center">
-                                    <a class="gray_btn" href="{{ route('products') }}">Tiếp tục mua sắm</a>
-                                    {{-- <a class="primary-btn" href="{{ route('account.checkout.form') }}">Thanh toán</a> --}}
-                                    <form action="{{ route('account.checkout.cart') }}" method="GET" class="d-inline-block">
-    <button type="submit" class="primary-btn">Thanh toán</button>
-</form>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Phí vận chuyển:</span>
+                                    <span id="shipping">30.000 VNĐ</span>
                                 </div>
-                                <div class="text-center mt-3">
-                                    <button class="btn btn-outline-danger btn-sm" onclick="clearCart()">
-                                        <i class="fa fa-trash"></i> Xóa tất cả
-                                    </button>
+                                <hr>
+                                @php
+                                    $totalAmount = $cartItems->sum(function($item) {
+                                        $variant = $item->variant ?? $item['variant'] ?? null;
+                                        $product = $variant?->product ?? null;
+                                        if (!$variant || !$product) return 0;
+                                        $quantity = $item->quantity ?? $item['quantity'];
+                                        return $variant->price * $quantity;
+                                    });
+
+                                    $shippingFee = 30000;
+                                    $finalTotal = $totalAmount + $shippingFee;
+                                @endphp
+                                <div class="d-flex justify-content-between mb-3">
+                                    <strong>Tổng thanh toán:</strong>
+                                    <strong id="total">{{ number_format($finalTotal, 0, ',', '.') }} VNĐ</strong>
                                 </div>
+                            </div>
+                            <div class="checkout_btn_inner d-flex align-items-center">
+                                <a class="gray_btn" href="{{ route('products') }}">Tiếp tục mua sắm</a>
+                                <form action="{{ route('account.checkout.cart') }}" method="GET" class="d-inline-block">
+                                    <button type="submit" class="primary-btn">Thanh toán</button>
+                                </form>
+                            </div>
+                            <div class="text-center mt-3">
+                                <button class="btn btn-outline-danger btn-sm" onclick="clearCart()">
+                                    <i class="fa fa-trash"></i> Xóa tất cả
+                                </button>
                             </div>
                         </div>
                     </div>
-                @else
-                    <div class="text-center py-5">
-                        <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
-                        <h3>Giỏ hàng trống</h3>
-                        <p>Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
-                        <a href="{{ route('products') }}" class="primary-btn">Mua sắm ngay</a>
-                    </div>
-                @endif
-            </div>
+                </div>
+            @else
+                <div class="text-center py-5">
+                    <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
+                    <h3>Giỏ hàng trống</h3>
+                    <p>Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
+                    <a href="{{ route('products') }}" class="primary-btn">Mua sắm ngay</a>
+                </div>
+            @endif
         </div>
-    </section>
+    </div>
+</section>
     <!--================End Cart Area =================-->
 @endsection
 
@@ -222,23 +247,26 @@ function updateItemTotal(variantId, quantity) {
     const totalElement = row.querySelector('.item-total');
 
     const price = parseFloat(priceElement.textContent.replace(/[^\d]/g, ''));
-    const total = price * quantity;
+
+    const total = (price * quantity);
 
     totalElement.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
 }
 
 function updateCartTotals() {
     let subtotal = 0;
+        const shippingFee = 30000;
     const rows = document.querySelectorAll('tbody tr');
 
     rows.forEach(row => {
         const totalElement = row.querySelector('.item-total');
         const total = parseFloat(totalElement.textContent.replace(/[^\d]/g, ''));
-        subtotal += total;
+        // const shippingFee =30000;
+        subtotal += total ;
     });
-
+ const finalTotal = subtotal + shippingFee;
     document.getElementById('subtotal').textContent = subtotal.toLocaleString('vi-VN') + ' VNĐ';
-    document.getElementById('total').textContent = subtotal.toLocaleString('vi-VN') + ' VNĐ';
+    document.getElementById('total').textContent = finalTotal.toLocaleString('vi-VN') + ' VNĐ';
 }
 
 function showQuantityError(variantId, message) {

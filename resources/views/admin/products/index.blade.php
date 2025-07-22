@@ -41,7 +41,20 @@
                             <td><img src="{{ asset('/storage/'.$product->image) }}" alt="{{$product->image}}" width="50px" height="50px"></td>
 
                             <td>{{ $product->name_product }}</td>
-                            <td>{{ number_format($product->price, 0, ',', '.') }} VND</td>
+                               @php
+    $minPrice = $product->variants->min('price');
+    $maxPrice = $product->variants->max('price');
+@endphp
+
+{{-- <div class="price"> --}}
+    @if ($minPrice === null)
+        <td>Đang cập nhật</td>
+    @elseif ($minPrice == $maxPrice)
+        <td>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</td>
+    @else
+        <td>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</td>
+    @endif
+{{-- </div> --}}
                             <td>{{ $product->category->name_category ?? 'Không có danh mục' }}</td>
                             <th><a href="{{ route('admin.variants.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a></th>
                             <th><a href="{{ route('admin.album-products.show', $product->id_product) }}" class="btn btn-info btn-sm">Xem</a></th>
