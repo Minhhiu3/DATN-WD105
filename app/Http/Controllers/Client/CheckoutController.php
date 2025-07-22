@@ -67,7 +67,8 @@ class CheckoutController extends Controller
             }
             // Tạo đơn hàng
             $orderCode = $this->generateOrderCode();
-            $order = Order::create([
+            if ($vnp_ResponseCode == '00') {
+                $order = Order::create([
                 'user_id'        => $user->id_user,
                 'order_code'     => $orderCode,
                 'status'         => 'pending',
@@ -80,6 +81,9 @@ class CheckoutController extends Controller
                 'total_amount'   => $variant->price * $request->quantity,
                 'created_at'     => now(),
             ]);
+            } else {
+                return redirect()->back()->withErrors('Lỗi tạo đơn hàng. Vui lòng thử lại sau.');
+            }
 
             // Thêm chi tiết đơn hàng
             OrderItem::create([
@@ -178,7 +182,8 @@ $shippingFee = 30000;
             $orderCode = $this->generateOrderCode();
 
 
-        $order = Order::create([
+       if ($vnp_ResponseCode == '00') {
+         $order = Order::create([
             'user_id'        => $user->id_user,
             'order_code'     => $orderCode,
             'status'         => 'pending',
@@ -192,6 +197,9 @@ $shippingFee = 30000;
             'grand_total'=> $grand_total,
             'created_at'     => now(),
         ]);
+        } else {
+            return redirect()->back()->withErrors('Lỗi tạo đơn hàng. Vui lòng thử lại sau.');
+       }
 
             foreach ($cartItems as $item) {
                 OrderItem::create([

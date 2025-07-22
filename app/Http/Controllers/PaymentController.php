@@ -17,7 +17,7 @@ $vnp_Returnurl = route('vnpay.return');
     $vnp_HashSecret = "CP0XHLTRZJQRZGUCBI3XPP3C5HQDNB7E";
 
    $vnp_TxnRef = $order->order_code;
-    $vnp_OrderInfo = "Thanh toán đơn hàng " . $order->order_code;
+    $vnp_OrderInfo = "Thanh toán đơn hàng " . $order->order_code . ", tổng tiền: " . $order->total_amount . " VND" . ", đã bao gồm phí vận chuyển: " . 30000 . " VND";
     $vnp_OrderType = "billpayment";
     $vnp_Amount = $order->total_amount * 100;
     $shipingFee = 30000; // Assuming no shipping fee for simplicity
