@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\AlbumProduct;
+use App\Models\AdviceProduct;
+use App\Models\Variant;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -12,14 +17,34 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Lấy tất cả danh mục để đổ vào dropdown
+        $categoris = Category::all();
 
-      $products = Product::with(['category', 'albumProducts' => function ($query) {
-        $query->limit(1); // Lấy chỉ 1 ảnh đầu tiên
-    }])->latest()->paginate(10);
-        return view('admin.products.index', compact('products'));
+        // Query builder để lọc sản phẩm
+    $productsQuery = Product::with(['category', 'advice_product']);
+
+
+
+        // Lọc theo từ khóa
+        if ($request->filled('keyword')) {
+            $productsQuery->where('name_product', 'like', '%' . $request->keyword . '%');
+        }
+
+        // Lọc theo danh mục
+        if ($request->filled('category')) {
+            $productsQuery->where('category_id', $request->category);
+        }
+
+        // Phân trang kết quả
+        $products = $productsQuery->latest()->paginate(10);
+
+
+
+        return view('admin.products.index', compact('products', 'categoris'));
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -32,47 +57,100 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name_product' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:category,id_category',
-            'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,jpg,png|max:2048'
-        ]);
+public function store(Request $request)
+{
+    // ✅ 1. Validate dữ liệu
+    $request->validate([
+        'name_product'   => 'required|string|max:255',
+        'price'          => 'required|numeric|min:0',
+        'category_id'    => 'required|exists:category,id_category', // Sửa đúng bảng categories
+        'description'    => 'nullable|string',
+        'image'          => 'required|image|mimes:jpeg,jpg,png|max:2048',
+        'album.*'        => 'nullable|image|mimes:jpeg,jpg,png|max:2048', // validate từng ảnh album
 
-        // Lưu dữ liệu form
-        $data = $request->only(['name_product', 'price', 'category_id', 'description']);
+        // ✅ Validate dữ liệu advice_product
+        'value'          => 'required|integer|min:0',
+        'start_date'     => 'required|date',
+        'end_date'       => 'required|date|after_or_equal:start_date',
+        'status'         => 'required|in:on,off', // Enum chỉ chấp nhận on/off
+    ]);
 
-        // Xử lý lưu ảnh
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('public/products');
-            $data['image'] = str_replace('public/', '', $path); // lưu path để dùng trong asset()
-        } else {
-            return back()->with('error', 'Không tìm thấy file ảnh');
-        }
+    // ✅ 2. Chuẩn bị dữ liệu
+    $data = $request->only(['name_product', 'price', 'category_id', 'description']);
 
-        // Tạo sản phẩm
-        Product::create($data);
-
-        return redirect()->route('admin.products.index')->with('success', 'Thêm mới thành công.');
+    // ✅ 3. Upload ảnh chính
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('public/products');
+        $data['image'] = str_replace('public/', '', $path);
+    } else {
+        return back()->with('error', 'Không tìm thấy file ảnh chính.');
     }
+
+    // ✅ 4. Tạo sản phẩm
+    $product = Product::create($data);
+    $product->refresh(); // ép Laravel reload từ DB để có id_product
+
+    // ✅ 5. Lưu album ảnh (nếu có)
+    if ($request->hasFile('album')) {
+        foreach ($request->file('album') as $albumImage) {
+            $albumPath  = $albumImage->store('public/products/album');
+            $cleanPath  = str_replace('public/', '', $albumPath);
+
+            AlbumProduct::create([
+                'product_id' => $product->id_product,
+                'image'      => $cleanPath,
+            ]);
+        }
+    }
+
+    // ✅ 6. Tạo dữ liệu advice_product liên kết
+    AdviceProduct::create([
+        'product_id' => $product->id_product,
+        'value'      => $request->input('value'),
+        'start_date' => $request->input('start_date'),
+        'end_date'   => $request->input('end_date'),
+        'status'     => $request->input('status'),
+    ]);
+
+    // ✅ 7. Chuyển hướng về danh sách
+    return redirect()->route('admin.products.index')->with('success', 'Thêm sản phẩm và dữ liệu khuyến mãi thành công.');
+}
+
+
+
 
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
-    {
-      $categories= Category::all();
-        return view('admin.products.show', compact('product','categories'));
-    }
-//     public function show($id)
-// {
-//     $product = Product::with('category', 'albumProducts')->findOrFail($id);
-//     $categories = Category::all();
-//     return view('client.product.show', compact('product', 'categories'));
-// }
+public function show(Product $product)
+{
+    // Lấy tất cả categories
+    $categories = Category::all();
+
+    // Lấy tất cả ảnh album của sản phẩm
+    $album_products = AlbumProduct::where('product_id', $product->id_product)->get();
+
+    // ✅ Tổng số sản phẩm còn trong kho
+    $total_in_stock = Variant::where('product_id', $product->id_product)
+                             ->sum('quantity');
+
+    // ✅ Tổng số sản phẩm đã bán
+    $total_sold = DB::table('order_items')
+        ->join('orders', 'order_items.order_id', '=', 'orders.id_order')
+        ->join('variant', 'order_items.variant_id', '=', 'variant.id_variant')
+        ->where('variant.product_id', $product->id_product)
+        ->whereIn('orders.status', ['shipping', 'completed']) // chỉ tính đơn đã giao
+        ->sum('order_items.quantity');
+
+    return view('admin.products.show', compact(
+        'product', 
+        'categories', 
+        'album_products', 
+        'total_in_stock', 
+        'total_sold'
+    ));
+}
+
     /**
      * Show the form for editing the specified resource.
      */

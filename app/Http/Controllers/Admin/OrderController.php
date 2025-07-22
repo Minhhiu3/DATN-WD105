@@ -28,7 +28,12 @@ class OrderController extends Controller
         $code = $request->input('code');
 
         if ($code) {
-            $query->where('id_order', $code);
+            $query->where('order_code', $code);
+        }
+        $status = $request->input('status');
+
+        if ($status) {
+            $query->where('status', $status);
         }
 
         $orders = $query->orderBy('created_at', 'desc')
@@ -64,14 +69,21 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-   public function show($order_id)
+public function show($order_id)
 {
+    // Lấy đơn hàng
     $order = Order::findOrFail($order_id);
+
+    // Lấy thông tin người dùng
+    $user = User::findOrFail($order->user_id);
+
+    // Lấy danh sách sản phẩm trong đơn hàng
     $order_items = OrderItem::with(['variant.size', 'variant.product'])
         ->where('order_id', $order_id)
         ->get();
 
-    return view('admin.orders.show', compact('order', 'order_items'));
+    // Gửi dữ liệu sang view
+    return view('admin.orders.show', compact('order', 'user', 'order_items'));
 }
 
 
@@ -99,85 +111,64 @@ public function update(Request $request, $order_id)
     // Lấy đơn hàng theo ID
     $order = Order::findOrFail($order_id);
 
-    // So sánh và cập nhật nếu cần
+    // Map mức độ trạng thái
+    $statusLevels = [
+        'pending' => 1,
+        'processing' => 2,
+        'shipping' => 3,
+        'completed' => 4,
+        'canceled' => 5,
+    ];
+
+    $currentLevel = $statusLevels[$order->status] ?? 0;
+    $newLevel = $statusLevels[$request->status] ?? 0;
+
+    // Kiểm tra nếu đơn hàng đã hoàn thành hoặc hủy thì không được đổi nữa
+    if (in_array($order->status, ['completed', 'canceled'])) {
+        return redirect()->route('admin.orders.index')
+            ->with('error', 'Đơn hàng đã hoàn thành hoặc bị hủy, không thể thay đổi trạng thái.');
+    }
+
+    // Không cho nhảy bước (chỉ cho phép tăng 1 level)
+    if ($newLevel > $currentLevel + 1) {
+        return redirect()->route('admin.orders.index')
+            ->with('error', 'Không được bỏ qua bước, hãy cập nhật tuần tự!');
+    }
+
+    // Không cho quay lại bước trước
+    if ($newLevel < $currentLevel) {
+        return redirect()->route('admin.orders.index')
+            ->with('error', 'Không thể quay về trạng thái trước!');
+    }
+
+    // Cập nhật trạng thái nếu hợp lệ
     if ($order->status !== $request->status) {
         $order->status = $request->status;
         $order->save();
 
         return redirect()->route('admin.orders.index')
             ->with('success', 'Đã cập nhật trạng thái đơn hàng!');
-    } else {
-        return redirect()->route('admin.orders.index')
-            ->with('info', 'Trạng thái không thay đổi.');
     }
+
+    return redirect()->route('admin.orders.index')
+        ->with('info', 'Trạng thái không thay đổi.');
 }
+
+
 
     public function updateStatus(Request $request)
-{
-    $request->validate([
-        'id' => 'required|exists:orders,id_order',
-        'status' => 'required|in:pending,processing,shipping,completed,canceled',
-    ]);
+    {
+        $request->validate([
+            'id' => 'required|exists:orders,id_order',
+            'status' => 'required|in:pending,processing,shipping,completed,canceled',
+        ]);
 
-    $order = Order::findOrFail($request->id);
+        $order = Order::findOrFail($request->id);
+        $order->status = $request->status;
+        $order->save();
 
-    $statusLevels = [
-        'pending'    => 1,
-        'processing' => 2,
-        'shipping'   => 3,
-        'completed'  => 4,
-        'canceled'   => 5,
-    ];
-
-    $currentStatus = $order->status;
-    $newStatus = $request->status;
-
-    $currentLevel = $statusLevels[$currentStatus];
-    $newLevel = $statusLevels[$newStatus];
-
-    // Trường hợp đã completed hoặc canceled → không thay đổi được nữa
-    if (in_array($currentStatus, ['completed', 'canceled'])) {
-        return response()->json(['success' => false, 'message' => 'Đơn hàng đã hoàn tất hoặc hủy, không thể thay đổi.']);
+        return response()->json(['success' => true, 'message' => 'Trạng thái đã cập nhật']);
     }
-
-    // Chỉ cho phép giữ nguyên hoặc chuyển đúng 1 cấp tiếp theo
-    if ($newLevel != $currentLevel && $newLevel != $currentLevel + 1) {
-        return response()->json(['success' => false, 'message' => 'Không được nhảy cóc trạng thái.']);
-    }
-
-    // Nếu chuyển sang canceled, trả hàng về kho
-    if ($newStatus === 'canceled') {
-        foreach ($order->orderItems as $item) {
-            $variant = $item->variant;
-            if ($variant) {
-                $variant->quantity += $item->quantity;
-                $variant->save();
-            }
-        }
-    }
-
-    $order->status = $newStatus;
-    $order->save();
-
-    return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái thành công!']);
-}
- public function updatePaymentStatus(Request $request)
-{
-    $request->validate([
-        'id' => 'required|exists:orders,id_order',
-        'payment_status' => 'required|in:unpaid,paid,canceled',
-    ]);
-
-    $order = Order::findOrFail($request->id);
-    $order->payment_status = $request->payment_status;
-    $order->save();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Cập nhật trạng thái thanh toán thành công!',
-    ]);
-}
-
     public function cancel(Request $request)
     {
         $request->validate([
@@ -186,7 +177,7 @@ public function update(Request $request, $order_id)
 
         $order = Order::findOrFail($request->id);
 
-        if ($order->status !== 'pending' && $order->status !== 'canceled') {
+        if ($order->status !== 'canceled') {
             $order->status = 'canceled';
             $order->save();
             return response()->json(['success' => true, 'message' => 'Đã hủy đơn hàng!']);
@@ -196,7 +187,7 @@ public function update(Request $request, $order_id)
     }
 
 
-
+ 
     /**
      * Remove the specified resource from storage.
      */

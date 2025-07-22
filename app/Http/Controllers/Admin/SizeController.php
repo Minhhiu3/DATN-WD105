@@ -12,7 +12,7 @@ class SizeController extends Controller
 {
     public function index()
     {
-        $sizes = Size::orderBy('id_size', 'asc')->paginate();
+        $sizes = Size::latest()->paginate();
         return view('admin.size.index', compact('sizes'));
     }
 
@@ -53,18 +53,10 @@ public function store(Request $request)
         return redirect()->route('admin.sizes.index')->with('success', 'Cập nhật danh mục mới thành công.');
     }
 
-    public function destroy(Size $size)
+    public function destroy(size $size)
     {
-          // Kiểm tra nếu size đang được dùng trong bất kỳ Variant nào
-    if ($size->variants()->exists()) {
-        return redirect()->route('admin.sizes.index')
-            ->with('error', 'Không thể xóa size vì đang được sử dụng trong các biến thể sản phẩm.Vui lòng xóa các biến thể trước');
-    }
+        $size->delete();
 
-    // Nếu không có liên kết, thì xóa
-    $size->delete();
-
-    return redirect()->route('admin.sizes.index')
-        ->with('success', 'Xóa size thành công.');
+        return redirect()->route('admin.sizes.index')->with('success', 'Xóa danh mục thành công.');
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
-use App\Models\CartItem;
 use App\Models\Variant;
 use App\Models\Product;
 use App\Models\Size;
@@ -39,33 +38,43 @@ class VariantController extends Controller
     /**
      * Lưu biến thể mới vào database.
      */
-    public function store(Request $request)
+public function store(Request $request)
 {
-    // Validate dữ liệu đầu vào
-    $request->validate([
-        'size_id' => 'required|exists:size,id_size',
+    $validated = $request->validate([
         'product_id' => 'required|exists:products,id_product',
-        'price' => 'required|numeric|min:0',
-        'quantity' => 'required|integer|min:0',
+        'variants' => 'required|array|min:1',
+        'variants.*.size_id' => 'required|exists:size,id_size',
+        'variants.*.price' => 'required|numeric|min:0',
+        'variants.*.quantity' => 'required|integer|min:0',
     ]);
 
-    // Kiểm tra nếu biến thể đã tồn tại (tránh bị trùng UNIQUE)
-    $id_product=$request->product_id;
-    $exists = Variant::where('product_id', $request->product_id)
-        ->where('size_id', $request->size_id)
-        ->exists();
+    foreach ($validated['variants'] as $variant) {
+        // Kiểm tra biến thể đã tồn tại chưa
+        $existingVariant = Variant::where('product_id', $validated['product_id'])
+            ->where('size_id', $variant['size_id'])
+            ->first();
 
-    if ($exists) {
-        return back()
-            ->withInput()
-            ->with('error', 'Biến thể này đã tồn tại (sản phẩm và size).');
+        if ($existingVariant) {
+            // ✅ Nếu đã tồn tại: cập nhật giá và cộng dồn số lượng
+            $existingVariant->price = $variant['price']; // Cập nhật giá mới
+            $existingVariant->quantity += $variant['quantity']; // Cộng dồn số lượng
+            $existingVariant->save();
+        } else {
+            // ✅ Nếu chưa tồn tại: tạo mới
+            Variant::create([
+                'product_id' => $validated['product_id'],
+                'size_id' => $variant['size_id'],
+                'price' => $variant['price'],
+                'quantity' => $variant['quantity'],
+            ]);
+        }
     }
 
-    // Tạo mới biến thể nếu chưa tồn tại
-    Variant::create($request->only(['size_id','product_id', 'price', 'quantity']));
-
-    return redirect()->route('admin.variants.show', $id_product)->with('success', 'Thêm biến thể thành công!');
+    return redirect()->route('admin.variants.show', $validated['product_id'])
+        ->with('success', 'Đã thêm hoặc cập nhật biến thể thành công!');
 }
+
+
 
 
 
@@ -105,9 +114,18 @@ class VariantController extends Controller
     {
         $variant = Variant::findOrFail($id_variant);
         $id_product = $variant->product_id;
-        // CartItem::where('variant_id', $id_variant)->delete();
-        $variant->delete();
+        $variant->forceDelete();
 
     return redirect()->route('admin.variants.show', $id_product)->with('success', 'Thêm biến thể thành công!');
     }
+    // ajax sửa số lượng
+    public function updateQuantity(Request $request, $id)
+    {
+        $variant = Variant::findOrFail($id);
+        $variant->quantity = $request->quantity;
+        $variant->save();
+
+        return response()->json(['success' => true]);
+    }
+
 }

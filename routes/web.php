@@ -19,6 +19,8 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Admin\ProductReviewController;
+use App\Http\Controllers\Admin\AdviceProductController;
+
 use App\Http\Controllers\PaymentController;
 
 // Public Routes
@@ -196,6 +198,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/reviews/update-status', [ProductReviewController::class, 'updateStatus'])->name('admin.reviews.updateStatus');
     Route::post('/reviews/update-status', [ProductReviewController::class, 'updateStatus'])->name('admin.reviews.updateStatus');
     Route::delete('/reviews/{id_review}', [ProductReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+
+     //xem chi tiét sale của sản phẩm
+    Route::get('/sale/{id_product}', [AdviceProductController::class, 'index'])->name('admin.sale.index');
+    Route::post('/sale/update/{id_product}', [AdviceProductController::class, 'update'])->name('admin.sale.update');
+    Route::post('sales/{id}/toggle-status', [AdviceProductController::class, 'toggleStatus'])->name('admin.sale.toggleStatus');
 
 });
 
