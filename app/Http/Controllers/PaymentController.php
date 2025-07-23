@@ -16,10 +16,12 @@ $vnp_Returnurl = route('vnpay.return');
     $vnp_TmnCode = "EXCCT61K";
     $vnp_HashSecret = "CP0XHLTRZJQRZGUCBI3XPP3C5HQDNB7E";
 
+    $total = $order->total_amount + 30000;
+
    $vnp_TxnRef = $order->order_code;
     $vnp_OrderInfo = "Thanh toán đơn hàng " . $order->order_code . ", tổng tiền: " . $order->total_amount . " VND" . ", đã bao gồm phí vận chuyển: " . 30000 . " VND";
     $vnp_OrderType = "billpayment";
-    $vnp_Amount = $order->total_amount * 100;
+    $vnp_Amount = $total * 100;
     $shipingFee = 30000; // Assuming no shipping fee for simplicity
     $vnp_Locale = "VN";
     $vnp_BankCode = "NCB";

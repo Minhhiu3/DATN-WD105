@@ -207,12 +207,17 @@
                     </tr>
                 </thead>
                 <tbody>
+        @php
+            $subTotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
+            $shippingFee = 30000;
+            $grandTotal = $subTotal + $shippingFee;
+        @endphp
                     @forelse ($orders as $order)
                         <tr>
                             <td>#{{ $order->id_order }}</td>
                             <td>{{ $order->order_code }}</td>
                             <td>{{ $order->user->name ?? 'N/A' }}</td>
-                            <td>{{ number_format($order->total_amount, 0, ',', '.') }}₫</td>
+                            <td>{{ number_format($order->total_amount + 30000, 0, ',', '.') }}₫</td>
                             <td>{{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}</td>
                             <td>{{ ucfirst($order->payment_method) }}</td>
                                                              @php

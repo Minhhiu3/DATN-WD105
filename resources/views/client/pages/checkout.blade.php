@@ -97,10 +97,15 @@
                             <span class="last">{{ number_format($variant->price * $quantity, 0, ',', '.') }} VNĐ</span>
                         </li>
                     </ul>
+                            @php
+            $subTotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
+            $shippingFee = 30000;
+            $grandTotal = $subTotal + $shippingFee;
+        @endphp
                     <ul class="list list_2">
-                        <li><a href="#">Phí vận chuyển <span>0 VND</span></a></li>
+                        <li><a href="#">Phí vận chuyển <span>{{ number_format($shippingFee, 0, ',', '.') }} VNĐ</span></a></li>
                         <li><a href="#">Tổng tiền
-                                <span>{{ number_format($variant->price * $quantity, 0, ',', '.') }} VNĐ</span></a>
+                                <span>{{ number_format($variant->price * $quantity + $shippingFee, 0, ',', '.') }} VNĐ</span></a>
                         </li>
                     </ul>
 

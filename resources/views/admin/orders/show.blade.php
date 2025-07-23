@@ -82,7 +82,8 @@
                             <th>Size</th>
                             <th>Số Lượng</th>
                             <th>Giá</th>
-                            <th>Tổng</th>
+                            <th>Tổng tiền đơn hàng</th>
+                            <th>Phí ship</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -92,7 +93,8 @@
                                 $price = optional($item->variant)->price ?? 0;
                                 $quantity = $item->quantity ?? 0;
                                 $thanhTien = $price * $quantity;
-                                $tongTien += $thanhTien;
+                                $tongTien += $thanhTien + 30000;
+                                $shippingFee = 30000
                             @endphp
                             <tr>
                                 <td>{{ $item->variant->id_variant ?? 'Không rõ' }}</td>
@@ -101,11 +103,13 @@
                                 <td>{{ $item->quantity ?? 'Không rõ' }}</td>
                                 <td>{{ number_format($price, 0, ',', '.') }} VND</td>
                                 <td>{{ number_format($thanhTien, 0, ',', '.') }} VND</td>
+                                <td>{{ number_format($shippingFee, 0, ', ', '.') }} VND</td>
                             </tr>
                         @endforeach
                         {{-- Dòng tổng tiền --}}
                         <tr class="table-success">
-                            <td colspan="5" class="text-end"><strong>Tổng tiền:</strong></td>
+                            <td colspan="5" class="text-end"><strong>Tổng tiền:  </strong></td>
+                            <td></td>
                             <td><strong>{{ number_format($tongTien, 0, ',', '.') }} VND</strong></td>
                         </tr>
                     </tbody>
