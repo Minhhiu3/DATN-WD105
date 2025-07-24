@@ -138,7 +138,7 @@
             <button type="submit" class="btn btn-primary-custom">
                 <i class="bi bi-check-circle"></i> Cập Nhật
             </button>
-            <a href="{{ route('admin.variants.index') }}" class="btn btn-secondary-custom">
+            <a href="{{ route('admin.variants.show', $product->id_product) }}" class="btn btn-secondary-custom">
                 <i class="bi bi-arrow-left-circle"></i> Hủy
             </a>
         </div>
