@@ -97,8 +97,8 @@
     </div>
     <div class="search_input" id="search_input_box">
         <div class="container">
-            <form class="d-flex justify-content-between">
-                <input type="text" class="form-control" id="search_input" placeholder="Tìm kiếm tại đây">
+            <form class="d-flex justify-content-between" action="{{ route('products') }}" method="GET">
+                <input type="text" name="keyword" value="{{request('keyword')}}" class="form-control" id="search_input" placeholder="Tìm kiếm tại đây">
                 <button type="submit" class="btn"></button>
                 <span class="lnr lnr-cross" id="close_search" title="Đóng tìm kiếm"></span>
             </form>

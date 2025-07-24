@@ -34,7 +34,7 @@ class DiscountController extends Controller
         ]);
 
         DiscountCode::create($request->all());
-        return redirect()->route('discounts.index')->with('success', 'Mã giảm giá đã được tạo.');
+        return redirect()->route('admin.discounts.index')->with('success', 'Mã giảm giá đã được tạo.');
     }
     public function edit(DiscountCode $discount)
     {
@@ -58,7 +58,7 @@ class DiscountController extends Controller
         // Update the discount code in the database
         // DiscountCode::findOrFail($id)->update($data);
 $discount->update($request->all());
-        return redirect()->route('discounts.index')->with('success', 'Sửa mã giảm giá thành công.');
+        return redirect()->route('admin.discounts.index')->with('success', 'Sửa mã giảm giá thành công.');
     }
     public function destroy(DiscountCode $discount)
     {
@@ -66,6 +66,6 @@ $discount->update($request->all());
         // DiscountCode::destroy($id);
         $discount->delete();
 
-        return redirect()->route('discounts.index')->with('success', 'Mã giảm giá đã được xóa.');
+        return redirect()->route('admin.discounts.index')->with('success', 'Mã giảm giá đã được xóa.');
     }
 }

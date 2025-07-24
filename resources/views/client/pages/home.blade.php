@@ -13,6 +13,7 @@
         <div class="row fullscreen align-items-center justify-content-start">
             <div class="col-lg-12">
                 <div class="active-banner-slider owl-carousel">
+                    {{-- <img src="{{asset('assets/img/banner/banner-img.png')}}" alt=""> --}}
                     @foreach ($banners as $banner)
                         <div class="single-slide row align-items-center d-flex">
                             <div class="col-lg-5 col-md-6">
@@ -155,7 +156,7 @@
 <!-- End category Area -->
 
 <!-- start product Area -->
-<section class="owl-carousel active-product-area section_gap">
+<section class=" active-product-area section_gap">
     <!-- single product slide -->
     <div class="single-product-slider">
         <div class="container">
@@ -179,9 +180,20 @@
                                     <img src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
                                     <div class="product-details">
                                         <h6>{{ $product->name_product }}</h6>
-                                        <div class="price">
-                                            <h6>{{ number_format($product->price, 0, ',', '.') }} VNĐ</h6>
-                                        </div>
+                                                                          @php
+    $minPrice = $product->variants->min('price');
+    $maxPrice = $product->variants->max('price');
+@endphp
+
+<div class="price">
+    @if ($minPrice === null)
+        <h6>Đang cập nhật</h6>
+    @elseif ($minPrice == $maxPrice)
+        <h6>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</h6>
+    @else
+        <h6>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</h6>
+    @endif
+</div>
                                         <div class="prd-bottom">
 
                                             <a href="" class="social-info">
@@ -211,5 +223,5 @@
             </div>
         </div>
     </div>
-
+</section>
 @endsection

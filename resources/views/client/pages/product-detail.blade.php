@@ -19,112 +19,146 @@
     </section>
     <!-- End Banner Area -->
 
-    <!--================detail Product Area =================-->
-<div class="product_image_area">
-    <div class="container">
-        <div class="row s_product_inner">
-            <!-- Ảnh sản phẩm -->
-            <div class="col-lg-6">
-                <div class="main-image mb-3">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name_product }}"
-                        class="img-fluid rounded shadow-sm w-100" style="object-fit: cover; max-height: 400px;">
+    <!-- ================= Start Product Detail Area ================= -->
+    <div class="product_image_area">
+        <div class="container">
+            <div class="row s_product_inner">
+                <!-- Ảnh sản phẩm -->
+                <div class="col-lg-6">
+                    <div class="main-image mb-3">
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name_product }}"
+                            class="img-fluid rounded shadow-sm w-100" style="object-fit: cover; max-height: 400px;">
+                    </div>
+                    <div class="album-images d-flex flex-wrap gap-2">
+                        @if ($product->albumProducts && $product->albumProducts->count())
+                            @foreach ($product->albumProducts as $album)
+                                <div class="album-thumb border rounded p-1"
+                                    style="width: 100px; height: 100px; overflow: hidden;">
+                                    <img src="{{ asset('storage/' . $album->image) }}"
+                                        alt="{{ $product->name_product }} - album" class="img-fluid h-100 w-100"
+                                        style="object-fit: cover;">
+                                </div>
+                            @endforeach
+                        @else
+                            <img src="{{ asset('assets/img/product/default.jpg') }}" alt="{{ $product->name_product }}"
+                                class="img-fluid">
+                        @endif
+                    </div>
                 </div>
-                <div class="album-images d-flex flex-wrap gap-2">
-                    @if ($product->albumProducts && $product->albumProducts->count())
-                        @foreach ($product->albumProducts as $album)
-                            <div class="album-thumb border rounded p-1"
-                                style="width: 100px; height: 100px; overflow: hidden;">
-                                <img src="{{ asset('storage/' . $album->image) }}"
-                                    alt="{{ $product->name_product }} - album" class="img-fluid h-100 w-100"
-                                    style="object-fit: cover;">
-                            </div>
-                        @endforeach
-                    @else
-                        <img src="{{ asset('assets/img/product/default.jpg') }}" alt="{{ $product->name_product }}"
-                            class="img-fluid">
-                    @endif
-                </div>
-            </div>
 
-            <!-- Thông tin chi tiết -->
-            <div class="col-lg-5 offset-lg-1">
-                <div class="s_product_text">
-                    <h3>{{ $product->name_product }}</h3>
-                    <h2>{{ number_format($product->price, 0, ',', '.') }} VNĐ</h2>
-                    <ul class="list">
-                        <li>
-                            <span>Danh mục</span> :
-                            {{ $product->category->name_category ?? 'Chưa phân loại' }}
-                        </li>
-                        <li>
-                            <span>Tình trạng</span> :
-                            @if ($product->variants->sum('quantity') > 0)
-                                Còn hàng ({{ $product->variants->sum('quantity') }} sản phẩm)
+                <!-- Thông tin chi tiết -->
+                <div class="col-lg-5 offset-lg-1">
+                    <div class="s_product_text">
+                        <h3>{{ $product->name_product }}</h3>
+                        <h2 id="dynamic-price">
+                            @if ($product->variants->count() > 0)
+                                {{ number_format($product->variants->min('price'), 0, ',', '.') }} VNĐ
+                                <h6 id="dynamic-stock" class="text-muted">Vui lòng chọn kích thước</h6>
                             @else
-                                Hết hàng
+                                <span class="text-danger">Đang cập nhật</span>
                             @endif
-                        </li>
-                    </ul>
-                    <p>{{ $product->description }}</p>
+                        </h2>
 
-                    {{-- Size --}}
-                    <form action="{{ route('cart.add') }}" method="POST" class="mt-3">
-                        @csrf
 
-                        <div class="form-group d-flex align-items-center mb-3">
-                            <label for="size" class="mr-2 mb-0">Size:</label>
-                            <select name="variant_id" id="size" class="form-control w-auto" required>
-                                <option value="">-- Chọn Size --</option>
-                                @foreach ($product->variants as $variant)
-                                    <option value="{{ $variant->id_variant }}"
-                                        data-quantity="{{ $variant->quantity }}"
-                                        {{ $variant->quantity == 0 ? 'disabled' : '' }}>
-                                        Size {{ $variant->size->name ?? 'Không xác định' }}
-                                        {{ $variant->quantity > 0 ? "- Còn $variant->quantity" : '(Hết hàng)' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <ul class="list">
+                            <li>
+                                <span>Danh mục</span> :
+                                {{ $product->category->name_category ?? 'Chưa phân loại' }}
+                            </li>
+                            {{-- <li>
+                                <span>Tình trạng</span> :
+                                @if ($product->variants->sum('quantity') > 0)
+                                    Còn hàng ({{ $product->variants->sum('quantity') }} sản phẩm)
+                                @else
+                                    Hết hàng
+                                @endif
+                            </li> --}}
+                        </ul>
+                        <p>{{ $product->description }}</p>
 
-                        {{-- Số lượng --}}
-                        <div class="product_count mb-3">
-                            <label for="qty">Số lượng:</label>
-                            <input type="number" name="quantity" id="sst" min="1" value="1"
-                                class="input-text qty form-control d-inline-block w-auto">
-                        </div>
+                        @guest
+                            {{-- Nếu chưa đăng nhập --}}
+                            <a href="{{ route('login') }}" class="primary-btn">Đăng nhập để thêm vào giỏ</a>
+                        @else
+                            {{-- Form thêm vào giỏ --}}
+                            <form onsubmit="addToCart(event)" class="mt-3">
+                                @csrf
 
-                        {{-- Nút thêm vào giỏ hàng + mua ngay --}}
-                        <div class="card_area d-flex align-items-center gap-3">
-                            <button type="submit" id="add-to-cart-btn" onclick="addToCart()" class="primary-btn">Add to Cart</button>
-                        </div>
-                        <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
+                                <!-- Size dạng nút -->
+                                <div class="form-group mb-3">
+                                    <label for="size">Kích thước:</label>
+                                    <div class="d-flex gap-2 flex-wrap" id="size-options">
+                                        @foreach ($product->variants as $variant)
+                                            @php
+                                                $size = $variant->size->name ?? 'N/A';
+                                                $qty = $variant->quantity;
+                                            @endphp
+                                            <button type="button"
+                                                class="btn btn-outline-dark size-btn {{ $qty == 0 ? 'disabled' : '' }}"
+                                                data-variant-id="{{ $variant->id_variant }}"
+                                                data-quantity="{{ $qty }}" {{ $qty == 0 ? 'disabled' : '' }}>
+                                                {{ $size }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                    <input type="hidden" name="variant_id" id="variant_id" required>
+                                </div>
 
-                    </form>
+                                <div class="product_count mb-3">
+                                    <label for="sst">Số lượng:</label>
+                                    <div class="input-group" style="width: 140px;">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-secondary" type="button"
+                                                id="decrease-btn">−</button>
+                                        </div>
+                                        <input type="text" name="quantity" id="sst" min="1" value="1"
+                                            class="form-control text-center">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button"
+                                                id="increase-btn">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if ($product->variants->count() > 0)
+                                    <div class="card_area d-flex align-items-center gap-3">
+                                        <button type="submit" class="primary-btn" id="add-to-cart-btn">Add to Cart</button>
+                                    </div>
 
-                    {{-- Mua ngay --}}
-                    <form action="{{ route('account.checkout.form') }}" method="GET" class="mt-2">
-                        @csrf
-                        <input type="hidden" name="variant_id" id="selectedVariant"
-                            value="{{ $product->variants->first()->id_variant ?? '' }}">
-                        <input type="hidden" name="quantity" id="selectedQty" value="1">
-                        <button type="submit" class="primary-btn">Mua ngay</button>
-                    </form>
+                                    <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
+                            </form>
+                            {{-- Mua ngay --}}
+                            <form action="{{ route('account.checkout.form') }}" method="GET" class="mt-2">
+                                @csrf
+                                <input type="hidden" name="variant_id" id="selectedVariant" value="">
+                                <input type="hidden" name="quantity" id="selectedQty" value="1">
+                                <div class="card_area d-flex align-items-center gap-3">
+                                    <button type="submit" class="primary-btn">Mua ngay</button>
+                                </div>
+                            </form>
+                        @else
+                            <div class="card_area d-flex align-items-center gap-3">
+                                <button type="button" class="primary-btn disabled">Hết hàng</button>
+                            </div>
+                            @endif
+                        @endguest
 
+
+
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-    <!--================End detail Product Area =================-->
+    <!-- ================= End Product Detail Area ================= -->
 
     <!--================Product Description Area =================-->
     <section class="product_description_area">
         <div class="container">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-                        aria-selected="true">Mô tả</a>
+                    <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                        aria-controls="home" aria-selected="true">Mô tả</a>
                 </li>
 
                 <li class="nav-item">
@@ -152,16 +186,10 @@
                                             <img src="img/product/review-1.png" alt="">
                                         </div>
                                         <div class="media-body">
-                                            {{-- <h4>Blake Ruiz</h4>
-                                            <h5>12th Feb, 2018 at 05:56 pm</h5>
-                                            <a class="reply_btn" href="#">Reply</a> --}}
+
                                         </div>
                                     </div>
-                                    {{-- <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                                        incididunt ut labore et
-                                        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                                        laboris nisi ut aliquip ex ea
-                                        commodo</p> --}}
+
                                 </div>
                                 <div class="review_item reply">
                                     <div class="media">
@@ -323,112 +351,266 @@
                 </div>
             </div>
         </div>
+        @php
+    $variantMap = $product->variants->mapWithKeys(function($v) {
+        return [
+            $v->id_variant => [
+                'price' => $v->price,
+                'quantity' => $v->quantity,
+            ]
+        ];
+    });
+@endphp
     </section>
-    <script>
-        document.querySelector('form[action="{{ route('account.checkout.form') }}"]').addEventListener('submit', function(
-            e) {
-            const qty = document.getElementById('sst').value;
-            document.getElementById('selectedQty').value = qty;
+    {{-- <script>
+        document.querySelector('form[action="{{ route('account.checkout.form') }}"]').addEventListener('submit', function (e) {
+        const qty = document.getElementById('sst').value;
+        document.getElementById('selectedQty').value = qty;
 
-            const variantId = document.getElementById('size').value;
-            document.getElementById('selectedVariant').value = variantId;
-        });
-    </script>
+        const variantId = document.getElementById('variant_id').value;
+        document.getElementById('selectedVariant').value = variantId;
+    });
+    </script> --}}
 
     <!--================End Product Description Area =================-->
 @endsection
+
 @push('scripts')
 <script>
-function addToCart() {
-    const variantId = document.getElementById('size').value;
-    const quantity = document.getElementById('sst').value;
+    function addToCart(event) {
+        event.preventDefault();
 
-    if (!variantId) {
-        alert('Vui lòng chọn size!');
-        return;
-    }
+        const variantId = document.getElementById('variant_id')?.value;
+        const quantity = document.getElementById('sst')?.value;
 
-    if (quantity < 1) {
-        alert('Số lượng phải lớn hơn 0!');
-        return;
-    }
-
-    const btn = document.getElementById('add-to-cart-btn');
-    btn.disabled = true;
-    btn.textContent = 'Đang thêm...';
-
-    const formData = new FormData();
-    formData.append('variant_id', variantId);
-    formData.append('quantity', quantity);
-    formData.append('_token', '{{ csrf_token() }}');
-
-    fetch('{{ route("cart.add") }}', {
-        method: 'POST',
-        body: formData
-    })
-    .then(async response => {
-        let data = {};
-        try {
-            data = await response.json();
-        } catch (err) {
-            console.error('Không thể parse JSON:', err);
+        if (!variantId) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Chưa chọn kích thước',
+                text: 'Vui lòng chọn size trước khi thêm vào giỏ!'
+            });
+            return;
         }
 
-        if (!response.ok) {
-            if (response.status === 422 && data.errors) {
-                const messages = Object.values(data.errors).flat().join(', ');
-                alert(messages);
-            } else {
-                alert(data.message || 'Có lỗi xảy ra khi thêm vào giỏ!');
+        if (quantity < 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Số lượng không hợp lệ',
+                text: 'Số lượng phải lớn hơn 0!'
+            });
+            return;
+        }
+
+        const btn = document.getElementById('add-to-cart-btn');
+        btn.disabled = true;
+        btn.textContent = 'Đang thêm...';
+
+        const formData = new FormData();
+        formData.append('variant_id', variantId);
+        formData.append('quantity', quantity);
+        formData.append('_token', '{{ csrf_token() }}');
+
+        fetch('{{ route('cart.add') }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(async response => {
+            const text = await response.text();
+            let data = {};
+
+            try {
+                data = JSON.parse(text);
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi máy chủ',
+                    text: text
+                });
+                return;
             }
-            return;
-        }
 
-        if (data.require_login) {
-            alert(data.message || 'Bạn cần đăng nhập!');
-            setTimeout(() => window.location.href = '/login', 1000);
-            return;
-        }
+            if (!response.ok) {
+                if (response.status === 422 && data.errors) {
+                    const messages = Object.values(data.errors).flat().join(', ');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi nhập liệu',
+                        text: messages
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: data.message || 'Có lỗi xảy ra khi thêm vào giỏ!'
+                    });
+                }
+                return;
+            }
 
-        if (data.success) {
-            alert(data.message || 'Đã thêm vào giỏ hàng!');
-            updateCartCount();
-        } else {
-            alert(data.message || 'Thêm vào giỏ hàng thất bại!');
-        }
-    })
-    .catch(error => {
-        console.error('Lỗi khi gửi yêu cầu:', error);
-        alert('Lỗi không xác định. Vui lòng thử lại.');
-    })
-    .finally(() => {
-        btn.disabled = false;
-        btn.textContent = 'Add to Cart';
-    });
-}
+            if (data.require_login) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Cần đăng nhập',
+                    text: data.message || 'Vui lòng đăng nhập để tiếp tục.',
+                    confirmButtonText: 'Đăng nhập ngay'
+                }).then(() => {
+                    window.location.href = '/login';
+                });
+                return;
+            }
 
-function updateCartCount() {
-    const cartCountEl = document.getElementById('cart-count');
-    if (cartCountEl) {
-        fetch('{{ route("cart.count") }}')
-        .then(res => res.json())
-        .then(data => {
-            if (data.count > 0) {
-                cartCountEl.style.display = 'inline-block';
-                cartCountEl.innerText = data.count;
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: data.message || 'Đã thêm vào giỏ hàng!',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                updateCartCount();
             } else {
-                cartCountEl.style.display = 'none';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Thất bại',
+                    text: data.message || 'Thêm vào giỏ hàng thất bại!'
+                });
             }
         })
-        .catch(err => {
-            console.error('Lỗi cập nhật giỏ hàng:', err);
+        .catch(error => {
+            console.error('Lỗi khi gửi yêu cầu:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi không xác định',
+                text: 'Vui lòng thử lại sau.'
+            });
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.textContent = 'Add to Cart';
         });
     }
-}
 
-document.addEventListener('DOMContentLoaded', updateCartCount);
+    function updateCartCount() {
+        const cartCountEl = document.getElementById('cart-count');
+        if (cartCountEl) {
+            fetch('{{ route('cart.count') }}')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.count > 0) {
+                        cartCountEl.style.display = 'inline-block';
+                        cartCountEl.innerText = data.count;
+                    } else {
+                        cartCountEl.style.display = 'none';
+                    }
+                })
+                .catch(err => {
+                    console.error('Lỗi cập nhật giỏ hàng:', err);
+                });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartCount();
+
+        const sizeButtons = document.querySelectorAll('.size-btn');
+        const hiddenVariantInput = document.getElementById('variant_id');
+        const selectedVariantInput = document.getElementById('selectedVariant');
+        const priceDisplay = document.getElementById('dynamic-price');
+        const stockDisplay = document.getElementById('dynamic-stock');
+        const input = document.getElementById('sst');
+
+        const btnMinus = document.getElementById('decrease-btn');
+        const btnPlus = document.getElementById('increase-btn');
+
+        const variants = @json($variantMap);
+
+        function formatPrice(number) {
+            return new Intl.NumberFormat('vi-VN').format(number) + ' VNĐ';
+        }
+
+        function getMaxQuantity() {
+            const selectedBtn = document.querySelector('.size-btn.btn-dark');
+            return selectedBtn ? parseInt(selectedBtn.dataset.quantity) : Infinity;
+        }
+
+        sizeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sizeButtons.forEach(b => b.classList.remove('active', 'btn-dark'));
+                btn.classList.add('active', 'btn-dark');
+
+                const variantId = btn.dataset.variantId;
+                const variant = variants[variantId];
+
+                hiddenVariantInput.value = variantId;
+                selectedVariantInput.value = variantId;
+
+                // Cập nhật giá
+                if (priceDisplay && variant?.price) {
+                    priceDisplay.innerText = formatPrice(variant.price);
+                }
+
+                // Cập nhật tồn kho
+                if (stockDisplay) {
+                    if (variant?.quantity > 0) {
+                        stockDisplay.innerText = `Còn lại: ${variant.quantity} sản phẩm`;
+                        stockDisplay.classList.remove('text-danger');
+                        stockDisplay.classList.add('text-muted');
+                    } else {
+                        stockDisplay.innerText = 'Hết hàng';
+                        stockDisplay.classList.remove('text-muted');
+                        stockDisplay.classList.add('text-danger');
+                    }
+                }
+
+                // Reset số lượng về 1 khi chọn size mới
+                input.value = 1;
+            });
+        });
+
+        // Nút -
+        btnMinus.addEventListener('click', function() {
+            let val = parseInt(input.value) || 1;
+            if (val > 1) input.value = val - 1;
+        });
+
+        // Nút +
+        btnPlus.addEventListener('click', function() {
+            let val = parseInt(input.value) || 1;
+            const maxQty = getMaxQuantity();
+            if (val < maxQty) input.value = val + 1;
+        });
+
+        // Nhập tay: giới hạn số lượng
+        input.addEventListener('input', function() {
+            let val = parseInt(input.value);
+            const maxQty = getMaxQuantity();
+
+            if (isNaN(val) || val < 1) input.value = 1;
+            else if (val > maxQty) input.value = maxQty;
+        });
+
+        // Gán lại số lượng cho nút "Mua ngay"
+        const buyNowForm = document.querySelector('form[action="{{ route('account.checkout.form') }}"]');
+        if (buyNowForm) {
+            buyNowForm.addEventListener('submit', function(e) {
+                const variant = document.getElementById('variant_id').value;
+                const qty = document.getElementById('sst').value;
+
+                if (!variant) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Chưa chọn size',
+                        text: 'Vui lòng chọn kích thước trước khi mua ngay.'
+                    });
+                    return;
+                }
+
+                document.getElementById('selectedQty').value = qty;
+                document.getElementById('selectedVariant').value = variant;
+            });
+        }
+    });
 </script>
 @endpush
-
-
 

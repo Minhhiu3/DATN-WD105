@@ -15,20 +15,47 @@
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
         {{-- header --}}
-        @include('admin.partials.header')
+        {{-- @include('admin.partials.header') --}}
 
-        {{-- sidebar --}}
         <!-- Navbar -->
-        <!-- <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+                        <i class="fas fa-bars"></i>
+                    </a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="{{ url('/') }}" class="nav-link">Home</a>
+                    <a href="{{ url('/') }}" class="nav-link">Trang chủ</a>
                 </li>
             </ul>
-        </nav> -->
+
+            <!-- Hiển thị tài khoản ở góc phải -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Dropdown người dùng -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fas fa-user-circle"></i>
+                        {{ Auth::user()->name ?? 'Admin' }}
+                        <i class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user mr-2"></i> Hồ sơ
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ route('logout') }}"
+                           class="dropdown-item"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </nav>
 
         <!-- Sidebar -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -54,9 +81,9 @@
                 @yield('content')
             </section>
         </div>
-        {{-- -footer --}}
-        @include('admin.partials.footer')
 
+        {{-- footer --}}
+        @include('admin.partials.footer')
     </div>
 
     <!-- Scripts -->

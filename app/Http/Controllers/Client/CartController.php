@@ -50,23 +50,36 @@ class CartController extends Controller
 
             $variant = Variant::with(['product', 'size'])->find($request->variant_id);
 
-            if (!$variant) {
+            if (!$variant || $variant->deleted_at) {
                 return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại']);
             }
 
-            if ($variant->quantity < $request->quantity) {
-                return response()->json(['success' => false, 'message' => 'Số lượng không đủ']);
-            }
+            // if ($variant->quantity < $request->quantity) {
+            //     return response()->json(['success' => false, 'message' => 'Số lượng không đủ']);
+            // }
 
             $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
             $cartItem = CartItem::where('cart_id', $cart->id_cart)
                 ->where('variant_id', $request->variant_id)
                 ->first();
 
-            if ($cartItem) {
-                $cartItem->quantity += $request->quantity;
-                $cartItem->save();
-            } else {
+
+       if ($cartItem) {
+    $totalQty = $cartItem->quantity + $request->quantity;
+
+
+    if ($totalQty > $variant->quantity) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Số lượng hàng không đủ. Chỉ còn ' . $variant->quantity . ' sản phẩm'
+        ]);
+    }
+
+
+    $cartItem->quantity = $totalQty;
+    $cartItem->save();
+} else {
+
                 CartItem::create([
                     'cart_id' => $cart->id_cart,
                     'variant_id' => $request->variant_id,
@@ -74,11 +87,10 @@ class CartController extends Controller
                 ]);
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Đã thêm vào giỏ hàng',
-                'cart_count' => $this->getCartCountPrivate()
-            ]);
+           return response()->json([
+    'success' => true,
+    'message' => 'Đã thêm vào giỏ hàng!'
+]);
         } catch (\Exception $e) {
             Log::error('Add to cart error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Lỗi server: ' . $e->getMessage()], 500);
@@ -95,10 +107,9 @@ class CartController extends Controller
 
             $variant = Variant::find($request->variant_id);
 
-            if (!$variant) {
-                return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại']);
+            if (!$variant || !$variant->product || $variant->deleted_at) {
+                return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại hoặc ngưng bán, vui lòng xóa khỏi giỏ hàng']);
             }
-
             // Kiểm tra số lượng tồn kho
             if ($request->quantity > $variant->quantity) {
                 return response()->json([
@@ -213,6 +224,7 @@ class CartController extends Controller
     public function getCartDetails()
     {
         try {
+             $shippingFee = 30000;
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
                 if ($cart) {
@@ -235,14 +247,16 @@ class CartController extends Controller
                 $total += $variant->price * $quantity;
                 $itemCount += $quantity;
             }
-
+            $grandTotal = $total + $shippingFee;
             return response()->json([
                 'success' => true,
                 'data' => [
                     'items' => $cartItems,
                     'total' => $total,
+                    'shipping_fee' => $shippingFee,
+                    'grand_total'=> $grandTotal,
                     'item_count' => $itemCount,
-                    'formatted_total' => number_format($total, 0, ',', '.') . ' VNĐ'
+                    'formatted_total' => number_format($grandTotal, 0, ',', '.') . ' VNĐ'
                 ]
             ]);
         } catch (\Exception $e) {

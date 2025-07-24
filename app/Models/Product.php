@@ -46,14 +46,20 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'category_id', 'id_category');
     }
     public function albumProducts(): HasMany
-{
-    // Giả sử khóa ngoại trong bảng `album_product` là 'product_id'
-    // và khóa chính trong bảng `products` là 'id_product'
-    return $this->hasMany(AlbumProduct::class, 'product_id', 'id_product');
-}
-public function variants()
-{
-    return $this->hasMany(Variant::class, 'product_id', 'id_product');
-}
+    {
+        return $this->hasMany(AlbumProduct::class, 'product_id', 'id_product');
+    }
+    public function variants()
+    {
+        return $this->hasMany(Variant::class, 'product_id', 'id_product');
+    }
+    public function albums()
+    {
+        return $this->hasMany(AlbumProduct::class, 'product_id', 'id_product');
+    }
+    public function advice_product()
+    {
+        return $this->hasOne(AdviceProduct::class, 'product_id', 'id_product');
+    }
 
 }

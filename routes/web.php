@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -18,6 +19,10 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Admin\ProductReviewController;
+use App\Http\Controllers\Admin\AdviceProductController;
+use App\Http\Controllers\Admin\ColorController;
+
+use App\Http\Controllers\PaymentController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -57,10 +62,13 @@ Route::prefix('account')->middleware('auth')->group(function () {
     Route::get('/settings', [AccountController::class, 'settings'])->name('account.settings');
  Route::get('/checkout-form', [CheckoutController::class, 'showCheckoutForm'])->name('account.checkout.form');
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('account.placeOrder');
-Route::put('/account/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
-Route::get('/account/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
+Route::put('/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
+Route::get('/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
 Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
 Route::post('/place-order-cart', [CheckoutController::class, 'placeOrderFromCart'])->name('account.placeOrder.cart');
+Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment'])->name('account.vnpay.payment'); // VNPAY payment route
+Route::get('/payment/vnpay/{order}', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay');
+Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
 
 });
 
@@ -148,6 +156,16 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.variants.update',
         'destroy' => 'admin.variants.destroy',
     ]);
+    // Size Management Routes
+    Route::resource('/colors', ColorController::class)->names([
+        'index' => 'admin.colors.index',
+        'create' => 'admin.colors.create',
+        'store' => 'admin.colors.store',
+        'show' => 'admin.colors.show',
+        'update' => 'admin.colors.update',
+        'destroy' => 'admin.colors.destroy',
+    ]);
+    Route::get('/colors/{color}/edit', [ColorController::class, 'edit'])->name('admin.colors.edit');
 
     // Discount Management Routes
     Route::resource('/discounts', DiscountController::class)->names([
@@ -177,6 +195,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     // AJAX: cập nhật trạng thái
     Route::post('orders/update-status', [OrderController::class, 'updateStatus'])
          ->name('admin.orders.updateStatus');
+           Route::post('orders/update-payment-status', [OrderController::class, 'updatePaymentStatus'])
+         ->name('admin.orders.updatePaymentStatus');
 
     // AJAX: hủy đơn hàng
     Route::post('orders/cancel', [OrderController::class, 'cancel'])
@@ -190,7 +210,62 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/reviews/update-status', [ProductReviewController::class, 'updateStatus'])->name('admin.reviews.updateStatus');
     Route::delete('/reviews/{id_review}', [ProductReviewController::class, 'destroy'])->name('admin.reviews.destroy');
 
+     //xem chi tiét sale của sản phẩm
+    Route::get('/sale/{id_product}', [AdviceProductController::class, 'index'])->name('admin.sale.index');
+    Route::post('/sale/update/{id_product}', [AdviceProductController::class, 'update'])->name('admin.sale.update');
+    Route::post('sales/{id}/toggle-status', [AdviceProductController::class, 'toggleStatus'])->name('admin.sale.toggleStatus');
+
 });
+
+//call api ben thu 3
+// Route lấy danh sách tỉnh
+Route::get('/api/vl/provinces', function () {
+    $response = Http::get('https://vietnamlabs.com/api/vietnamprovince');
+
+    if ($response->successful()) {
+        $data = $response->json();
+
+        return response()->json([
+            'success' => true,
+            'data' => $data['data']['data'] ?? []
+        ]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Không thể lấy tỉnh/thành'], 500);
+});
+
+// Route lấy quận/huyện theo mã tỉnh
+Route::get('/api/vl/districts/{provinceCode}', function ($provinceCode) {
+    $response = Http::get("https://vietnamlabs.com/api/vietnamprovince/district/$provinceCode");
+
+    if ($response->successful()) {
+        $data = $response->json();
+        return response()->json([
+            'success' => true,
+            'data' => $data['data'] ?? []
+        ]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Không thể lấy quận/huyện'], 500);
+});
+
+// Route lấy phường/xã theo mã quận/huyện
+Route::get('/api/vl/wards/{districtCode}', function ($districtCode) {
+    $response = Http::get("https://vietnamlabs.com/api/vietnamprovince/commune/$districtCode");
+
+    if ($response->successful()) {
+        $data = $response->json();
+        return response()->json([
+            'success' => true,
+            'data' => $data['data'] ?? []
+        ]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Không thể lấy phường/xã'], 500);
+});
+
+
+
 
 // Client Routes
 Route::get('/blogs', function () {
@@ -200,8 +275,6 @@ Route::get('/blogs', function () {
 Route::get('/blog-detail', function () {
     return view('client.pages.blog-detail');
 })->name('blog-detail');
-
 // Route::get('/checkout', function () {
 //     return view('client.pages.checkout');
 // })->name('checkout');
-
