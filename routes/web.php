@@ -162,11 +162,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'create' => 'admin.colors.create',
         'store' => 'admin.colors.store',
         'show' => 'admin.colors.show',
+        'edit' => 'admin.colors.edit',
         'update' => 'admin.colors.update',
         'destroy' => 'admin.colors.destroy',
     ]);
-    Route::get('/colors/{color}/edit', [ColorController::class, 'edit'])->name('admin.colors.edit');
-
     // Discount Management Routes
     Route::resource('/discounts', DiscountController::class)->names([
         'index' => 'admin.discounts.index',
@@ -214,6 +213,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/sale/{id_product}', [AdviceProductController::class, 'index'])->name('admin.sale.index');
     Route::post('/sale/update/{id_product}', [AdviceProductController::class, 'update'])->name('admin.sale.update');
     Route::post('sales/{id}/toggle-status', [AdviceProductController::class, 'toggleStatus'])->name('admin.sale.toggleStatus');
+    // sua so luong bieen the 
+    Route::post('/variant/update-quantity/{id}', [VariantController::class, 'updateQuantity'])->name('admin.updateQuantity');
+
 
 });
 
