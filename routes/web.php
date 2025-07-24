@@ -20,6 +20,7 @@ use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Admin\ProductReviewController;
 use App\Http\Controllers\Admin\AdviceProductController;
+use App\Http\Controllers\Admin\ColorController;
 
 use App\Http\Controllers\PaymentController;
 
@@ -155,6 +156,16 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.variants.update',
         'destroy' => 'admin.variants.destroy',
     ]);
+    // Size Management Routes
+    Route::resource('/colors', ColorController::class)->names([
+        'index' => 'admin.colors.index',
+        'create' => 'admin.colors.create',
+        'store' => 'admin.colors.store',
+        'show' => 'admin.colors.show',
+        'update' => 'admin.colors.update',
+        'destroy' => 'admin.colors.destroy',
+    ]);
+    Route::get('/colors/{color}/edit', [ColorController::class, 'edit'])->name('admin.colors.edit');
 
     // Discount Management Routes
     Route::resource('/discounts', DiscountController::class)->names([
