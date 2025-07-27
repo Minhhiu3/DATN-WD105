@@ -139,9 +139,19 @@ class CheckoutController extends Controller
             return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
         }
 
-        $cartItems = CartItem::with('variant.product')
-            ->where('cart_id', $cart->id_cart)
-            ->get();
+        // $cartItems = CartItem::with('variant.product')
+        //     ->where('cart_id', $cart->id_cart)
+        //     ->get();
+        $cartItems = CartItem::with([
+        'variant' => function ($q) {
+            $q->withTrashed()->with([
+                'product' => function ($q2) {
+                    $q2->withTrashed();
+                },
+                'size'
+            ]);
+        }
+    ])->where('cart_id', $cart->id_cart)->get();
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
@@ -155,17 +165,18 @@ class CheckoutController extends Controller
             'ward'            => 'required|string',
             'address'         => 'required|string',
         ]);
-
+   if ($request->payment_method === 'cod') {
         DB::beginTransaction();
 
         try {
             $totalAmount = 0;
 $grand_total =0;
-            foreach ($cartItems as $item) {
+             foreach ($cartItems as $item) {
                 $variant = $item->variant;
 
-                if (!$variant || $variant->deleted_at) {
-                    throw new \Exception("Sản phẩm {$variant->product->name_product} không tồn tại hoặc đã ngừng bán. Vui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán");
+                // Check sản phẩm bị xóa mềm
+                if (!$variant || $variant->trashed() || !$variant->product || $variant->product->trashed()) {
+                    throw new \Exception("Một sản phẩm trong giỏ hàng đã bị ngừng bán. Vui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
                 }
 
                 if ($variant->quantity < $item->quantity) {
@@ -180,7 +191,7 @@ $shippingFee = 30000;
             $orderCode = $this->generateOrderCode();
 
 
- 
+
          $order = Order::create([
             'user_id'        => $user->id_user,
             'order_code'     => $orderCode,
@@ -215,12 +226,48 @@ $shippingFee = 30000;
                    if ($request->payment_method === 'cod') {
                     return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
                 }
-      if ($request->payment_method === 'vnpay') {
-    return redirect()->route('payment.vnpay', ['order' => $order->id_order]);
-}
+
     } catch (\Exception $e) {
         DB::rollBack();
         return redirect()->back()->withErrors( $e->getMessage());
+    }
+}
+// Nếu chọn VNPAY thì chuyển sang trang xác nhận OTP
+    if ($request->payment_method === 'vnpay') {
+        $totalAmount = 0;
+         foreach ($cartItems as $item) {
+            $variant = $item->variant;
+
+            if (!$variant || $variant->trashed() || !$variant->product || $variant->product->trashed()) {
+                return redirect()->route('cart')->withErrors("Một sản phẩm trong giỏ hàng đã bị xóa hoặc ngừng bán.");
+            }
+
+            if ($variant->quantity < $item->quantity) {
+                return redirect()->route('cart')->withErrors("Sản phẩm {$variant->product->name_product} không đủ hàng.");
+            }
+
+            $totalAmount += $variant->price * $item->quantity;
+        }
+
+    $shippingFee = 30000;
+    $grand_total = $totalAmount + $shippingFee;
+        // Lưu thông tin đơn hàng tạm vào session hoặc truyền qua request
+         session([
+        'pending_order_cart' => [
+            'user_id'       => $user->id_user,
+            'cart_id'       => $cart->id_cart,
+            'payment_method'=> $request->payment_method,
+            'province'      => $request->province,
+            'district'      => $request->district,
+            'ward'          => $request->ward,
+            'address'       => $request->address,
+            'total_amount'  => $totalAmount,
+            'grand_total'   => $grand_total,
+        ]
+    ]);
+
+    // Chuyển hướng tới VNPay để thanh toán
+    return redirect()->route('payment.vnpay');
     }
 }
 
