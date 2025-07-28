@@ -149,7 +149,7 @@
                             <div class="checkout_btn_inner d-flex align-items-center">
                                 <a class="gray_btn" href="{{ route('products') }}">Tiếp tục mua sắm</a>
                                 <form action="{{ route('account.checkout.cart') }}" method="GET" class="d-inline-block">
-                                    <button type="submit" class="primary-btn">Thanh toán</button>
+                                    <button type="submit" class="btn btn-primary">Thanh toán</button>
                                 </form>
                             </div>
                             <div class="text-center mt-3">

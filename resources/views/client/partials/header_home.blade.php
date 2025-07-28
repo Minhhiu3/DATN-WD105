@@ -133,6 +133,24 @@
         updateCartCountFromServer();
     });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchBox = document.getElementById('search_input_box');
+    const searchIcon = document.querySelector('.lnr-magnifier'); 
+    const closeIcon = document.getElementById('close_search');
+
+    // Khi click icon search -> mở
+    searchIcon.addEventListener('click', function () {
+        searchBox.classList.add('active');
+    });
+
+    // Khi click icon đóng -> ẩn
+    closeIcon.addEventListener('click', function () {
+        searchBox.classList.remove('active');
+    });
+});
+</script>
+
 
 
 

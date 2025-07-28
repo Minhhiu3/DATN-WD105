@@ -12,9 +12,13 @@
                   @elseif ($order->status == 'processing')
                 <span class="btn btn-sm btn-primary text-white">Đã xác nhận</span>
             @elseif ($order->status == 'shipping')
-                <span class="btn btn-sm btn-info text-white">Đang giao</span>
+                <span class="btn btn-sm btn-info text-white">Đang giao hàng</span>
+                 @elseif ($order->status == 'delivered')
+                <span class="btn btn-sm btn-info text-white">Đã giao hàng</span>
+                @elseif ($order->status == 'received')
+                <span class="btn btn-sm btn-info text-white">Đã nhận hàng</span>
             @elseif ($order->status == 'completed')
-                <span class="btn btn-sm btn-success text-white">Đã giao</span>
+                <span class="btn btn-sm btn-success text-white">Hoàn thành</span>
             @elseif ($order->status == 'canceled')
                 <span class="btn btn-sm btn-danger text-white">Đã hủy</span>
             @else
@@ -39,7 +43,6 @@
               <p><strong>Địa chỉ:</strong>
     {{ $order->address }},
     {{ $order->ward }},
-    {{ $order->district }},
     {{ $order->province }}
 </p>
 
