@@ -29,6 +29,7 @@ class ClientProductController extends Controller
         'category',
         'variants.color',
         'variants.size',
+        
          'albumProducts')->findOrFail($id);
     return view('client.pages.product-detail', compact('product'));
 }

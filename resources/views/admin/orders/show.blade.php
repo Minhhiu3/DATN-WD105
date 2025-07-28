@@ -80,6 +80,7 @@
                             <th></th>
                             <th>Sản phẩm</th>
                             <th>Size</th>
+                            <th>color</th>
                             <th>Số Lượng</th>
                             <th>Giá</th>
                             <th>Tổng tiền đơn hàng</th>
@@ -100,6 +101,7 @@
                                 <td>{{ $item->variant->id_variant ?? 'Không rõ' }}</td>
                                 <td>{{ $item->variant->product->name_product ?? 'Không rõ' }}</td>
                                 <td>{{ $item->variant->size->name ?? 'Không rõ' }}</td>
+                                <td>{{ $item->variant->color->name ?? 'không rõ' }}</td>
                                 <td>{{ $item->quantity ?? 'Không rõ' }}</td>
                                 <td>{{ number_format($price, 0, ',', '.') }} VND</td>
                                 <td>{{ number_format($thanhTien, 0, ',', '.') }} VND</td>
