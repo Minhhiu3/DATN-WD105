@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
            SizeSeeder::class,
             ProductSeeder::class,
             VariantSeeder::class,
-
+            ColorSeeder::class,
 
 
         ]);

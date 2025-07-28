@@ -4,7 +4,7 @@
 
 @section('content')
 <style>
-    /* ==== CARD ==== */
+/* ==== CARD ==== */
     .card-modern {
         border-radius: 14px;
         background: #ffffff;
@@ -22,104 +22,135 @@
         align-items: center;
         border-bottom: 1px solid #e9ecef;
     }
-    .btn-add-modern {
-        background: linear-gradient(135deg, #42a5f5, #478ed1);
-        color: #fff;
-        border-radius: 50px;
-        padding: 0.5rem 1.2rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(66, 165, 245, 0.3);
-    }
-    .btn-add-modern:hover {
-        opacity: 0.95;
-        transform: translateY(-2px);
-    }
 
-    /* ==== TABLE ==== */
-    .table-modern {
-        border-collapse: separate;
-        border-spacing: 0 10px;
-        width: 100%;
-    }
-    .table-modern thead {
-        background-color: #f1f3f5;
-    }
-    .table-modern th {
-        font-weight: 600;
-        color: #495057;
-        padding: 12px;
-        border: none;
-    }
-    .table-modern td {
-        background: #fff;
-        border: none;
-        padding: 12px;
-        vertical-align: middle;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        border-radius: 8px;
-    }
-    .table-modern tbody tr:hover td {
-        background: #f8f9fa;
-        transition: background 0.3s ease;
-    }
+/* ==== BUTTONS ==== */
+.btn-add-modern {
+    background: linear-gradient(135deg, #42a5f5, #1e88e5);
+    color: #fff;
+    border-radius: 40px;
+    padding: 0.45rem 1.3rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 16px rgba(66, 165, 245, 0.3);
+}
+.btn-add-modern:hover {
+    opacity: 0.95;
+    transform: translateY(-2px);
+}
 
-    /* ==== ACTION BUTTONS ==== */
-    .btn-action {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        border-radius: 8px;
-        padding: 0.4rem 0.9rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #fff;
-        border: none;
-        transition: all 0.3s ease;
-        text-decoration: none;
-    }
-    .btn-edit {
-        background: linear-gradient(135deg, #fbc02d, #f57f17); /* GOLDEN gradient */
-        box-shadow: 0 4px 10px rgba(251, 192, 45, 0.4);
-    }
-    .btn-edit:hover {
-        background: linear-gradient(135deg, #f9a825, #f57c00);
-        transform: scale(1.05);
-        box-shadow: 0 6px 15px rgba(251, 192, 45, 0.6);
-    }
-    .btn-delete {
-        background: linear-gradient(135deg, #e53935, #b71c1c); /* STRONG RED gradient */
-        box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
-    }
-    .btn-delete:hover {
-        background: linear-gradient(135deg, #d32f2f, #b71c1c);
-        transform: scale(1.05);
-        box-shadow: 0 6px 15px rgba(229, 57, 53, 0.6);
-    }
+/* ==== TABLE ==== */
+.table-modern {
+    width: 100%;
+    border-spacing: 0 12px;
+    border-collapse: separate;
+}
+.table-modern thead th {
+    background: #f6f9fc;
+    font-weight: 600;
+    padding: 14px;
+    color: #495057;
+    border: none;
+}
+.table-modern tbody td {
+    background: #fff;
+    padding: 14px;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+    vertical-align: middle;
+    border: none;
+}
+.table-modern tbody tr:hover td {
+    background: #f4f6f9;
+    transition: all 0.2s ease;
+}
 
-    .alert-success-modern {
-        background: #d1f2eb;
-        color: #117864;
-        border: 1px solid #a3e4d7;
-        border-radius: 8px;
-        font-weight: 500;
-        padding: 10px 15px;
-        margin-bottom: 15px;
-        animation: fadeIn 0.5s ease-out;
-    }
-        .table-modern input.quantity-input {
-        width: 80px;
-        text-align: center;
-        border: 1px solid #ced4da;
-        border-radius: 6px;
-        padding: 5px 8px;
-        transition: all 0.3s ease;
-    }
-    .table-modern input.quantity-input:focus {
-        border-color: #42a5f5;
-        box-shadow: 0 0 0 0.1rem rgba(66, 165, 245, 0.3);
-        outline: none;
-    }
+/* ==== INPUT ==== */
+.quantity-input {
+    width: 80px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 5px 10px;
+    transition: 0.3s;
+}
+.quantity-input:focus {
+    border-color: #42a5f5;
+    box-shadow: 0 0 0 0.1rem rgba(66, 165, 245, 0.3);
+    outline: none;
+}
+
+/* ==== ACTION BUTTONS ==== */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.45rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 10px;
+    color: #fff;
+    text-decoration: none;
+    transition: 0.25s;
+    border: none;
+}
+.btn-edit {
+    background: linear-gradient(135deg, #fbc02d, #f57f17);
+    box-shadow: 0 4px 10px rgba(251, 192, 45, 0.4);
+}
+.btn-edit:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #f9a825, #f57c00);
+}
+.btn-delete {
+    background: linear-gradient(135deg, #e53935, #c62828);
+    box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
+}
+.btn-delete:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+/* ==== ALERT ==== */
+.alert-success-modern {
+    background: #e6fffa;
+    color: #117864;
+    border: 1px solid #a3e4d7;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+/* ==== COLOR HEADER ==== */
+.color-header {
+    background-color: #e3f2fd;
+    font-weight: bold;
+    padding: 10px 16px;
+    border-radius: 10px;
+}
+.color-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.color-info img {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+.color-info div {
+    display: flex;
+    flex-direction: column;
+}
+.color-info div span:first-child {
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+.color-info div span:last-child {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
 </style>
 
 <div class="card card-modern">
@@ -141,58 +172,85 @@
         @endif
 
         <div class="table-responsive">
-            <table class="table table-modern">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Mã Sản Phẩm</th>
-                        <th>Kích Cỡ</th>
-                        <th>Giá</th>
-                        <th>Số Lượng</th>
-                        <th class="text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($variants as $variant)
+            @foreach ($groupedVariants as $colorId => $variantsGroup)
+                @php $color = $variantsGroup->first()->color; @endphp
+
+                <!-- Tiêu đề màu -->
+                <div class="color-header d-flex justify-content-between align-items-center mb-2">
+                    <div class="color-info">
+                        <img src="{{ asset('storage/' . $color->image) }}" alt="{{ $color->name_color }}">
+                        <div>
+                            <span><i class="bi bi-palette-fill"></i> {{ $color->name_color }}</span>
+                            <span>ID: {{ $color->id_color }}</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="{{ url('/admin/colors/' . $color->id_color . '/edit') }}?product_id={{ $id_product }}" class="btn btn-action btn-edit">
+                            <i class="bi bi-pencil-square"></i> Sửa
+                        </a>
+                        <form action="" method="POST" class="d-inline" style="margin-left: 5px">
+                            @csrf
+                            @method('DELETE')
+                            <button onclick="return confirm('Bạn có chắc muốn xóa?')" class="btn btn-action btn-delete">
+                                <i class="bi bi-trash3-fill"></i> Xóa
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Bảng biến thể theo từng màu -->
+                <table class="table table-modern">
+                    <thead>
                         <tr>
-                            <td>{{ $variant->id_variant }}</td>
-                            <td>{{ $variant->product->name_product }}</td>
-                            <td>{{ $variant->size->name }}</td>
-                            <td>{{ number_format($variant->price, 0, ',', '.') }} VNĐ</td>
-                            <td>
-                                <input type="number" min="0" class="quantity-input" width="50px"
-                                value="{{ $variant->quantity }}" 
-                                data-id="{{ $variant->id_variant }}">
-                            </td>
-                            <td class="text-center">
-                                <a href="{{ route('admin.variants.edit', $variant->id_variant) }}" 
-                                   class="btn btn-action btn-edit">
-                                    <i class="bi bi-pencil-square"></i> Sửa
-                                </a>
-                                <form action="{{ route('admin.variants.destroy', $variant->id_variant) }}" 
-                                      method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button onclick="return confirm('Bạn có chắc muốn xóa?')" 
-                                            class="btn btn-action btn-delete">
-                                        <i class="bi bi-trash3-fill"></i> Xóa
-                                    </button>
-                                </form>
-                            </td>
+                            <th>#</th>
+                            <th>Mã Sản Phẩm</th>
+                            <th>Tên Màu</th>
+                            <th>Kích Cỡ</th>
+                            <th>Giá</th>
+                            <th>Số Lượng</th>
+                            <th class="text-center">Hành động</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($variantsGroup as $variant)
+                            <tr>
+                                <td>{{ $variant->id_variant }}</td>
+                                <td>{{ $variant->product->name_product }}</td>
+                                <td>{{ $variant->color->name_color }}</td>
+                                <td>{{ $variant->size->name }}</td>
+                                <td>{{ number_format($variant->price, 0, ',', '.') }} VNĐ</td>
+                                <td>
+                                    <input type="number" min="0" class="quantity-input" value="{{ $variant->quantity }}"
+                                           data-id="{{ $variant->id_variant }}">
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ route('admin.variants.edit', $variant->id_variant) }}" class="btn btn-action btn-edit">
+                                        <i class="bi bi-pencil-square"></i> Sửa
+                                    </a>
+                                    <form action="{{ route('admin.variants.destroy', $variant->id_variant) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button onclick="return confirm('Bạn có chắc muốn xóa?')" class="btn btn-action btn-delete">
+                                            <i class="bi bi-trash3-fill"></i> Xóa
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endforeach
         </div>
     </div>
 </div>
+
 <script>
     document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', function() {
+        input.addEventListener('change', function () {
             let id = this.dataset.id;
             let newQuantity = this.value;
 
-            fetch(`/admin/variants/update-quantity/${id}`, {
+            fetch(`/admin/variant/update-quantity/${id}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -202,12 +260,13 @@
             })
             .then(res => res.json())
             .then(data => {
-                if(data.success){
+                if (data.success) {
                     alert('Số lượng đã được cập nhật!');
                 } else {
                     alert('Lỗi khi cập nhật số lượng.');
                 }
-            }).catch(err => {
+            })
+            .catch(err => {
                 console.error(err);
                 alert('Không thể kết nối đến server.');
             });

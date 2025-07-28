@@ -11,6 +11,7 @@ use App\Models\Variant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 
@@ -43,47 +44,48 @@ class CheckoutController extends Controller
 
         return $code;
     }
-    public function placeOrder(Request $request)
-    {
-        $request->validate([
-            'variant_id'      => 'required|exists:variant,id_variant',
-            'quantity'        => 'required|integer|min:1',
-            'payment_method'  => 'required|in:cod,vnpay',
-            'province'        => 'required|string',
-            'district'        => 'required|string',
-            'ward'            => 'required|string',
-            'address'         => 'required|string',
-        ]);
+   public function placeOrder(Request $request)
+{
+    $request->validate([
+        'variant_id'      => 'required|exists:variant,id_variant',
+        'quantity'        => 'required|integer|min:1',
+        'payment_method'  => 'required|in:cod,vnpay',
+        'province'        => 'required|string',
+        'ward'            => 'required|string',
+        'address'         => 'required|string',
+    ]);
 
+    $user = Auth::user();
+    $variant = Variant::findOrFail($request->variant_id);
 
+    if ($variant->quantity < $request->quantity) {
+        return redirect()->back()->withErrors('Số lượng sản phẩm không đủ trong kho.');
+    }
+
+    $totalAmount = $variant->price * $request->quantity;
+    $shippingFee = 30000;
+    $grand_total = $totalAmount + $shippingFee;
+
+    // COD
+    if ($request->payment_method === 'cod') {
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
-            $user = Auth::user();
-            $variant = Variant::findOrFail($request->variant_id);
-
-            if ($variant->quantity < $request->quantity) {
-                return redirect()->back()->withErrors('Số lượng sản phẩm không đủ trong kho.');
-            }
-            // Tạo đơn hàng
             $orderCode = $this->generateOrderCode();
 
-                $order = Order::create([
+            $order = Order::create([
                 'user_id'        => $user->id_user,
                 'order_code'     => $orderCode,
                 'status'         => 'pending',
-                'payment_method' => $request->payment_method,
+                'payment_method' => 'cod',
                 'payment_status' => 'unpaid',
-                'province' => $request->province,
-                'district' => $request->district,
-                'ward'     => $request->ward,
-                'address'  => $request->address,
-                'total_amount'   => $variant->price * $request->quantity,
+                'province'       => $request->province,
+                'ward'           => $request->ward,
+                'address'        => $request->address,
+                'total_amount'   => $totalAmount,
+                'grand_total'    => $grand_total,
                 'created_at'     => now(),
             ]);
 
-
-            // Thêm chi tiết đơn hàng
             OrderItem::create([
                 'order_id'   => $order->id_order,
                 'variant_id' => $variant->id_variant,
@@ -91,21 +93,38 @@ class CheckoutController extends Controller
                 'created_at' => now(),
             ]);
 
-            // Trừ kho
             $variant->decrement('quantity', $request->quantity);
 
             DB::commit();
-                if ($request->payment_method === 'cod') {
-                    return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
-                }
-      if ($request->payment_method === 'vnpay') {
-    return redirect()->route('payment.vnpay', ['order' => $order->id_order]);
-}
-                } catch (\Exception $e) {
-            DB::rollback();
+            return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()->withErrors('Lỗi xử lý đơn hàng: ' . $e->getMessage());
         }
     }
+
+    //VNPay
+    if ($request->payment_method === 'vnpay') {
+        session([
+            'pending_order_buy_now' => [
+                'user_id'       => $user->id_user,
+                'variant_id'    => $variant->id_variant,
+                'quantity'      => $request->quantity,
+                'province'      => $request->province,
+                'ward'          => $request->ward,
+                'address'       => $request->address,
+                'total_amount'  => $totalAmount,
+                'grand_total'   => $grand_total,
+            ]
+        ]);
+
+        Log::info('🔄 [Buy Now] Lưu session pending_order_buy_now:', session('pending_order_buy_now'));
+
+        return redirect()->route('payment.vnpay.buy_now');
+    }
+}
+
+
     //mua từ giỏ hàng
     public function checkoutCart()
     {
@@ -161,7 +180,7 @@ class CheckoutController extends Controller
         $request->validate([
             'payment_method' => 'required|in:cod,vnpay',
             'province'        => 'required|string',
-            'district'        => 'required|string',
+            // 'district'        => 'required|string',
             'ward'            => 'required|string',
             'address'         => 'required|string',
         ]);
@@ -200,7 +219,7 @@ $shippingFee = 30000;
             'payment_status' => 'unpaid',
             'total_amount'   => $totalAmount,
             'province'       => $request->province,
-            'district'       => $request->district,
+            // 'district'       => $request->district,
             'ward'           => $request->ward,
             'address'        => $request->address,
             'grand_total'=> $grand_total,
@@ -258,7 +277,7 @@ $shippingFee = 30000;
             'cart_id'       => $cart->id_cart,
             'payment_method'=> $request->payment_method,
             'province'      => $request->province,
-            'district'      => $request->district,
+            // 'district'      => $request->district,
             'ward'          => $request->ward,
             'address'       => $request->address,
             'total_amount'  => $totalAmount,

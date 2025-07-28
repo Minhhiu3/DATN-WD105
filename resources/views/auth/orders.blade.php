@@ -96,10 +96,14 @@
                                                                 nhận</span>
                                                         @elseif ($status == 'shipping')
                                                             <span class="btn btn-sm btn-info text-white">Đang giao</span>
-                                                        @elseif ($status == 'completed')
-                                                            <span class="btn btn-sm btn-success text-white">Đã giao</span>
-                                                        @elseif ($status == 'canceled')
-                                                            <span class="btn btn-sm btn-danger text-white">Đã hủy</span>
+                                                        @elseif ($status == 'delivered')
+                                                            <span class="btn btn-sm btn-success text-white">Đã giao hàng</span>
+                                                             @elseif ($status == 'received')
+                                                            <span class="btn btn-sm btn-success text-white">Đã nhận hàng</span>
+                                                            @elseif ($status == 'completed')
+                                                            <span class="btn btn-sm btn-success text-white">Hoàn thành</span>
+                                                             @elseif ($status == 'canceled')
+                                                            <span class="btn btn-sm btn-success text-white">Đã Hủy</span>
                                                         @else
                                                             <span
                                                                 class="btn btn-sm btn-light text-black">{{ $status }}</span>
@@ -143,6 +147,17 @@
                                                                     </button>
                                                                 </form>
                                                             @endif
+                                                            @if ($order->status == 'delivered')
+            <form action="{{ route('account.confirmReceive', $order->id_order) }}"
+                method="POST"
+                onsubmit="return confirm('Xác nhận bạn đã nhận được hàng này?')">
+                @csrf
+                @method('PUT')
+                <button type="submit" class="btn btn-sm btn-success">
+                    <i class="fa fa-check"></i> Xác nhận đã nhận hàng
+                </button>
+            </form>
+        @endif
                                                         </div>
                                                     </td>
                                                 </tr>

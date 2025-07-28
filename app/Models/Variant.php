@@ -16,6 +16,7 @@ class Variant extends Model
     protected $fillable = [
         'size_id',
         'product_id',
+        'color_id',
         'price',
         'quantity',
     ];
@@ -28,5 +29,10 @@ public function size()
 {
     return $this->belongsTo(Size::class, 'size_id', 'id_size');
 }
+public function color()
+{
+    return $this->belongsTo(Color::class, 'color_id', 'id_color');
+}
+
 
 }

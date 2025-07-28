@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => {
             provincesData = response.data || [];
             provincesData.forEach(p => {
-                const option = new Option(p.province, p.id);
+                const option = new Option(p.province, p.province);
                 provinceSelect.add(option);
             });
         })
@@ -153,12 +153,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ✅ Khi chọn tỉnh -> load xã/phường từ wards
     provinceSelect.addEventListener("change", function() {
-        const provinceId = this.value;
+        const provinceName = this.value;
         wardSelect.innerHTML = '<option value="">-- Chọn Xã/Phường --</option>';
 
-        if (!provinceId) return;
+        if (!provinceName) return;
 
-        const selectedProvince = provincesData.find(p => p.id === provinceId);
+        const selectedProvince = provincesData.find(p => p.province === provinceName);
         if (selectedProvince && selectedProvince.wards) {
             selectedProvince.wards.forEach(w => {
                 const option = new Option(w.name, w.name);
