@@ -1,6 +1,6 @@
 @extends('layouts.client_home')
 @section('title', 'Chi tiết sản phẩmphẩm')
-@push('styles')
+<!-- @push('styles')
 <style>
     .size-btn, .color-btn {
         min-width: 50px;
@@ -8,10 +8,10 @@
     }
 </style>
 
-@endpush
+@endpush -->
 @section('content')
    <!-- ================= Start Product Detail Area ================= -->
-<div class="product_image_area my-5">
+<div class="product_image_area my-5 ">
     <div class="container">
         <div class="row">
             <!-- Cột trái: Ảnh sản phẩm -->
@@ -44,8 +44,8 @@
             </div>
 
             <!-- Cột phải: Thông tin sản phẩm -->
-            <div class="col-lg-6">
-                <div class="s_product_text">
+            <div class="col-lg-6 " >
+                <div class="s_product_text" style="margin-left: 20px;">
                     <h3>{{ $product->name_product }}</h3>
 
                     <h2>
@@ -378,6 +378,21 @@
     <!--================End Product Description Area =================-->
 @endsection
 
+@push('styles')
+<style>
+.fade-image {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 1;
+}
+
+.fade-out {
+    opacity: 0;
+    transform: scale(0.97);
+}
+
+</style>
+@endpush
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -456,8 +471,13 @@ const quantityInput = document.getElementById('add-cart-quantity');             
             colorBtn.classList.add('active', 'btn-primary');
 
             if (mainImage && imageUrl) {
-                mainImage.src = imageUrl;
-            }
+    mainImage.classList.add('fade-out');
+    setTimeout(() => {
+        mainImage.src = imageUrl;
+        mainImage.classList.remove('fade-out');
+    }, 200);
+}
+
 
             stockDisplay.innerText = `Số lượng còn lại của màu: ${colorQuantity} sản phẩm`;
             stockDisplay.classList.remove('text-danger');
