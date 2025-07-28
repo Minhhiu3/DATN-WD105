@@ -5799,4 +5799,15 @@ label {
         pointer-events: none;
         opacity: 0.5;
     }
+    /* #province, #ward {
+    display: block !important;
+} */
+ #search_input_box {
+    display: none; /* Mặc định ẩn */
+    transition: all 0.3s ease; /* hiệu ứng mượt */
+}
+#search_input_box.active {
+    display: block; /* Khi mở sẽ hiển thị */
+}
+
 /*# sourceMappingURL=main.css.map */

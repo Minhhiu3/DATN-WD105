@@ -66,20 +66,20 @@
                     <input type="text" class="form-control" value="{{ auth()->user()->email }}" disabled>
                 </div>
 
-                <div class="form-group">
-                    <label>Tỉnh/Thành</label>
-                    <input type="text" name="province" class="form-control" placeholder="Nhập tỉnh/thành" required>
-                </div>
+               <!-- Địa chỉ -->
+  <div class="col-md-12 form-group">
+    <label><b>Tỉnh/Thành</b></label>
+    <select id="province" name="province" class="form-control" required>
+        <option value="">-- Chọn Tỉnh/Thành phố --</option>
+    </select>
+</div>
 
-                <div class="form-group">
-                    <label>Quận/Huyện</label>
-                    <input type="text" name="district" class="form-control" placeholder="Nhập quận/huyện" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Xã/Phường</label>
-                    <input type="text" name="ward" class="form-control" placeholder="Nhập xã/phường" required>
-                </div>
+<div class="col-md-12 form-group">
+    <label><b>Xã/Phường</b></label>
+    <select id="ward" name="ward" class="form-control" required disabled>
+        <option value="">-- Chọn Xã/Phường --</option>
+    </select>
+</div>
 
                 <div class="form-group">
                     <label>Địa chỉ chi tiết</label>
@@ -109,20 +109,15 @@
                         </li>
                     </ul>
 
-                    <div class="payment_item">
-                        <label>
-                            <input type="radio" name="payment_method" value="cod" checked>
-                            Thanh toán khi nhận hàng
-                        </label>
-                    </div>
-                    <div class="payment_item">
-                        <label>
-                            <input type="radio" name="payment_method" value="vnpay">
-                            Thanh toán qua VNPay
-                        </label>
-                    </div>
+                   <div class="col-md-12 text-right mt-3 d-flex justify-content-between">
+                                <button type="submit" name="payment_method" value="cod" class="btn btn-warning">
+                                    ĐẶT HÀNG THANH TOÁN SAU <br><small>(Trả tiền khi nhận hàng)</small>
+                                </button>
 
-                    <button type="submit" class="primary-btn w-100 mt-3">Đặt Hàng</button>
+                                <button type="submit" name="payment_method" value="vnpay" class="btn btn-primary">
+                                    THANH TOÁN ONLINE <br><small>(Thông qua VNPay)</small>
+                                </button>
+                            </div>
                 </div>
             </div>
         </form>
@@ -131,115 +126,46 @@
 
     </div>
 </section>
-<!--================End Checkout Area =================-->
 
-
-<!--
-  <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const provinceSelect = document.getElementById('provinceSelect');
-    const districtSelect = document.getElementById('districtSelect');
-    const wardSelect = document.getElementById('wardSelect'); // Thêm nếu bạn có dropdown phường/xã
-
-    // Load danh sách tỉnh/thành
-    async function loadProvinces() {
-        try {
-            provinceSelect.innerHTML = '<option value="">Đang tải...</option>';
-            const res = await fetch('/api/vl/provinces');
-            const result = await res.json();
-
-            if (result.success && Array.isArray(result.data)) {
-                provinceSelect.innerHTML = '<option value="">Chọn Tỉnh/Thành</option>';
-                result.data.forEach(province => {
-                    const opt = document.createElement("option");
-                    opt.value = province.id; // Hoặc province.code nếu API dùng code
-                    opt.textContent = province.province;
-                    provinceSelect.appendChild(opt);
-                });
-            } else {
-                throw new Error("Dữ liệu tỉnh không hợp lệ");
-            }
-        } catch (error) {
-            console.error("Lỗi khi tải tỉnh/thành:", error);
-            provinceSelect.innerHTML = '<option value="">Lỗi khi tải</option>';
-        }
-    }
-
-    // Load danh sách quận/huyện theo tỉnh
-    async function loadDistricts(provinceId) {
-        try {
-            districtSelect.innerHTML = '<option value="">Đang tải...</option>';
-            const res = await fetch(`/api/vl/districts/${provinceId}`);
-            const result = await res.json();
-
-            if (result.success && Array.isArray(result.data)) {
-                districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
-                result.data.forEach(district => {
-                    const opt = document.createElement("option");
-                    opt.value = district.id; // Hoặc district.code
-                    opt.textContent = district.district;
-                    districtSelect.appendChild(opt);
-                });
-                wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>'; // Reset nếu dùng
-            } else {
-                throw new Error("Dữ liệu quận/huyện không hợp lệ");
-            }
-        } catch (error) {
-            console.error("Lỗi khi tải quận/huyện:", error);
-            districtSelect.innerHTML = '<option value="">Lỗi khi tải</option>';
-        }
-    }
-
-    // Load danh sách phường/xã theo quận
-    async function loadWards(districtId) {
-        try {
-            wardSelect.innerHTML = '<option value="">Đang tải...</option>';
-            const res = await fetch(`/api/vl/wards/${districtId}`);
-            const result = await res.json();
-
-            if (result.success && Array.isArray(result.data)) {
-                wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
-                result.data.forEach(ward => {
-                    const opt = document.createElement("option");
-                    opt.value = ward.id; // Hoặc ward.code
-                    opt.textContent = ward.commune;
-                    wardSelect.appendChild(opt);
-                });
-            } else {
-                throw new Error("Dữ liệu phường/xã không hợp lệ");
-            }
-        } catch (error) {
-            console.error("Lỗi khi tải phường/xã:", error);
-            wardSelect.innerHTML = '<option value="">Lỗi khi tải</option>';
-        }
-    }
-
-    // Event khi chọn tỉnh
-    provinceSelect.addEventListener('change', function () {
-        const provinceId = this.value;
-        if (provinceId) {
-            loadDistricts(provinceId);
-        } else {
-            districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
-            wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
-        }
-    });
-
-    // Event khi chọn quận
-    districtSelect.addEventListener('change', function () {
-        const districtId = this.value;
-        if (districtId) {
-            loadWards(districtId);
-        } else {
-            wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
-        }
-    });
-
-    // Gọi hàm khởi tạo
-    loadProvinces();
-});
-</script> -->
-
-
-    <!--================End Checkout Area =================-->
 @endsection
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const provinceSelect = document.getElementById("province");
+    const districtSelect = document.getElementById("district");
+    const wardSelect = document.getElementById("ward");
+
+    let provincesData = []; // Lưu dữ liệu API để dùng sau
+
+    // ✅ Gọi API lấy danh sách tỉnh + xã/phường
+    fetch("https://vietnamlabs.com/api/vietnamprovince")
+        .then(res => res.json())
+        .then(response => {
+            provincesData = response.data || [];
+            provincesData.forEach(p => {
+                const option = new Option(p.province, p.province);
+                provinceSelect.add(option);
+            });
+        })
+        .catch(err => console.error("Lỗi load tỉnh:", err));
+
+    // ✅ Khi chọn tỉnh -> load xã/phường từ wards
+    provinceSelect.addEventListener("change", function() {
+        const provinceName = this.value;
+        wardSelect.innerHTML = '<option value="">-- Chọn Xã/Phường --</option>';
+
+        if (!provinceName) return;
+
+        const selectedProvince = provincesData.find(p => p.province === provinceName);
+        if (selectedProvince && selectedProvince.wards) {
+            selectedProvince.wards.forEach(w => {
+                const option = new Option(w.name, w.name);
+                wardSelect.add(option);
+            });
+        }
+
+        wardSelect.disabled = false;
+    });
+});
+</script>
+@endpush

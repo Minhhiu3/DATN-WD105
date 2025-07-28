@@ -21,7 +21,8 @@ use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Admin\ProductReviewController;
 use App\Http\Controllers\Admin\AdviceProductController;
 use App\Http\Controllers\Admin\ColorController;
-
+use App\Http\Controllers\Client\OrderController as ClientOrderController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PaymentController;
 
 // Public Routes
@@ -67,9 +68,17 @@ Route::get('/orders/{id}', [AccountController::class, 'orderDetail'])->name('acc
 Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
 Route::post('/place-order-cart', [CheckoutController::class, 'placeOrderFromCart'])->name('account.placeOrder.cart');
 Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment'])->name('account.vnpay.payment'); // VNPAY payment route
-Route::get('/payment/vnpay/{order}', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay');
+Route::get('/payment/vnpay', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay');
 Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
-
+// routes/web.php
+Route::get('/get-provinces', [LocationController::class, 'getProvinces'])->name('get.provinces');
+// Route::get('/get-districts/{province_id}', [LocationController::class, 'getDistricts'])->name('get.districts');
+Route::get('/get-wards/{district_id}', [LocationController::class, 'getWards'])->name('get.wards');
+Route::get('/payment/vnpay-buy-now', [PaymentController::class, 'paymentVnpayBuyNow'])->name('payment.vnpay.buy_now');
+    Route::get('/vnpay-return-buy-now', [PaymentController::class, 'vnpayReturnBuyNow'])->name('vnpay.return.buy_now');
+    //xac nhan nhan hang
+    Route::put('/orders/{id}/confirm-receive', [ClientOrderController::class, 'confirmReceive'])
+    ->name('account.confirmReceive');
 });
 
 
@@ -213,7 +222,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/sale/{id_product}', [AdviceProductController::class, 'index'])->name('admin.sale.index');
     Route::post('/sale/update/{id_product}', [AdviceProductController::class, 'update'])->name('admin.sale.update');
     Route::post('sales/{id}/toggle-status', [AdviceProductController::class, 'toggleStatus'])->name('admin.sale.toggleStatus');
-    // sua so luong bieen the 
+    // sua so luong bieen the
     Route::post('/variant/update-quantity/{id}', [VariantController::class, 'updateQuantity'])->name('admin.updateQuantity');
 
 

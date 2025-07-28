@@ -105,7 +105,7 @@ public function show($order_id)
 public function update(Request $request, $order_id)
 {
     $request->validate([
-        'status' => 'required|in:pending,processing,shipping,completed,canceled',
+        'status' => 'required|in:pending,processing,shipping,delivered,received,completed,canceled',
     ]);
 
     // Lấy đơn hàng theo ID
@@ -114,10 +114,12 @@ public function update(Request $request, $order_id)
     // Map mức độ trạng thái
     $statusLevels = [
         'pending' => 1,
-        'processing' => 2,
-        'shipping' => 3,
-        'completed' => 4,
-        'canceled' => 5,
+                                    'processing' => 2,
+                                    'shipping' => 3,
+                                    'delivered' => 4,
+                                    'received' => 5,
+                                    'completed' => 6,
+                                    'canceled' => 7,
     ];
 
     $currentLevel = $statusLevels[$order->status] ?? 0;
@@ -157,18 +159,44 @@ public function update(Request $request, $order_id)
 
 
     public function updateStatus(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|exists:orders,id_order',
-            'status' => 'required|in:pending,processing,shipping,completed,canceled',
-        ]);
+{
+    $request->validate([
+        'id' => 'required|exists:orders,id_order',
+        'status' => 'required|in:pending,processing,shipping,delivered,received,completed,canceled',
+    ]);
 
-        $order = Order::findOrFail($request->id);
-        $order->status = $request->status;
-        $order->save();
+    $order = Order::findOrFail($request->id);
 
-        return response()->json(['success' => true, 'message' => 'Trạng thái đã cập nhật']);
+    $statusLevels = [
+        'pending' => 1,
+        'processing' => 2,
+        'shipping' => 3,
+        'delivered' => 4,
+        'received' => 5,
+        'completed' => 6,
+        'canceled' => 7,
+    ];
+
+    $currentLevel = $statusLevels[$order->status] ?? 0;
+    $newLevel = $statusLevels[$request->status] ?? 0;
+
+    if (in_array($order->status, ['completed', 'canceled'])) {
+        return response()->json(['success' => false, 'message' => 'Đơn hàng đã hoàn thành hoặc bị hủy, không thể thay đổi trạng thái.']);
     }
+
+    if ($newLevel > $currentLevel + 1) {
+        return response()->json(['success' => false, 'message' => 'Không được bỏ qua bước, hãy cập nhật tuần tự!']);
+    }
+
+    if ($newLevel < $currentLevel) {
+        return response()->json(['success' => false, 'message' => 'Không thể quay về trạng thái trước!']);
+    }
+
+    $order->status = $request->status;
+    $order->save();
+
+    return response()->json(['success' => true, 'message' => 'Trạng thái đã cập nhật']);
+}
     public function cancel(Request $request)
     {
         $request->validate([
@@ -187,7 +215,7 @@ public function update(Request $request, $order_id)
     }
 
 
- 
+
     /**
      * Remove the specified resource from storage.
      */
