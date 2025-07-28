@@ -78,7 +78,7 @@ public function show($order_id)
     $user = User::findOrFail($order->user_id);
 
     // Lấy danh sách sản phẩm trong đơn hàng
-    $order_items = OrderItem::with(['variant.size', 'variant.product'])
+    $order_items = OrderItem::with(['variant.size','variant.color', 'variant.product'])
         ->where('order_id', $order_id)
         ->get();
 

@@ -22,11 +22,18 @@ class ClientProductController extends Controller
         })
         ->latest()->paginate(9);
         return view('client.pages.products', compact('products', 'categories', 'sizes','keyword'));    }
+
   public function show($id)
 {
-    $product = Product::with('category','variants', 'albumProducts')->findOrFail($id);
+    $product = Product::with(
+        'category',
+        'variants.color',
+        'variants.size',
+        
+         'albumProducts')->findOrFail($id);
     return view('client.pages.product-detail', compact('product'));
 }
+
     public function search(Request $request)
     {
         // Validate dữ liệu tìm kiếm

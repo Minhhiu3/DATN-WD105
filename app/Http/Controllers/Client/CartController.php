@@ -47,8 +47,8 @@ class CartController extends Controller
                 'variant_id' => 'required|exists:variant,id_variant',
                 'quantity' => 'required|integer|min:1',
             ]);
-
-            $variant = Variant::with(['product', 'size'])->find($request->variant_id);
+//abc nac
+            $variant = Variant::with(['product', 'size', 'color'])->find($request->variant_id);
 
             if (!$variant || $variant->deleted_at) {
                 return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại']);

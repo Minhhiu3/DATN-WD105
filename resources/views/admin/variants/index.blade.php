@@ -250,7 +250,7 @@
             let id = this.dataset.id;
             let newQuantity = this.value;
 
-            fetch(`/admin/variants/update-quantity/${id}`, {
+            fetch(`/admin/variant/update-quantity/${id}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
