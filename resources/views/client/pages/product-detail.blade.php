@@ -73,26 +73,22 @@
                             @csrf
 
                            <!-- Màu sắc -->
-<div class="form-group mb-3">
-    <label>Màu sắc:</label>
-    <div class="d-flex flex-wrap" id="color-options">
-        @foreach ($product->variants->groupBy('color_id') as $colorId => $variants)
-            @php
-                $color = $variants->first()->color ?? null;
-                $totalQty = $variants->sum('quantity');
-            @endphp
-            @if ($color)
-                <button type="button"
-                        class="btn btn-outline-dark color-btn mr-2 mb-2"
-                        data-color-id="{{ $colorId }}"
-                        data-image="{{ asset('storage/' . $color->image) }}"
-                        data-quantity="{{ $totalQty }}">
-                    {{ $color->name_color }}
-                </button>
-            @endif
-        @endforeach
-    </div>
-</div>
+@foreach ($product->variants->groupBy('color_id') as $colorId => $variants)
+    @php
+        $color = $variants->first()->color ?? null;
+        $totalQty = $variants->sum('quantity');
+    @endphp
+    @if ($color && $totalQty > 0)
+        <button type="button"
+                class="btn btn-outline-dark color-btn mr-2 mb-2"
+                data-color-id="{{ $colorId }}"
+                data-image="{{ asset('storage/' . $color->image) }}"
+                data-quantity="{{ $totalQty }}">
+            {{ $color->name_color }}
+        </button>
+    @endif
+@endforeach
+
 
 <!-- Kích thước -->
 <div class="form-group mb-3">
@@ -366,7 +362,7 @@
     });
 @endphp
 
-    </section>
+    <!-- </section>
     {{-- <script>
         document.querySelector('form[action="{{ route('account.checkout.form') }}"]').addEventListener('submit', function (e) {
         const qty = document.getElementById('sst').value;
@@ -376,7 +372,7 @@
         
         document.getElementById('selectedVariant').value = variantId;
     });
-    </script> --}}
+    </script> --}} -->
 
     <!--================End Product Description Area =================-->
 @endsection
@@ -413,6 +409,9 @@ const quantityInput = document.getElementById('add-cart-quantity');             
 
     const colorButtons = document.querySelectorAll('.color-btn');
     const sizeButtons = document.querySelectorAll('.size-btn');
+    // Ẩn toàn bộ size khi trang load
+sizeButtons.forEach(btn => btn.style.display = 'none');
+
     const mainImage = document.getElementById('main-image');
     const priceDisplay = document.getElementById('dynamic-price');
     const stockDisplay = document.getElementById('dynamic-stock');
@@ -443,6 +442,8 @@ const quantityInput = document.getElementById('add-cart-quantity');             
 // console.log("color variants:", selectedVariantInput);
 
 // console.log("variant_id:", document.getElementById("variant_id"));
+
+
 
 
 
@@ -504,12 +505,26 @@ const quantityInput = document.getElementById('add-cart-quantity');             
 
             resetSelections();
 
-            // ✅ Auto chọn size đầu tiên còn hàng
-            const firstSize = Array.from(sizeButtons).find(btn => btn.dataset.colorId === colorId && !btn.disabled);
-            if (firstSize) {
-                log("First size found:", firstSize.dataset.variantId);
-                firstSize.click();
-            }
+            // Lọc size
+sizeButtons.forEach(btn => {
+    if (btn.dataset.colorId === colorId) {
+        btn.style.display = 'inline-block';
+    } else {
+        btn.style.display = 'none';
+        btn.classList.remove('active', 'btn-dark');
+    }
+});
+
+// ⚠️ Reset trước khi chọn size
+resetSelections();
+
+// ✅ Auto chọn size đầu tiên còn hàng
+const firstSize = Array.from(sizeButtons).find(btn => btn.dataset.colorId === colorId && !btn.disabled);
+if (firstSize) {
+    console.log("First size found:", firstSize.dataset.variantId);
+    firstSize.click();
+}
+
         });
     });
 
@@ -559,37 +574,50 @@ sizeButtons.forEach(btn => {
         else if (val > maxQty) input.value = maxQty;
     });
 
-    // 👉 Auto chọn màu đầu tiên
-    if (colorButtons.length > 0) {
-        colorButtons[0].click();
-    }
+    // // 👉 Auto chọn màu đầu tiên
+    // if (colorButtons.length > 0) {
+    //     colorButtons[0].click();
+    // }
 
     // 👉 Mua ngay
+// 👉 Mua ngay
 const buyNowForm = document.querySelector('form[action="{{ route('account.checkout.form') }}"]');
 if (buyNowForm) {
     buyNowForm.addEventListener('submit', function (e) {
-        const variant = hiddenVariantInput.value;
-        const qty = input.value;
+        const variantId = document.getElementById('add-cart-variant-id')?.value;
+        const quantity = document.getElementById('sst')?.value;
 
-        // 👉 Thêm log kiểm tra
         console.log('🔍 Submit Buy Now Form');
-        console.log('Variant ID:', variant);
-        console.log('Quantity:', qty);
+        console.log('Variant ID:', variantId);
+        console.log('Quantity:', quantity);
 
-        if (!variant) {
+        // ✅ Validate giống addToCart
+        if (!variantId) {
             e.preventDefault();
             Swal.fire({
                 icon: 'warning',
-                title: 'Chưa chọn size',
-                text: 'Vui lòng chọn kích thước trước khi mua ngay.'
+                title: 'Chưa chọn kích thước',
+                text: 'Vui lòng chọn size trước khi mua ngay.'
             });
             return;
         }
 
-        document.getElementById('selectedQty').value = qty;
-        selectedVariantInput.value = variant;
+        if (quantity < 1) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Số lượng không hợp lệ',
+                text: 'Số lượng phải lớn hơn 0!'
+            });
+            return;
+        }
+
+        // ✅ Gán dữ liệu vào input ẩn để submit
+        document.getElementById('selectedQty').value = quantity;
+        document.getElementById('selectedVariant').value = variantId;
     });
 }
+
 
 });
 
