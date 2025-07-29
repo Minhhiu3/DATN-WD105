@@ -93,9 +93,15 @@
                             <h2>Đơn hàng của bạn</h2>
                             <ul class="list">
                                 @foreach ($cartItems as $item)
+                                    @php
+                                        $variant = $item->variant;
+                                        $product = $variant->product;
+                                        $size = $variant->size;
+                                        $color = $variant->color;
+                                    @endphp
                                     <li>
                                         <b>{{ $item->variant->product->name_product }} (Size
-                                            {{ $item->variant->size->name ?? 'N/A' }})</b>
+                                            {{ $item->variant->size->name ?? 'N/A' }}, Color:{{$item -> variant->color->name_color}})</b>
                                         <span class="middle">x {{ $item->quantity }}</span>
                                         <span
                                             class="last">{{ number_format($item->variant->price * $item->quantity, 0, ',', '.') }}

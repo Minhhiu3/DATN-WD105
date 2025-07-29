@@ -49,29 +49,36 @@
 <p>@foreach ($order->orderItems as $item)
     @endforeach</p>
         <div class="table-responsive mt-4">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Sản phẩm</th>
-                        <th>Size</th>
-                        <th>Số lượng</th>
-                        <th>Giá</th>
-                        <th>Thành tiền</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($order->orderItems as $item)
-                <tr>
-                    <td>{{ $item->variant->product->name_product ?? 'Không có sản phẩm' }}</td>
-                    <td>{{$item->variant->size->name}}</td>
-                    <td>{{ $item->quantity }}</td>
-                    <td>{{ number_format($item->variant->price) }} VNĐ</td>
-                    <td>{{ number_format($item->quantity*$item->variant->price) }} VNĐ</td>
-                </tr>
-@endforeach
-                </tbody>
-            </table>
+<table class="table table-bordered order-table">
+    <thead>
+        <tr>
+            <th>Thumbnail</th>
+            <th>Sản phẩm</th>
+            <th>Size</th>
+            <th>Màu</th>
+            <th>Số lượng</th>
+            <th>Giá</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ($order->orderItems as $item)
+            <tr>
+                <td>
+                    <img src="{{ asset('storage/' . ($item->variant->color->image ?? 'default.jpg')) }}"
+                         alt="{{ $item->variant->product->name_product }}"
+                         style="width: 70px; height: 80px; object-fit: cover;">
+                </td>
+                <td>{{ $item->variant->product->name_product ?? 'Không có sản phẩm' }}</td>
+                <td>{{ $item->variant->size->name }}</td>
+                <td>{{ $item->variant->color->name_color }}</td>
+                <td>{{ $item->quantity }}</td>
+                <td>{{ number_format($item->variant->price) }} VNĐ</td>
+                <td>{{ number_format($item->quantity * $item->variant->price) }} VNĐ</td>
+            </tr>
+        @endforeach
+    </tbody>
+</table>
         </div>
 
        <div class="mt-3 text-end">
@@ -89,3 +96,37 @@
     </div>
 </section>
 @endsection
+@push('styles')
+<style>
+    .order-table {
+        background-color: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .order-table th, .order-table td {
+        vertical-align: middle !important;
+        text-align: center;
+    }
+
+    .order-table img {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 3px;
+        background-color: #f9f9f9;
+    }
+
+    .order-table thead {
+        background-color: #f8f9fa;
+    }
+
+    .order-table td {
+        font-size: 15px;
+    }
+
+    .order-table td:nth-child(2) {
+        text-align: left;
+    }
+</style>
+@endpush

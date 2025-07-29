@@ -92,7 +92,7 @@
                     <h2>Đơn hàng của bạn</h2>
                     <ul class="list">
                         <li>
-                            <b>{{ $variant->product->name_product }} (Size {{ $variant->size->name }})</b>
+                            <b>{{ $variant->product->name_product }} (Size: {{ $variant->size->name }}, Color: {{$variant->color->name_color}})</b>
                             <span class="middle">x {{ $quantity }}</span>
                             <span class="last">{{ number_format($variant->price * $quantity, 0, ',', '.') }} VNĐ</span>
                         </li>
