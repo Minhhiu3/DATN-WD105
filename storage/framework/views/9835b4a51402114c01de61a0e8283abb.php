@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/ion.rangeSlider.skinFlat.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/magnific-popup.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/main.css')); ?>">
+    <!-- Google Font: Roboto -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <style>
         #mini-cart {
@@ -31,7 +33,26 @@
         .nav-item.position-relative:focus-within #mini-cart {
             display: block !important;
         }
+        body {
+    font-family: 'Roboto', sans-serif;
+}
+
+        /* Bỏ viền cho tất cả các nút Bootstrap */
+    .btn {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Tuỳ chỉnh lại hover nếu cần */
+    .btn:hover,
+    .btn:focus {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+
     </style>
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 
 <body>
