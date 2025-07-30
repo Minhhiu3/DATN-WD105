@@ -151,6 +151,29 @@
     font-size: 0.85rem;
     color: #6c757d;
 }
+.btn-purple-add {
+    background: linear-gradient(135deg, #9b59b6, #6c3483); /* tím đậm */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-purple-add:hover {
+    background: linear-gradient(135deg, #8e44ad, #5b2c6f);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(108, 52, 131, 0.4);
+    color: #fff;
+    text-decoration: none;
+}
+
+
 </style>
 
 <div class="card card-modern">
@@ -173,10 +196,14 @@
 
         <div class="table-responsive">
             @foreach ($groupedVariants as $colorId => $variantsGroup)
-                @php $color = $variantsGroup->first()->color; @endphp
+                    @php
+                        $color = $variantsGroup->first()->color ?? null;
+                    @endphp
 
                 <!-- Tiêu đề màu -->
                 <div class="color-header d-flex justify-content-between align-items-center mb-2">
+                    
+                @if ($color)
                     <div class="color-info">
                         <img src="{{ asset('storage/' . $color->image) }}" alt="{{ $color->name_color }}">
                         <div>
@@ -188,14 +215,19 @@
                         <a href="{{ url('/admin/colors/' . $color->id_color . '/edit') }}?product_id={{ $id_product }}" class="btn btn-action btn-edit">
                             <i class="bi bi-pencil-square"></i> Sửa
                         </a>
-                        <form action="" method="POST" class="d-inline" style="margin-left: 5px">
+                        <form action="{{ url('/admin/colors/' . $color->id_color) }}?product_id={{ $id_product }}" method="POST" class="d-inline" style="margin-left: 5px">
                             @csrf
                             @method('DELETE')
                             <button onclick="return confirm('Bạn có chắc muốn xóa?')" class="btn btn-action btn-delete">
                                 <i class="bi bi-trash3-fill"></i> Xóa
                             </button>
                         </form>
+
                     </div>
+                @else
+                    <span class="text-danger">Màu sắc không tồn tại hoặc bị lỗi.</span>
+                @endif
+                    
                 </div>
 
                 <!-- Bảng biến thể theo từng màu -->
@@ -235,8 +267,20 @@
                                         </button>
                                     </form>
                                 </td>
+
                             </tr>
+
                         @endforeach
+                            <tr>
+                                <td colspan="6" class="text-end"></td>
+                                <td colspan="6" class="text-center">
+                                    <a href="{{ route('admin.variants.create_item', ['product_id' => $id_product,'color_id' => $color->id_color ]) }}"
+                                    class="btn btn-purple-add">
+                                    <i class="fas fa-plus-circle"></i> Thêm mới
+                                    </a>
+                                </td>
+                                
+                            </tr>
                     </tbody>
                 </table>
             @endforeach

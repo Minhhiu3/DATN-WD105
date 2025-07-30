@@ -1,7 +1,10 @@
 @extends('layouts.client_home')
 @section('title', 'Trang Chủ')
 @section('content')
-
+@php
+    $variantId= request('variant_id');
+    $quantity= request('quantity');
+@endphp
 <!-- Start Banner Area -->
 <section class="banner-area organic-breadcrumb">
     <div class="container">
@@ -33,8 +36,16 @@
             <div class="check_title">
                 <h2>Nhập mã giảm giá của bạn <a href="#">Các sự kiện nhận mã giảm giá</a></h2>
             </div>
-            <input type="text" placeholder="Nhập mã giảm giá">
-            <a class="tp_btn" href="#">OK</a>
+            <form id="apply-coupon-form">
+                @csrf
+                <input type="hidden" id="variantId" name="variantId" value="{{$variantId}}" >
+                <input type="hidden" id="quantity" name="quantity" value="{{$quantity}}" >
+                <input type="text" id="coupon_code" name="coupon_code" placeholder="Nhập mã giảm giá">
+
+                <button type="submit" class="tp_btn">OK</button>
+            </form>
+            <p id="coupon-message" class="mt-2 text-success"></p>
+            
         </div>
  {{-- <form  method="POST">
             @csrf
@@ -104,8 +115,9 @@
         @endphp
                     <ul class="list list_2">
                         <li><a href="#">Phí vận chuyển <span>{{ number_format($shippingFee, 0, ',', '.') }} VNĐ</span></a></li>
+                        <li><a href="#">Tiền giảm giá <span id="discount-amount">{{ number_format(0, 0, ',', '.') }} VNĐ</span></a></li>
                         <li><a href="#">Tổng tiền
-                                <span>{{ number_format($variant->price * $quantity + $shippingFee, 0, ',', '.') }} VNĐ</span></a>
+                                <span id="order-total">{{ number_format($variant->price * $quantity + $shippingFee, 0, ',', '.') }} VNĐ</span></a>
                         </li>
                     </ul>
 
@@ -126,7 +138,61 @@
 
     </div>
 </section>
+<script>
+document.getElementById('apply-coupon-form').addEventListener('submit', function (e) {
+    e.preventDefault();
 
+    const couponCode = document.getElementById('coupon_code').value;
+    const variantId = document.getElementById('variantId').value;
+    const quantity = document.getElementById('quantity').value;
+    const messageEl = document.getElementById('coupon-message');
+
+    fetch("{{ route('apply.coupon') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({
+            coupon_code: couponCode,
+            variant_id: variantId,
+            quantity: quantity
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            messageEl.textContent = data.message;
+            messageEl.classList.remove('text-danger');
+            messageEl.classList.add('text-success');
+
+            const orderTotalElement = document.getElementById('order-total');
+            if (orderTotalElement && data.final_total !== undefined) {
+                orderTotalElement.textContent = new Intl.NumberFormat('vi-VN').format(data.final_total) + ' VNĐ';
+            }
+
+            // ✅ Hiển thị số tiền giảm
+            const discountEl = document.getElementById('discount-amount');
+            if (discountEl && data.discount !== undefined) {
+                discountEl.textContent = 'Bạn được giảm: ' + new Intl.NumberFormat('vi-VN').format(data.discount) + ' VNĐ';
+            }
+
+        } else {
+            messageEl.textContent = data.message;
+            messageEl.classList.remove('text-success');
+            messageEl.classList.add('text-danger');
+        }
+    })
+
+
+    .catch(error => {
+        console.error("Lỗi khi áp mã:", error);
+        messageEl.textContent = 'Lỗi hệ thống khi áp mã.';
+        messageEl.classList.remove('text-success');
+        messageEl.classList.add('text-danger');
+    });
+});
+</script>
 @endsection
 @push('scripts')
 <script>

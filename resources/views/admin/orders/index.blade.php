@@ -185,8 +185,6 @@
                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
                 <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Đang xử lý</option>
                 <option value="shipping" {{ request('status') == 'shipping' ? 'selected' : '' }}>Đang giao</option>
-                <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Đã giao hàng</option>
-                <option value="received" {{ request('status') == 'received' ? 'selected' : '' }}>Đã nhận hàng</option>
                 <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
                 <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>Đã hủy</option>
             </select>
@@ -219,7 +217,7 @@
                             <td>#{{ $order->id_order }}</td>
                             <td>{{ $order->order_code }}</td>
                             <td>{{ $order->user->name ?? 'N/A' }}</td>
-                            <td>{{ number_format($order->total_amount + 30000, 0, ',', '.') }}₫</td>
+                            <td>{{ number_format($order->total_amount, 0, ',', '.') }}₫</td>
                             <td>{{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}</td>
                             <td>{{ ucfirst($order->payment_method) }}</td>
                                                              @php
@@ -227,10 +225,8 @@
                                     'pending' => 1,
                                     'processing' => 2,
                                     'shipping' => 3,
-                                    'delivered' => 4,
-                                    'received' => 5,
-                                    'completed' => 6,
-                                    'canceled' => 7,
+                                    'completed' => 4,
+                                    'canceled' => 5,
                                 ];
 
                                 $currentStatus = $order->status;
@@ -239,7 +235,7 @@
                             <td>
                                 {{-- Nếu đã hoàn thành hoặc hủy thì chỉ hiển thị badge --}}
                                 @if (in_array($currentStatus, ['completed', 'canceled']))
-                                    <span class="badge
+                                    <span class="badge 
                                         {{ $currentStatus == 'completed' ? 'bg-success' : 'bg-danger' }}">
                                         @switch($currentStatus)
                                             @case('completed') Hoàn thành @break
@@ -265,8 +261,6 @@
                                                         @case('pending') 🟡 Chờ xử lý @break
                                                         @case('processing') 🔵 Đang xử lý @break
                                                         @case('shipping') 🚚 Đang giao @break
-                                                        @case('delivered') 📦 Đã giao hàng @break
-                                                        @case('received') 📬 Đã nhận hàng @break
                                                         @case('completed') ✅ Hoàn thành @break
                                                         @case('canceled') ❌ Đã hủy @break
                                                     @endswitch
@@ -277,7 +271,7 @@
                                 @endif
                             </td>
 
-
+                            
                             <td>
                                 <a href="{{ route('admin.orders.show', $order->id_order) }}" class="btn-view-sm"><i class="bi bi-eye"></i> Xem</a>
                                 @if (in_array($order->status, ['pending', 'processing']))

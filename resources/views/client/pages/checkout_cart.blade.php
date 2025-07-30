@@ -24,6 +24,19 @@
             </div>
         @endif
         <div class="container">
+            <div class="cupon_area">
+                <div class="check_title">
+                    <h2>Nhập mã giảm giá của bạn <a href="#">Các sự kiện nhận mã giảm giá</a></h2>
+                </div>
+                <form id="apply-coupon-form">
+                    @csrf
+                    <input type="text" id="coupon_code" name="coupon_code" placeholder="Nhập mã giảm giá">
+
+                    <button type="submit" class="tp_btn">OK</button>
+                </form>
+                <p id="coupon-message" class="mt-2 text-success"></p>
+                
+            </div>
             <div class="billing_details">
                 <div class="row">
                     <div class="col-lg-6">
@@ -121,7 +134,9 @@
                                             VNĐ</span></a></li>
                                 <li><a href="#">Phí vận chuyển <span>{{ number_format($shippingFee, 0, ',', '.') }}
                                             VNĐ</span></a></li>
-                                <li><a href="#">Tổng thanh toán <span>{{ number_format($grandTotal, 0, ',', '.') }}
+                                <li><a href="#">Tiền giảm giá <span id="discount-amount">{{ number_format(0, 0, ',', '.') }}
+                                            VNĐ</span></a></li>
+                                <li><a href="#">Tổng thanh toán <span id="order-total" >{{ number_format($grandTotal, 0, ',', '.') }}
                                             VNĐ</span></a></li>
                             </ul>
                         </div>
@@ -173,6 +188,55 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         wardSelect.disabled = false;
+    });
+});
+document.getElementById('apply-coupon-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const couponCode = document.getElementById('coupon_code').value;
+    const messageEl = document.getElementById('coupon-message');
+
+    fetch("{{ route('apply.couponCart') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({
+            coupon_code: couponCode,
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            messageEl.textContent = data.message;
+            messageEl.classList.remove('text-danger');
+            messageEl.classList.add('text-success');
+
+            const orderTotalElement = document.getElementById('order-total');
+            if (orderTotalElement && data.final_total !== undefined) {
+                orderTotalElement.textContent = new Intl.NumberFormat('vi-VN').format(data.final_total) + ' VNĐ';
+            }
+
+            // ✅ Hiển thị số tiền giảm
+            const discountEl = document.getElementById('discount-amount');
+            if (discountEl && data.discount !== undefined) {
+                discountEl.textContent = 'Bạn được giảm: ' + new Intl.NumberFormat('vi-VN').format(data.discount) + ' VNĐ';
+            }
+
+        } else {
+            messageEl.textContent = data.message;
+            messageEl.classList.remove('text-success');
+            messageEl.classList.add('text-danger');
+        }
+    })
+
+
+    .catch(error => {
+        console.error("Lỗi khi áp mã:", error);
+        messageEl.textContent = 'Lỗi hệ thống khi áp mã.';
+        messageEl.classList.remove('text-success');
+        messageEl.classList.add('text-danger');
     });
 });
 </script>

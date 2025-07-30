@@ -8,6 +8,7 @@ use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Variant;
+use App\Models\DiscountCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -64,7 +65,20 @@ class CheckoutController extends Controller
 
     $totalAmount = $variant->price * $request->quantity;
     $shippingFee = 30000;
-    $grand_total = $totalAmount + $shippingFee;
+
+    //  Lấy giảm giá từ session nếu có
+    $discount = session('discount');
+    $discountCode = $discount['code'] ?? null;
+    if(isset($discount)){
+        //  Tổng tiền sau giảm
+        $finalTotal = max(0, $discount['final_total']);
+        $grand_total = $discount['final_total'] + $shippingFee;
+
+    }else{
+        $finalTotal = $totalAmount;
+        $grand_total = $totalAmount + $shippingFee;
+    }
+
 
     // COD
     if ($request->payment_method === 'cod') {
@@ -81,7 +95,7 @@ class CheckoutController extends Controller
                 'province'       => $request->province,
                 'ward'           => $request->ward,
                 'address'        => $request->address,
-                'total_amount'   => $totalAmount,
+                'total_amount'   => $finalTotal,
                 'grand_total'    => $grand_total,
                 'created_at'     => now(),
             ]);
@@ -205,11 +219,19 @@ $grand_total =0;
                 $totalAmount += $variant->price * $item->quantity;
             }
 
-$shippingFee = 30000;
-           $grand_total =  $totalAmount +$shippingFee;
+            $shippingFee = 30000;
             $orderCode = $this->generateOrderCode();
+            $discount = session('discount');
+            $discountCode = $discount['code'] ?? null;
+            if(isset($discount)){
+                //  Tổng tiền sau giảm
+                $finalTotal = max(0, $discount['final_total']);
+                $grand_total = $discount['final_total'] + $shippingFee;
 
-
+            }else{
+                $finalTotal = $totalAmount;
+                $grand_total = $totalAmount + $shippingFee;
+            }
 
          $order = Order::create([
             'user_id'        => $user->id_user,
@@ -217,7 +239,7 @@ $shippingFee = 30000;
             'status'         => 'pending',
             'payment_method' => $request->payment_method,
             'payment_status' => 'unpaid',
-            'total_amount'   => $totalAmount,
+            'total_amount'   => $finalTotal,
             'province'       => $request->province,
             // 'district'       => $request->district,
             'ward'           => $request->ward,
@@ -287,6 +309,141 @@ $shippingFee = 30000;
 
     // Chuyển hướng tới VNPay để thanh toán
     return redirect()->route('payment.vnpay');
+    }
+}
+// áp mã giảm giá cho đơn hàng
+        
+    public function apply(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => 'required|string',
+        ]);
+
+    $coupon = DiscountCode::where('code', $request->coupon_code)->first();
+
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Mã không hợp lệ']);
+        }
+
+        if (now()->gt($coupon->expired_at)) {
+            return response()->json(['success' => false, 'message' => 'Mã đã hết hạn']);
+        }
+
+        // Tính tổng đơn
+        $variant = Variant::find($request->variant_id);
+        $subtotal = $variant->price * $request->quantity;
+        $shippingFee = 30000;
+        $type = (int) $coupon->type; // ép kiểu chắc chắn
+
+        switch ($type) {
+            case 0:
+                $discount = $subtotal * ($coupon->value / 100);
+                break;
+            case 1:
+                $discount = $coupon->value;
+                break;
+            default:
+                $discount = 0;
+                break;
+        }
+
+
+        // tiền hiển thi + tiền ship
+        $finalTotalShip = max(0, $subtotal - $discount + $shippingFee);
+        // tiền chuyền session - tiền ship
+        $finalTotal = max(0, $subtotal - $discount );
+
+        session([
+            'discount' => [
+                'code' => $coupon->code,
+                'amount' => $discount,
+                'final_total' => $finalTotal
+            ]
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Đã áp dụng mã giảm giá!",
+            'discount' => $discount,
+            'final_total' => $finalTotalShip
+        ]);
+    }
+   public function applyCouponCart(Request $request)
+{
+    try {
+        $request->validate([
+            'coupon_code' => 'required|string',
+        ]);
+
+        $user = Auth::user();
+        $cart = Cart::with('cartItems.variant')->where('user_id', $user->id_user)->first();
+
+        if (!$cart || $cart->cartItems->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Giỏ hàng trống']);
+        }
+
+        $coupon = DiscountCode::where('code', $request->coupon_code)->first();
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Mã không hợp lệ']);
+        }
+
+        if (now()->gt($coupon->expired_at)) {
+            return response()->json(['success' => false, 'message' => 'Mã đã hết hạn']);
+        }
+
+        $subtotal = 0;
+        foreach ($cart->cartItems as $item) {
+            if ($item->variant) {
+                $subtotal += $item->variant->price * $item->quantity;
+            }
+        }
+
+        $shippingFee = 30000;
+        $discount = 0;
+        $type = (int) $coupon->type;
+
+        switch ($type) {
+            case 0: // phần trăm
+                $discount = $subtotal * ($coupon->value / 100);
+                break;
+            case 1: // số tiền cố định
+                $discount = $coupon->value;
+                break;
+            default:
+                $discount = 0;
+        }
+
+        // tiền hiển thi + tiền ship
+        $finalTotalShip = max(0, $subtotal - $discount + $shippingFee);
+        // tiền chuyền session - tiền ship
+        $finalTotal = max(0, $subtotal - $discount );
+        session([
+            'discount' => [
+                'code' => $coupon->code,
+                'amount' => $discount,
+                'final_total' => $finalTotal
+            ]
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã áp dụng mã giảm giá!',
+            'discount' => $discount,
+            'final_total' => $finalTotalShip
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Lỗi áp mã giảm giá', [
+            'message' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Lỗi khi áp mã giảm giá!',
+            'error' => $e->getMessage()
+        ], 500);
     }
 }
 

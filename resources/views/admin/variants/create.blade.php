@@ -193,12 +193,11 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    let colorIndex = 1; // Đếm số biến thể màu
-
+    let colorIndex = 1;
     const colorsWrapper = document.getElementById('colors-wrapper');
-    const allSizes = @json($sizes); // Danh sách size từ controller
+    const allSizes = @json($sizes); // Danh sách size
 
-    // Thêm biến thể mẹ (Màu)
+    // Thêm màu mới
     document.querySelector('.btn-add-color').addEventListener('click', function () {
         const colorItem = document.createElement('div');
         colorItem.classList.add('variant-item', 'mb-4');
@@ -239,14 +238,14 @@ document.addEventListener('DOMContentLoaded', function () {
         colorIndex++;
     });
 
-    // Xoá biến thể mẹ (Màu)
+    // Xoá màu
     colorsWrapper.addEventListener('click', function (e) {
         if (e.target.closest('.btn-remove-variant') && !e.target.closest('.child-variants-wrapper')) {
             e.target.closest('.variant-item').remove();
         }
     });
 
-    // Thêm biến thể con (Size)
+    // Thêm size
     colorsWrapper.addEventListener('click', function (e) {
         if (e.target.closest('.btn-add-variant')) {
             const parentVariant = e.target.closest('.variant-item');
@@ -259,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
             childItem.innerHTML = `
                 <div class="col-md-4">
                     <label>Kích Cỡ (Size):</label>
-                    <select name="variants[${parentIndex}][children][${childIndex}][size_id]" class="form-control form-select" required>
+                    <select name="variants[${parentIndex}][children][${childIndex}][size_id]" class="form-control form-select size-select" required>
                         <option value="">-- Chọn Size --</option>
                         ${allSizes.map(size => `<option value="${size.id_size}">${size.name}</option>`).join('')}
                     </select>
@@ -279,16 +278,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             `;
             childWrapper.appendChild(childItem);
+
+            // Cập nhật dropdown
+            updateSizeOptions(childWrapper);
         }
     });
 
-    // Xoá biến thể con (Size)
+    // Xoá size
     colorsWrapper.addEventListener('click', function (e) {
         if (e.target.closest('.btn-remove-variant') && e.target.closest('.child-variants-wrapper')) {
-            e.target.closest('.row').remove();
+            const childRow = e.target.closest('.row');
+            const wrapper = e.target.closest('.child-variants-wrapper');
+            childRow.remove();
+            updateSizeOptions(wrapper);
         }
     });
-    // Hiển thị preview ảnh khi chọn
+
+    // Hiển thị ảnh preview
     colorsWrapper.addEventListener('change', function (e) {
         if (e.target.classList.contains('image-input')) {
             const file = e.target.files[0];
@@ -307,7 +313,38 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Cập nhật danh sách size khi có thay đổi
+    colorsWrapper.addEventListener('change', function (e) {
+        if (e.target.classList.contains('size-select')) {
+            const wrapper = e.target.closest('.child-variants-wrapper');
+            updateSizeOptions(wrapper);
+        }
+    });
+
+    // Hàm ẩn hoàn toàn các size đã chọn trong nhóm
+    function updateSizeOptions(wrapper) {
+        const selectedValues = Array.from(wrapper.querySelectorAll('.size-select'))
+            .map(select => select.value)
+            .filter(val => val);
+
+        wrapper.querySelectorAll('.size-select').forEach(select => {
+            const currentValue = select.value;
+            select.innerHTML = `<option value="">-- Chọn Size --</option>`;
+            allSizes.forEach(size => {
+                const id = String(size.id_size);
+                if (!selectedValues.includes(id) || id === currentValue) {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = size.name;
+                    if (id === currentValue) option.selected = true;
+                    select.appendChild(option);
+                }
+            });
+        });
+    }
 });
 </script>
+
+
 
 @endsection

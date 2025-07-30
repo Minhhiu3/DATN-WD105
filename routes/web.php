@@ -61,24 +61,26 @@ Route::prefix('account')->middleware('auth')->group(function () {
     Route::put('/update-password', [AccountController::class, 'updatePassword'])->name('account.update-password');
     Route::get('/orders', [AccountController::class, 'orders'])->name('account.orders');
     Route::get('/settings', [AccountController::class, 'settings'])->name('account.settings');
- Route::get('/checkout-form', [CheckoutController::class, 'showCheckoutForm'])->name('account.checkout.form');
+    Route::get('/checkout-form', [CheckoutController::class, 'showCheckoutForm'])->name('account.checkout.form');
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('account.placeOrder');
-Route::put('/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
-Route::get('/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
-Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
-Route::post('/place-order-cart', [CheckoutController::class, 'placeOrderFromCart'])->name('account.placeOrder.cart');
-Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment'])->name('account.vnpay.payment'); // VNPAY payment route
-Route::get('/payment/vnpay', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay');
-Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
-// routes/web.php
-Route::get('/get-provinces', [LocationController::class, 'getProvinces'])->name('get.provinces');
-// Route::get('/get-districts/{province_id}', [LocationController::class, 'getDistricts'])->name('get.districts');
-Route::get('/get-wards/{district_id}', [LocationController::class, 'getWards'])->name('get.wards');
-Route::get('/payment/vnpay-buy-now', [PaymentController::class, 'paymentVnpayBuyNow'])->name('payment.vnpay.buy_now');
+    Route::put('/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
+    Route::get('/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
+    Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
+    Route::post('/place-order-cart', [CheckoutController::class, 'placeOrderFromCart'])->name('account.placeOrder.cart');
+    Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment'])->name('account.vnpay.payment'); // VNPAY payment route
+    Route::get('/payment/vnpay', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay');
+    Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
+    // routes/web.php
+    Route::get('/get-provinces', [LocationController::class, 'getProvinces'])->name('get.provinces');
+    // Route::get('/get-districts/{province_id}', [LocationController::class, 'getDistricts'])->name('get.districts');
+    Route::get('/get-wards/{district_id}', [LocationController::class, 'getWards'])->name('get.wards');
+    Route::get('/payment/vnpay-buy-now', [PaymentController::class, 'paymentVnpayBuyNow'])->name('payment.vnpay.buy_now');
     Route::get('/vnpay-return-buy-now', [PaymentController::class, 'vnpayReturnBuyNow'])->name('vnpay.return.buy_now');
     //xac nhan nhan hang
     Route::put('/orders/{id}/confirm-receive', [ClientOrderController::class, 'confirmReceive'])
     ->name('account.confirmReceive');
+    Route::post('/apply-coupon', [CheckoutController::class, 'apply'])->name('apply.coupon');
+    Route::post('/apply-coupon-cart', [CheckoutController::class, 'applyCouponCart'])->name('apply.couponCart');
 });
 
 
@@ -156,6 +158,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         ->name('admin.album-products.show-album');
 
     // Variant Management Routes
+    Route::get('/variants/create-item', [VariantController::class, 'create_item'])->name('admin.variants.create_item');
+    Route::post('/variants/store-item', [VariantController::class, 'storeItem'])->name('admin.variants.store_item');
     Route::resource('/variants', VariantController::class)->names([
         'index' => 'admin.variants.index',
         'create' => 'admin.variants.create',
