@@ -39,7 +39,7 @@ class BannerController extends Controller
         }
 
         $banner->save();
-        return redirect()->route('admin.banner.index')->with('success', 'Banner created successfully.');
+        return redirect()->route('admin.banner.index')->with('success', 'Tạo mới banner thành công.');
     }
 
     public function edit(Banner $banner)
@@ -67,7 +67,7 @@ class BannerController extends Controller
         }
 
         $banner->save();
-        return redirect()->route('admin.banner.index')->with('success', 'Banner updated successfully.');
+        return redirect()->route('admin.banner.index')->with('success', 'Chỉnh sửa banner thành công.');
     }
 
     public function destroy(Banner $banner)
@@ -76,6 +76,6 @@ class BannerController extends Controller
             Storage::disk('public')->delete($banner->image);
         }
         $banner->delete();
-        return redirect()->route('admin.banner.index')->with('success', 'Banner deleted successfully.');
+        return redirect()->route('admin.banner.index')->with('success', 'Xóa mềm banner thành công.');
     }
 }
