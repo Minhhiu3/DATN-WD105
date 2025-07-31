@@ -112,7 +112,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     ]);
 
     // Product Management Routes
-    Route::resource('/products', ProductController::class)->names([
+    Route::resource('products', ProductController::class)->names([
         'index' => 'admin.products.index',
         'create' => 'admin.products.create',
         'store' => 'admin.products.store',
@@ -122,6 +122,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.products.destroy',
     ]);
 
+    // Thùng rác sản phẩm
+    Route::get('products/trash', [ProductController::class, 'trash'])->name('admin.products.trash');
+    Route::post('products/restore/{id}', [ProductController::class, 'restore'])->name('admin.products.restore');
+    Route::delete('products/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('admin.products.forceDelete');
     // Size Management Routes
     Route::resource('/sizes', SizeController::class)->names([
         'index' => 'admin.sizes.index',
@@ -156,6 +160,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     ]);
     Route::get('/album-products/{product_id}/show-album', [AlbumProductController::class, 'showAblum'])
         ->name('admin.album-products.show-album');
+        
+
 
     // Variant Management Routes
     Route::get('/variants/create-item', [VariantController::class, 'create_item'])->name('admin.variants.create_item');
@@ -169,6 +175,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.variants.update',
         'destroy' => 'admin.variants.destroy',
     ]);
+    // Route cho thùng rác biến thể
+Route::get('/admin/variants/trash', [VariantController::class, 'trash'])->name('admin.variants.trash');
+Route::post('/admin/variants/restore/{id}', [VariantController::class, 'restore'])->name('admin.variants.restore');
+Route::delete('/admin/variants/force-delete/{id}', [VariantController::class, 'forceDelete'])->name('admin.variants.forceDelete');
+
     // Size Management Routes
     Route::resource('/colors', ColorController::class)->names([
         'index' => 'admin.colors.index',

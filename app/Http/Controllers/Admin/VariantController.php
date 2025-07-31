@@ -185,14 +185,57 @@ class VariantController extends Controller
     /**
      * Xóa mềm biến thể.
      */
-    public function destroy($id_variant)
+/**
+ * Xóa mềm biến thể.
+ */
+public function destroy($id_variant)
+{
+    $variant = Variant::findOrFail($id_variant);
+    $id_product = $variant->product_id;
+    $variant->delete(); // Sử dụng xóa mềm thay vì forceDelete()
+
+    return redirect()->route('admin.variants.show', $id_product)->with('success', 'Xóa mềm biến thể thành công!');
+}
+    public function trashCan()
     {
-        $variant = Variant::findOrFail($id_variant);
-        $id_product = $variant->product_id;
+        $variants = Variant::onlyTrashed()->with(['product', 'size'])->get();
+        return view('admin.variants.trashcan_variant', compact('variants'));
+    }
+        /**
+     * Hiển thị danh sách biến thể trong thùng rác.
+     */
+    public function trash()
+    {
+        $groupedVariants = Variant::onlyTrashed()
+            ->with(['product', 'color', 'size'])
+            ->get()
+            ->groupBy('color_id');
+
+        return view('admin.variants.trash', compact('groupedVariants'));
+    }
+
+    /**
+     * Khôi phục biến thể từ thùng rác.
+     */
+    public function restore($id)
+    {
+        $variant = Variant::onlyTrashed()->findOrFail($id);
+        $variant->restore();
+
+        return redirect()->route('admin.variants.trash')->with('success', 'Biến thể đã được khôi phục!');
+    }
+
+    /**
+     * Xóa vĩnh viễn biến thể từ thùng rác.
+     */
+    public function forceDelete($id)
+    {
+        $variant = Variant::onlyTrashed()->findOrFail($id);
         $variant->forceDelete();
 
-    return redirect()->route('admin.variants.show', $id_product)->with('success', 'xóa biến thể thành công!');
+        return redirect()->route('admin.variants.trash')->with('success', 'Biến thể đã được xóa vĩnh viễn!');
     }
+
     // ajax sửa số lượng
     public function updateQuantity(Request $request, $id)
     {
