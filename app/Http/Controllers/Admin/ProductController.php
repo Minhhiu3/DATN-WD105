@@ -203,7 +203,7 @@ public function update(Request $request, Product $product)
         $product->delete();
 
 
-        return redirect()->route('admin.products.index')->with('success', 'Xóa Sản phẩm thành công.');
+        return redirect()->route('admin.products.index')->with('success', 'Xóa mềm Sản phẩm thành công.');
     }
     /**
      * Search for products by name.
@@ -225,6 +225,56 @@ public function update(Request $request, Product $product)
         return view('admin.products.index', compact('products'));
     }
 
+    /**
+     * Hiển thị danh sách sản phẩm đã xóa mềm
+     */
+    public function trash(Request $request)
+    {
+        $categoris = Category::all();
+        $productsQuery = Product::onlyTrashed()->with(['category', 'advice_product']);
+
+        if ($request->filled('keyword')) {
+            $productsQuery->where('name_product', 'like', '%' . $request->keyword . '%');
+        }
+
+        if ($request->filled('category')) {
+            $productsQuery->where('category_id', $request->category);
+        }
+
+        $products = $productsQuery->latest()->paginate(10);
+
+        return view('admin.products.trash', compact('products', 'categoris'));
+    }
+
+    /**
+     * Khôi phục sản phẩm đã xóa mềm
+     */
+    public function restore($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $product->variants()->onlyTrashed()->restore(); // Khôi phục biến thể
+        $product->albumProducts()->onlyTrashed()->restore(); // Khôi phục ảnh album
+        $product->adviceProduct()->onlyTrashed()->restore(); // Khôi phục khuyến mãi
+        $product->restore(); // Khôi phục sản phẩm
+
+        return redirect()->route('admin.products.trash')->with('success', 'Khôi phục sản phẩm thành công!');
+    }
+
+    /**
+     * Xóa cứng sản phẩm và các bản ghi liên quan
+     */
+    public function forceDelete($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $product->variants()->onlyTrashed()->forceDelete(); // Xóa cứng biến thể
+        $product->albumProducts()->onlyTrashed()->forceDelete(); // Xóa cứng ảnh album
+        $product->adviceProduct()->onlyTrashed()->forceDelete(); // Xóa cứng khuyến mãi
+        $product->forceDelete(); // Xóa cứng sản phẩm
+
+        return redirect()->route('admin.products.trash')->with('success', 'Xóa vĩnh viễn sản phẩm thành công!');
+    }
+
+    
 
 
 

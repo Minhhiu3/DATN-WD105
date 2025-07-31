@@ -182,9 +182,14 @@
         @php
             $id = basename(request()->url());
         @endphp
-        <a href="{{ route('admin.variants.create', ['product_id' => $id]) }}" class="btn btn-add-modern">
-            <i class="fas fa-plus-circle"></i> Thêm mới
-        </a>
+               <div class="d-flex gap-2">
+            <a href="{{ route('admin.variants.create', ['product_id' => $id]) }}" class="btn btn-add-modern">
+                <i class="fas fa-plus-circle"></i> Thêm mới
+            </a>
+            <a href="{{ route('admin.variants.trash') }}" class="btn btn-add-modern">
+                <i class="bi bi-trash3-fill"></i> Thùng Rác
+            </a>
+        </div>
     </div>
 
     <div class="card-body">

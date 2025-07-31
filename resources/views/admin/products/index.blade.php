@@ -183,9 +183,14 @@
         <a href="{{ route('admin.products.create') }}" class="btn-icon" title="Thêm sản phẩm mới">
             <i class="bi bi-plus-lg"></i>
         </a>
+         <a href="{{ route('admin.products.trash') }}" class="btn btn-add-modern">
+                <i class="bi bi-trash3-fill"></i> Thùng Rác
+            </a>
+        
     </div>
 
     <div class="card-body">
+        
         <form action="{{ route('admin.products.index') }}" method="GET" class="search-form mb-3">
             {{-- Tìm theo tên --}}
             <input type="text" name="keyword" class="form-control" 
