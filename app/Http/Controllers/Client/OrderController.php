@@ -20,6 +20,7 @@ class OrderController extends Controller
     }
 
     $order->status = 'received';
+    $order->payment_status = 'paid';
     $order->save();
 
     return back()->with('success', 'Xác nhận nhận hàng thành công!');

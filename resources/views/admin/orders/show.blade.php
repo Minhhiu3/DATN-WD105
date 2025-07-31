@@ -15,15 +15,24 @@
         <div class="border p-3 mb-4 rounded shadow-sm">
             <h5 class="fw-bold mb-3">📦 Trạng thái đơn hàng</h5>
 
+
             @php
                 $steps = [
                     'pending' => ['label' => 'Chờ xử lý', 'icon' => 'fas fa-hourglass-start'],
                     'processing' => ['label' => 'Đang xử lý', 'icon' => 'fas fa-sync-alt fa-spin'],
                     'shipping' => ['label' => 'Đang giao', 'icon' => 'fas fa-truck'],
+                    'delivered' => ['label' => 'Đã giao', 'icon' => 'fas fa-check'],
+                    'received' => ['label' => 'Đã nhận', 'icon' => 'fas fa-box-open'],
                     'completed' => ['label' => 'Hoàn thành', 'icon' => 'fas fa-check-circle'],
                     'canceled' => ['label' => 'Đã hủy', 'icon' => 'fas fa-times-circle'],
                 ];
+
+                                                        $reason = $order->cancel_reason ?? 'Chưa có lý do hủy';
+
             @endphp
+                         @if($order->status == 'canceled')
+         <p class="btn btn-danger"><strong> Lý do hủy:</strong><span> {{$reason}}</span></p>
+        @endif
 
             {{-- Timeline trạng thái --}}
             <div class="d-flex justify-content-between align-items-center" id="orderTimeline">
@@ -66,7 +75,10 @@
                 <li><strong>Tên:</strong> {{ $user->name ?? 'N/A' }}</li>
                 <li><strong>Email:</strong> {{ $user->email ?? 'N/A' }}</li>
                 <li><strong>Số điện thoại:</strong> {{ $user->phone_number ?? 'N/A' }}</li>
-                <li><strong>Địa chỉ:</strong> {{ $user->address ?? 'N/A' }}</li>
+                <li><strong>Địa chỉ:</strong> {{ $order->address }},
+    {{ $order->ward }},
+    {{ $order->province }}</li>
+
             </ul>
         </div>
 

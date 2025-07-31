@@ -190,13 +190,14 @@
                     value="{{ request('code', $code ?? '') }}">
                 <select name="status" class="form-select">
                     <option value="">-- Tất cả trạng thái --</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
-                    <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Đang xử lý</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ xác nhận</option>
+                    <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Đã xác nhận
+                    </option>
                     <option value="shipping" {{ request('status') == 'shipping' ? 'selected' : '' }}>Đang giao</option>
-                     <option value="shipping" {{ request('status') == 'delivered' ? 'selected' : '' }}>Đã giao</option>
+                    <option value="shipping" {{ request('status') == 'delivered' ? 'selected' : '' }}>Đã giao</option>
 
-                      <option value="shipping" {{ request('status') == 'received' ? 'selected' : '' }}>Đã nhận hàng</option>
-                      
+                    <option value="shipping" {{ request('status') == 'received' ? 'selected' : '' }}>Đã nhận hàng</option>
+
                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
                     <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>Đã hủy</option>
                 </select>
@@ -245,24 +246,29 @@
                                     ];
 
                                     $currentStatus = $order->status;
+                                     $reason = $order->cancel_reason ?? 'Chưa có lý do hủy';
                                 @endphp
 
                                 <td>
                                     {{-- Nếu đã hoàn thành hoặc hủy thì chỉ hiển thị badge --}}
                                     @if (in_array($currentStatus, ['completed', 'canceled']))
                                         <span
-                                            class="badge
-                                        {{ $currentStatus == 'completed' ? 'bg-success' : 'bg-danger' }}">
+                                            class="btn
+                                        {{ $currentStatus == 'completed' ? 'btn-success' : 'btn-danger' }}">
                                             @switch($currentStatus)
                                                 @case('completed')
-                                                    Hoàn thành
+                                                     <span class="btn btn-sm btn-success text-white"> Hoàn thành </span>
                                                 @break
 
                                                 @case('canceled')
-                                                    Đã hủy
+                                                    <span class="btn btn-sm btn-danger text-white"> Đã hủy</span>
+
                                                 @break
                                             @endswitch
                                         </span>
+                                       @if ($currentStatus == 'canceled')
+                                            <p class="btn btn-sm btn-danger text-white"> Lý do hủy: <span >{{$reason}}</span></p>
+                                              @endif
                                     @else
                                         {{-- Dropdown thay đổi trạng thái --}}
                                         <select class="form-select form-select-sm order-status " style="min-width: 140px;"
@@ -272,6 +278,12 @@
                                                     $isAllowed =
                                                         $level == $statusLevels[$currentStatus] ||
                                                         $level == $statusLevels[$currentStatus] + 1;
+                                                    if (
+                                                        $status == 'canceled' &&
+                                                        !in_array($currentStatus, ['pending', 'processing'])
+                                                    ) {
+                                                        $isAllowed = false;
+                                                    }
                                                 @endphp
 
                                                 @if ($isAllowed)
@@ -280,19 +292,21 @@
                                                         {{ $currentStatus == $status ? 'selected' : '' }}>
                                                         @switch($status)
                                                             @case('pending')
-                                                                🟡 Chờ xử lý
+                                                                🟡 Chờ xác nhận
                                                             @break
 
                                                             @case('processing')
-                                                                🔵 Đang xử lý
+                                                                🔵 Đẫ xác nhận
                                                             @break
 
                                                             @case('shipping')
                                                                 🚚 Đang giao
                                                             @break
+
                                                             @case('delivered')
                                                                 📦 Đã giao
                                                             @break
+
                                                             @case('received')
                                                                 📦 Đã nhận hàng
                                                             @break
@@ -357,6 +371,34 @@
                 @endif
             </div>
         </div>
+        <!-- Modal nhập lý do hủy -->
+<div class="modal fade" id="adminCancelOrderModal" tabindex="-1" role="dialog" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="cancelOrderLabel">Nhập lý do hủy đơn hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="adminCancelOrderForm">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" name="order_id" id="admin_order_id">
+                    <div class="form-group">
+                        <label class="form-label">Lý do hủy</label>
+                        <textarea name="cancel_reason" id="admin_cancel_reason" class="form-control" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
         {{-- Script giữ nguyên --}}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -390,33 +432,44 @@
                 });
 
                 // Xử lý hủy đơn hàng
-                document.querySelectorAll('.cancel-order-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) return;
+          document.querySelectorAll('.cancel-order-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const orderId = this.dataset.id;
+            document.getElementById('admin_order_id').value = orderId;
+            $('#adminCancelOrderModal').modal('show'); // Bootstrap 4.6 dùng jQuery
+        });
+    });
 
-                        const orderId = this.dataset.id;
+    // Submit form hủy đơn
+    document.getElementById('adminCancelOrderForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const orderId = document.getElementById('admin_order_id').value;
+        const reason = document.getElementById('admin_cancel_reason').value;
 
-                        fetch("{{ route('admin.orders.cancel') }}", {
-                                method: "POST",
-                                headers: {
-                                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    id: orderId
-                                })
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                alert(data.message);
-                                if (data.success) location.reload();
-                            })
-                            .catch(error => {
-                                alert("Lỗi khi hủy đơn!");
-                                console.error(error);
-                            });
-                    });
-                });
+        fetch("{{ route('admin.orders.cancel') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id: orderId,
+                cancel_reason: reason
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            if (data.success) {
+                $('#adminCancelOrderModal').modal('hide');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            alert("Lỗi khi hủy đơn!");
+            console.error(error);
+        });
+    });
             });
         </script>
     @endsection

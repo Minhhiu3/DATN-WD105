@@ -193,26 +193,41 @@ public function update(Request $request, $order_id)
     }
 
     $order->status = $request->status;
+    if ($request->status === 'delivered' || $request->status === 'received') {
+        $order->payment_status = 'paid';
+    } elseif ($request->status === 'canceled') {
+        $order->payment_status = 'canceled'; // Hoặc trạng thái phù hợp khác
+    }
     $order->save();
 
     return response()->json(['success' => true, 'message' => 'Trạng thái đã cập nhật']);
 }
     public function cancel(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|exists:orders,id_order',
+{
+    $request->validate([
+        'id' => 'required|exists:orders,id_order',
+        'cancel_reason' => 'required|string|max:255', // Bắt buộc nhập lý do
+    ]);
+
+    $order = Order::findOrFail($request->id);
+
+    if ($order->status === 'canceled') {
+        return response()->json([
+            'success' => false,
+            'message' => 'Đơn hàng đã bị hủy trước đó.'
         ]);
-
-        $order = Order::findOrFail($request->id);
-
-        if ($order->status !== 'canceled') {
-            $order->status = 'canceled';
-            $order->save();
-            return response()->json(['success' => true, 'message' => 'Đã hủy đơn hàng!']);
-        }
-
-        return response()->json(['success' => false, 'message' => 'Đơn hàng đã bị hủy trước đó.']);
     }
+
+    $order->status = 'canceled';
+    $order->cancel_reason = $request->cancel_reason; //  Lưu lý do hủy
+    $order->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Đã hủy đơn hàng với lý do: ' . $request->cancel_reason
+    ]);
+}
+
 
 
 

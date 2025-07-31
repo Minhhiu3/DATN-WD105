@@ -6,6 +6,9 @@
          <div class="m-5">
         <h2 class="mb-4">Chi tiết đơn hàng #{{ $order->order_code }}</h2>
         <p><strong>Ngày đặt:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
+         @php
+                                                        $reason = $order->cancel_reason ?? 'Chưa có lý do hủy';
+                                                         @endphp
         <p><strong>Trạng thái đơn hàng:</strong>
             @if ($order->status == 'pending')
                 <span class="btn btn-sm btn-warning text-black">Chờ xác nhận</span>
@@ -21,10 +24,14 @@
                 <span class="btn btn-sm btn-success text-white">Hoàn thành</span>
             @elseif ($order->status == 'canceled')
                 <span class="btn btn-sm btn-danger text-white">Đã hủy</span>
+
             @else
                 <span class="btn btn-sm btn-light text-black">{{ $order->status }}</span>
             @endif
         </p>
+        @if($order->status == 'canceled')
+         <p><strong> Lý do hủy:</strong><span class="btn btn-sm btn-danger text-white  mt-2"> {{$reason}}</span></p>
+        @endif
         <p><strong>Trạng thái thanh toán:</strong>
             @if ($order->payment_status == 'unpaid')
                 <span class="btn btn-sm btn-warning text-dark">Chưa thanh toán</span>
