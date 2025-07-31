@@ -44,7 +44,7 @@
         $quantity = $item->quantity ?? $item['quantity'] ?? 1;
         $price = $variant->price ?? 0;
         $total = $price * $quantity;
-        $img = $color->image ?? 'k tim thay img'; 
+        $img = $color->image ?? 'k tim thay img';
 
     @endphp
 
@@ -148,9 +148,9 @@
                                 </div>
                             </div>
                             <div class="checkout_btn_inner d-flex align-items-center">
-                                <a class="gray_btn" href="{{ route('products') }}">Tiếp tục mua sắm</a>
+                                <a class="primary-btn" href="{{ route('products') }}">Tiếp tục mua</a>
                                 <form action="{{ route('account.checkout.cart') }}" method="GET" class="d-inline-block">
-                                    <button type="submit" class="btn btn-primary">Thanh toán</button>
+                                    <button type="submit" class="btn primary-btn">Thanh toán</button>
                                 </form>
                             </div>
                             <div class="text-center mt-3">

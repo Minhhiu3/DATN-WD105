@@ -212,11 +212,11 @@ class CheckoutController extends Controller
 
                 // Check sản phẩm bị xóa mềm
                 if (!$variant || $variant->trashed() || !$variant->product || $variant->product->trashed()) {
-                    throw new \Exception("Một sản phẩm trong giỏ hàng đã bị ngừng bán. Vui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
+                    throw new \Exception("Sản phẩm {$variant->product->name_product},màu:{$variant->color->name_color},size:{$variant->size->name} trong giỏ hàng đã bị xóa hoặc ngừng bán. Vui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
                 }
 
                 if ($variant->quantity < $item->quantity) {
-                    throw new \Exception("Sản phẩm {$variant->product->name_product} không đủ hàng.");
+                    throw new \Exception("Sản phẩm {$variant->product->name_product},màu:{$variant->color->name_color},size:{$variant->size->name} không đủ hàng.");
                 }
 
                 $totalAmount += $variant->price * $item->quantity;
@@ -283,11 +283,11 @@ class CheckoutController extends Controller
             $variant = $item->variant;
 
             if (!$variant || $variant->trashed() || !$variant->product || $variant->product->trashed()) {
-                return redirect()->route('cart')->withErrors("Một sản phẩm trong giỏ hàng đã bị xóa hoặc ngừng bán.");
+                return redirect()->route('cart')->withErrors("Sản phẩm {$variant->product->name_product},màu:{$variant->color->name_color},size:{$variant->size->name} trong giỏ hàng đã bị xóa hoặc ngừng bán. Vui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
             }
 
             if ($variant->quantity < $item->quantity) {
-                return redirect()->route('cart')->withErrors("Sản phẩm {$variant->product->name_product} không đủ hàng.");
+                return redirect()->route('cart')->withErrors("Sản phẩm {$variant->product->name_product},màu:{$variant->color->name_color},size:{$variant->size->name} không đủ hàng.");
             }
 
             $totalAmount += $variant->price * $item->quantity;
@@ -327,7 +327,7 @@ class CheckoutController extends Controller
     }
 }
 // áp mã giảm giá cho đơn hàng
-        
+
     public function apply(Request $request)
     {
         $request->validate([
@@ -387,7 +387,7 @@ class CheckoutController extends Controller
             $voucherMoney = $discount;
 
         }
-        
+
 
 
 

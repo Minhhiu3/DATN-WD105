@@ -74,6 +74,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent; }
 
+
 /* Start primary btn css
 ============================================================================================ */
 .primary-btn {
@@ -81,7 +82,7 @@
   overflow: hidden;
   color: #fff;
   padding: 0 30px;
-  line-height: 50px;
+  line-height: 40px;
   border-radius: 50px;
   display: inline-block;
   text-transform: uppercase;

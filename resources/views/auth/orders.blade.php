@@ -87,7 +87,9 @@
 
                                                     </td>
                                                     <td>
-                                                        @php $status = $order->status; @endphp
+                                                        @php $status = $order->status;
+                                                        $reason = $order->cancel_reason ?? 'Chưa có lý do hủy';
+                                                         @endphp
                                                         @if ($status == 'pending')
                                                             <span class="btn btn-sm btn-warning text-black">Chờ xác
                                                                 nhận</span>
@@ -97,13 +99,17 @@
                                                         @elseif ($status == 'shipping')
                                                             <span class="btn btn-sm btn-info text-white">Đang giao</span>
                                                         @elseif ($status == 'delivered')
-                                                            <span class="btn btn-sm btn-success text-white">Đã giao hàng</span>
-                                                             @elseif ($status == 'received')
-                                                            <span class="btn btn-sm btn-success text-white">Đã nhận hàng</span>
-                                                            @elseif ($status == 'completed')
-                                                            <span class="btn btn-sm btn-success text-white">Hoàn thành</span>
-                                                             @elseif ($status == 'canceled')
-                                                            <span class="btn btn-sm btn-success text-white">Đã Hủy</span>
+                                                            <span class="btn btn-sm btn-success text-white">Đã giao
+                                                                hàng</span>
+                                                        @elseif ($status == 'received')
+                                                            <span class="btn btn-sm btn-success text-white">Đã nhận
+                                                                hàng</span>
+                                                        @elseif ($status == 'completed')
+                                                            <span class="btn btn-sm btn-success text-white">Hoàn
+                                                                thành</span>
+                                                        @elseif ($status == 'canceled')
+                                                            <span class="btn btn-sm btn-danger text-white">Đã Hủy</span>
+                                                           <p class="btn btn-sm btn-danger text-white  mt-2"> Lý do hủy: <span >{{$reason}}</span></p>
                                                         @else
                                                             <span
                                                                 class="btn btn-sm btn-light text-black">{{ $status }}</span>
@@ -135,29 +141,24 @@
                                                                 <i class="fa fa-eye"></i> Xem chi tiết
                                                             </a>
 
-                                                            @if ($order->status == 'pending')
+                                                            @if ($order->status == 'pending' || $order->status == 'processing')
+                                                                <button type="button" class="btn btn-sm btn-danger"
+                                                                    onclick="showCancelModal({{ $order->id_order }})">
+                                                                    <i class="fa fa-recycle"></i> Hủy
+                                                                </button>
+                                                            @endif
+                                                            @if ($order->status == 'delivered')
                                                                 <form
-                                                                    action="{{ route('account.cancelOrder', $order->id_order) }}"
+                                                                    action="{{ route('account.confirmReceive', $order->id_order) }}"
                                                                     method="POST"
-                                                                    onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?')">
+                                                                    onsubmit="return confirm('Xác nhận bạn đã nhận được hàng này?')">
                                                                     @csrf
                                                                     @method('PUT')
-                                                                    <button type="submit" class="btn btn-sm btn-danger">
-                                                                        <i class="fa fa-recycle"></i> Hủy đơn hàng
+                                                                    <button type="submit" class="btn btn-sm btn-success">
+                                                                        <i class="fa fa-check"></i> Xác nhận đã nhận hàng
                                                                     </button>
                                                                 </form>
                                                             @endif
-                                                            @if ($order->status == 'delivered')
-            <form action="{{ route('account.confirmReceive', $order->id_order) }}"
-                method="POST"
-                onsubmit="return confirm('Xác nhận bạn đã nhận được hàng này?')">
-                @csrf
-                @method('PUT')
-                <button type="submit" class="btn btn-sm btn-success">
-                    <i class="fa fa-check"></i> Xác nhận đã nhận hàng
-                </button>
-            </form>
-        @endif
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -165,8 +166,8 @@
                                         </tbody>
                                     </table>
                                     <div class="pagination-wrapper">
-    {{ $orders->links() }}
-</div>
+                                        {{ $orders->links() }}
+                                    </div>
                                 </div>
                             @else
                                 <div class="text-center py-5">
@@ -185,4 +186,38 @@
         </div>
     </section>
     <!-- End Orders Area -->
+    <!-- Modal nhập lý do hủy -->
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Nhập lý do hủy đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="cancelOrderForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="cancel_reason" class="form-label">Lý do hủy</label>
+                            <textarea name="cancel_reason" class="form-control" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showCancelModal(orderId) {
+            let form = document.getElementById('cancelOrderForm');
+            form.action = "/account/orders/" + orderId + "/cancel";
+            var modal = new bootstrap.Modal(document.getElementById('cancelOrderModal'));
+            modal.show();
+        }
+    </script>
 @endsection

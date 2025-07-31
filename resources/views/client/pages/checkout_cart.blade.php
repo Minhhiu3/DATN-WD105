@@ -35,7 +35,7 @@
                     <button type="submit" class="tp_btn">OK</button>
                 </form>
                 <p id="coupon-message" class="mt-2 text-success"></p>
-                
+
             </div>
             <div class="billing_details">
                 <div class="row">
@@ -90,11 +90,11 @@
                             @endforeach
 
                             <div class="col-md-12 text-right mt-3 d-flex justify-content-between">
-                                <button type="submit" name="payment_method" value="cod" class="btn btn-warning">
-                                    ĐẶT HÀNG THANH TOÁN SAU <br><small>(Trả tiền khi nhận hàng)</small>
+                                <button type="submit" name="payment_method" value="cod" class="btn primary-btn">
+                                    ĐẶT HÀNG <br><small>(Trả tiền khi nhận hàng)</small>
                                 </button>
 
-                                <button type="submit" name="payment_method" value="vnpay" class="btn btn-primary">
+                                <button type="submit" name="payment_method" value="vnpay" class="btn primary-btn">
                                     THANH TOÁN ONLINE <br><small>(Thông qua VNPay)</small>
                                 </button>
                             </div>
