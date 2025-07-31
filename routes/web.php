@@ -138,7 +138,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     ]);
 
     // Banner Management Routes
-    Route::resource('/banner', BannerController::class)->names([
+    Route::resource('banner', BannerController::class)->names([
         'index' => 'admin.banner.index',
         'create' => 'admin.banner.create',
         'store' => 'admin.banner.store',
@@ -147,6 +147,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.banner.update',
         'destroy' => 'admin.banner.destroy',
     ]);
+
+Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
     // Album Product Management Routes
     Route::resource('/album-products', AlbumProductController::class)->names([

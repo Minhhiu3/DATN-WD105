@@ -8,32 +8,53 @@
 </style>
 @section('content')
 <!-- start banner Area -->
-<section class="banner-area">
+
+<section class="banner-area" style="margin-top: 80px">
     <div class="container">
         <div class="row fullscreen align-items-center justify-content-start">
             <div class="col-lg-12">
                 <div class="active-banner-slider owl-carousel">
-                    {{-- <img src="{{asset('assets/img/banner/banner-img.png')}}" alt=""> --}}
-                    @foreach ($banners as $banner)
+                    @forelse ($banners as $banner)
                         <div class="single-slide row align-items-center d-flex">
                             <div class="col-lg-5 col-md-6">
-                                <div class="banner-content">
+                                <div class="banner-content  ">
                                     <h1>{{ $banner->name ?? 'Bộ sưu tập mới!' }}</h1>
+                                    @if ($banner->product_id)
+                                        <a href="{{ route('client.product.show', $banner->product_id) }}" class="primary-btn">
+                                            Xem sản phẩm
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
-                            <div class="col-lg-7">
-                                <div class="banner-img">
-                                    <img class="img-fluid" src="{{ asset('storage/' . $banner->image) }}"
-                                        style="max-height: 400px; object-fit: cover;" alt="{{ $banner->name }}">
+                            <div class="col-lg-7 col-md-6 d-flex justify-content-center ">
+                                {{-- Ensure the image is responsive and fits well within the banner area --}}
+                                <div class="banner-img" style="width: 80%; height: 80%; mt-5">
+                                    {{-- Use asset helper to generate the correct URL for the image --}}
+                                    {{-- Ensure the image is responsive --}}
+                                    <img class="img-fluid" src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->name }}">
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    @empty
+                        <div class="single-slide row align-items-center d-flex">
+                            <div class="col-lg-5 col-md-6">
+                                <div class="banner-content">
+                                    <h1>Bộ sưu tập mới!</h1>
+                                </div>
+                            </div>
+                            <div class="col-lg-7 col-md-6">
+                                <div class="banner-img">
+                                    <img class="img-fluid" src="{{ asset('assets/img/banner/default-banner.jpg') }}" alt="Default Banner">
+                                </div>
+                            </div>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 <!-- End banner Area -->
 <!-- End banner Area -->
 
