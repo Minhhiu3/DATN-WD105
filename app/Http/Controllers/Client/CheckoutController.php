@@ -79,7 +79,6 @@ class CheckoutController extends Controller
         $grand_total = $totalAmount + $shippingFee;
     }
 
-
     // COD
     if ($request->payment_method === 'cod') {
         DB::beginTransaction();
@@ -110,6 +109,8 @@ class CheckoutController extends Controller
             $variant->decrement('quantity', $request->quantity);
 
             DB::commit();
+            // Xóa session mã giảm giá sau khi đặt hàng thành công
+            session()->forget('discount');
             return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -127,13 +128,15 @@ class CheckoutController extends Controller
                 'province'      => $request->province,
                 'ward'          => $request->ward,
                 'address'       => $request->address,
-                'total_amount'  => $totalAmount,
-                'grand_total'   => $grand_total,
+                'total_amount'  => $finalTotal,     // Tổng tiền sau giảm, chưa cộng phí ship
+                'grand_total'   => $grand_total,    // Tổng tiền đã giảm + phí ship
+                'discount_code' => $discountCode,
             ]
         ]);
 
         Log::info('🔄 [Buy Now] Lưu session pending_order_buy_now:', session('pending_order_buy_now'));
-
+        // Xóa session mã giảm giá sau khi đặt hàng thành công
+        session()->forget('discount');
         return redirect()->route('payment.vnpay.buy_now');
     }
 }
@@ -182,9 +185,9 @@ class CheckoutController extends Controller
                     $q2->withTrashed();
                 },
                 'size'
-            ]);
-        }
-    ])->where('cart_id', $cart->id_cart)->get();
+                ]);
+            }
+            ])->where('cart_id', $cart->id_cart)->get();
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
@@ -203,7 +206,7 @@ class CheckoutController extends Controller
 
         try {
             $totalAmount = 0;
-$grand_total =0;
+            $grand_total =0;
              foreach ($cartItems as $item) {
                 $variant = $item->variant;
 
@@ -290,8 +293,18 @@ $grand_total =0;
             $totalAmount += $variant->price * $item->quantity;
         }
 
-    $shippingFee = 30000;
-    $grand_total = $totalAmount + $shippingFee;
+            $shippingFee = 30000;
+            $discount = session('discount');
+            $discountCode = $discount['code'] ?? null;
+            if(isset($discount)){
+                //  Tổng tiền sau giảm
+                $finalTotal = max(0, $discount['final_total']);
+                $grand_total = $discount['final_total'] + $shippingFee;
+
+            }else{
+                $finalTotal = $totalAmount;
+                $grand_total = $totalAmount + $shippingFee;
+            }
         // Lưu thông tin đơn hàng tạm vào session hoặc truyền qua request
          session([
         'pending_order_cart' => [
@@ -302,11 +315,13 @@ $grand_total =0;
             // 'district'      => $request->district,
             'ward'          => $request->ward,
             'address'       => $request->address,
-            'total_amount'  => $totalAmount,
-            'grand_total'   => $grand_total,
+            'total_amount'  => $finalTotal,     // Tổng tiền sau giảm, chưa cộng phí ship
+            'grand_total'   => $grand_total,    // Tổng tiền đã giảm + phí ship
+            'discount_code' => $discountCode,
+
         ]
     ]);
-
+    session()->forget('discount');
     // Chuyển hướng tới VNPay để thanh toán
     return redirect()->route('payment.vnpay');
     }
@@ -319,19 +334,31 @@ $grand_total =0;
             'coupon_code' => 'required|string',
         ]);
 
-    $coupon = DiscountCode::where('code', $request->coupon_code)->first();
+        $coupon = DiscountCode::where('code', $request->coupon_code)->first();
 
         if (!$coupon) {
             return response()->json(['success' => false, 'message' => 'Mã không hợp lệ']);
         }
 
-        if (now()->gt($coupon->expired_at)) {
-            return response()->json(['success' => false, 'message' => 'Mã đã hết hạn']);
+        if (!now()->between($coupon->start_date, $coupon->end_date)) {
+            return response()->json(['success' => false, 'message' => 'Mã giảm giá không còn hiệu lực']);
         }
+        if ($coupon->is_active == '0') {
+            return response()->json(['success' => false, 'message' => 'Mã giảm giá đã bị vô hiệu hóa']);
+        }
+
+
 
         // Tính tổng đơn
         $variant = Variant::find($request->variant_id);
         $subtotal = $variant->price * $request->quantity;
+        if ($subtotal < $coupon->min_order_value) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng phải từ ' . number_format($coupon->min_order_value, 0, ',', '.') . 'đ mới được áp dụng mã giảm giá'
+            ]);
+        }
+
         $shippingFee = 30000;
         $type = (int) $coupon->type; // ép kiểu chắc chắn
 
@@ -346,17 +373,28 @@ $grand_total =0;
                 $discount = 0;
                 break;
         }
+        if ($discount>$coupon->max_discount) {
+            // tiền hiển thi + tiền ship
+            $finalTotalShip = max(0, $subtotal - $coupon->max_discount+ $shippingFee);
+            // tiền chuyền session - tiền ship
+            $finalTotal = max(0, $subtotal - $coupon->max_discount );
+            $voucherMoney = $coupon->max_discount;
+        } else {
+            // tiền hiển thi + tiền ship
+            $finalTotalShip = max(0, $subtotal - $discount + $shippingFee);
+            // tiền chuyền session - tiền ship
+            $finalTotal = max(0, $subtotal - $discount );
+            $voucherMoney = $discount;
+
+        }
+        
 
 
-        // tiền hiển thi + tiền ship
-        $finalTotalShip = max(0, $subtotal - $discount + $shippingFee);
-        // tiền chuyền session - tiền ship
-        $finalTotal = max(0, $subtotal - $discount );
 
         session([
             'discount' => [
                 'code' => $coupon->code,
-                'amount' => $discount,
+                'amount' => $voucherMoney,
                 'final_total' => $finalTotal
             ]
         ]);
@@ -364,7 +402,7 @@ $grand_total =0;
         return response()->json([
             'success' => true,
             'message' => "Đã áp dụng mã giảm giá!",
-            'discount' => $discount,
+            'discount' => $voucherMoney,
             'final_total' => $finalTotalShip
         ]);
     }
@@ -387,8 +425,11 @@ $grand_total =0;
             return response()->json(['success' => false, 'message' => 'Mã không hợp lệ']);
         }
 
-        if (now()->gt($coupon->expired_at)) {
-            return response()->json(['success' => false, 'message' => 'Mã đã hết hạn']);
+        if (!now()->between($coupon->start_date, $coupon->end_date)) {
+            return response()->json(['success' => false, 'message' => 'Mã giảm giá không còn hiệu lực']);
+        }
+        if ($coupon->is_active == '0') {
+            return response()->json(['success' => false, 'message' => 'Mã giảm giá đã bị vô hiệu hóa']);
         }
 
         $subtotal = 0;
@@ -397,7 +438,12 @@ $grand_total =0;
                 $subtotal += $item->variant->price * $item->quantity;
             }
         }
-
+        if ($subtotal < $coupon->min_order_value) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng phải từ ' . number_format($coupon->min_order_value, 0, ',', '.') . 'đ mới được áp dụng mã giảm giá'
+            ]);
+        }
         $shippingFee = 30000;
         $discount = 0;
         $type = (int) $coupon->type;
@@ -413,14 +459,24 @@ $grand_total =0;
                 $discount = 0;
         }
 
-        // tiền hiển thi + tiền ship
-        $finalTotalShip = max(0, $subtotal - $discount + $shippingFee);
-        // tiền chuyền session - tiền ship
-        $finalTotal = max(0, $subtotal - $discount );
+        if ($discount>$coupon->max_discount) {
+            // tiền hiển thi + tiền ship
+            $finalTotalShip = max(0, $subtotal - $coupon->max_discount+ $shippingFee);
+            // tiền chuyền session - tiền ship
+            $finalTotal = max(0, $subtotal - $coupon->max_discount );
+            $voucherMoney = $coupon->max_discount;
+        } else {
+            // tiền hiển thi + tiền ship
+            $finalTotalShip = max(0, $subtotal - $discount + $shippingFee);
+            // tiền chuyền session - tiền ship
+            $finalTotal = max(0, $subtotal - $discount );
+            $voucherMoney = $discount;
+
+        }
         session([
             'discount' => [
                 'code' => $coupon->code,
-                'amount' => $discount,
+                'amount' => $voucherMoney,
                 'final_total' => $finalTotal
             ]
         ]);
@@ -428,7 +484,7 @@ $grand_total =0;
         return response()->json([
             'success' => true,
             'message' => 'Đã áp dụng mã giảm giá!',
-            'discount' => $discount,
+            'discount' => $voucherMoney,
             'final_total' => $finalTotalShip
         ]);
 
