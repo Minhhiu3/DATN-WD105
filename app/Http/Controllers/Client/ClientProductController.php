@@ -16,10 +16,22 @@ class ClientProductController extends Controller
         $sizes = Size::all();
         $categories = Category::all();
         $keyword = $request->input('keyword');
-        $products = Product::with(['category', 'albumProducts'])
-        ->when($keyword,function($query,$keyword){
+          $category = $request->input('category');
+    $size = $request->input('size');
+     $products = Product::with(['category', 'albumProducts'])
+        ->when($keyword, function ($query, $keyword) {
             $query->where('name_product', 'like', "%$keyword%");
         })
+        ->when($category, function ($query, $category) {
+            $query->where('category_id', $category);
+        })
+       ->when($size, function ($query, $size) {
+    $query->whereHas('variants.size', function ($q) use ($size) {
+        $q->where('name', $size);
+    });
+})
+
+
         ->latest()->paginate(9);
         return view('client.pages.products', compact('products', 'categories', 'sizes','keyword'));    }
 
@@ -29,7 +41,7 @@ class ClientProductController extends Controller
         'category',
         'variants.color',
         'variants.size',
-        
+
          'albumProducts')->findOrFail($id);
     return view('client.pages.product-detail', compact('product'));
 }
