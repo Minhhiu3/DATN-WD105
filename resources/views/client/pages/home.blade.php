@@ -11,7 +11,10 @@
 .custom-banner-slider-wrapper {
     position: relative;
     overflow: hidden;
-    height: 500px; /* Chiều cao cố định cho toàn bộ banner */
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .custom-banner-slider {
@@ -25,32 +28,28 @@
     min-width: 100%;
     height: 100%;
     display: flex;
-    align-items: center; /* Căn giữa theo chiều dọc */
-    justify-content: space-between;
-    box-sizing: border-box;
-    padding: 0 30px;
+    align-items: center;
+    justify-content: center;  /* ✅ Căn giữa nội dung */
+    padding: 0;
 }
-
 .banner-content {
     flex: 1;
     padding-right: 20px;
 }
 
 .banner-img {
-    margin-left: 20px;
-    flex: 1;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
 }
-
 .banner-img img {
-    width: 400px;      /* ✅ KHÓA cứng chiều ngang */
-    height: 400px;     /* ✅ KHÓA cứng chiều dọc */
-    object-fit: cover; /* Cắt ảnh nếu quá khổ, vẫn giữ bố cục */
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); */
 }
 
 
