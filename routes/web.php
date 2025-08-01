@@ -30,6 +30,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ClientProductController::class, 'index'])->name('products');
 Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->name('client.product.show');
 Route::get('/products/filter', [ClientProductController::class, 'filterByPrice'])->name('products.filterByPrice');
+Route::get('/contact', function () {
+    return view('client.pages.contact');
+})->name('contact');
+
 
 // Cart Routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
@@ -162,7 +166,7 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
     ]);
     Route::get('/album-products/{product_id}/show-album', [AlbumProductController::class, 'showAblum'])
         ->name('admin.album-products.show-album');
-        
+
 
 
     // Variant Management Routes
