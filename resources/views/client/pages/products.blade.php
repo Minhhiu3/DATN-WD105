@@ -24,27 +24,27 @@
                 <div class="sidebar-categories">
                     <div class="head">Danh mục sản phẩm</div>
 
-                    <ul class="main-categories">
-                        @foreach ($categories as $category)
-                            <li class="main-nav-list"><a data-toggle="collapse" aria-expanded="false"
-                                    aria-controls="fruitsVegetable"></span>{{ $category->name_category }}</a>
-
-                            </li>
-                        @endforeach
-
-                    </ul>
+                   <ul class="main-categories">
+    @foreach ($categories as $category)
+        <li class="main-nav-list">
+            <a href="{{ route('products', ['category' => $category->id_category]) }}">
+                {{ $category->name_category }}
+            </a>
+        </li>
+    @endforeach
+</ul>
                 </div>
                 <div class="sidebar-filter mt-50 ">
                     <div class="top-filter-head ">Lọc</div>
 
-                 <div class="common-filter">
+      <div class="common-filter">
     <div class="head">Size</div>
-
     <div class="d-flex flex-wrap gap-2">
         @foreach ($sizes as $size)
-            <button type="button" class="btn btn-outline-dark size-square">
+            <a href="{{ route('products', ['size' => $size->name]) }}"
+               class="btn btn-outline-dark size-square {{ request('size') == $size->name ? 'active' : '' }}">
                 {{ $size->name }}
-            </button>
+            </a>
         @endforeach
     </div>
 </div>

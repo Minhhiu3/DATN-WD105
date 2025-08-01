@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Color;
+use App\Models\Variant;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -72,11 +74,15 @@ public function update(Request $request, Color $color)
     return redirect()->route('admin.variants.show', $request->product_id)->with('success', 'Cập nhật màu thành công.');
 }
 
+public function destroy(Color $color)
+{   
+    $productId = request()->get('product_id');
+    // Xoá các bản ghi liên quan trước nếu cần (ví dụ trong bảng variants)
+    Variant::where('color_id', $color->id_color)->delete();
 
-    public function destroy(Color $Color)
-    {
-        $Color->delete();
+    // Sau đó xoá màu
+    $color->delete();
+    return redirect()->route('admin.variants.show', $productId)->with('success', 'Xóa màu thành công.');
 
-        return redirect()->route('admin.colors.index')->with('success', 'Xóa màu thành công.');
-    }
+}
 }

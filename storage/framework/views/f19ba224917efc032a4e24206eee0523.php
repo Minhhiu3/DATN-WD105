@@ -44,7 +44,7 @@
 
             <!-- Cột phải: Thông tin sản phẩm -->
             <div class="col-lg-6 " >
-                <div class="s_product_text" style="margin-left: 20px;">
+                <div class="s_product_text" style="margin-left: 20px; margin-top: 20px;">
                     <h3><?php echo e($product->name_product); ?></h3>
 
                     <h2>
@@ -72,57 +72,56 @@
                         <form onsubmit="addToCart(event)" class="mt-3" id="add-to-cart-form">
                             <?php echo csrf_field(); ?>
 
-                            <!-- Màu sắc -->
-                            <div class="form-group mb-3">
-                                <label>Màu sắc:</label>
-                                <div class="d-flex gap-2 flex-wrap" id="color-options">
-                                    <?php $__currentLoopData = $product->variants->groupBy('color_id'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $colorId => $variants): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php
-                                            $color = $variants->first()->color ?? null;
-                                            $totalQty = $variants->sum('quantity');
-                                        ?>
-                                        <?php if($color): ?>
-                                            <button type="button"
-                                                    class="btn btn-outline-primary color-btn"
-                                                    data-color-id="<?php echo e($colorId); ?>"
-                                                    data-image="<?php echo e(asset('storage/' . $color->image)); ?>"
-                                                    data-quantity="<?php echo e($totalQty); ?>">
-                                                <?php echo e($color->name_color); ?>
+                           <!-- Màu sắc -->
+<?php $__currentLoopData = $product->variants->groupBy('color_id'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $colorId => $variants): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <?php
+        $color = $variants->first()->color ?? null;
+        $totalQty = $variants->sum('quantity');
+    ?>
+    <?php if($color && $totalQty > 0): ?>
+        <button type="button"
+                class="btn btn-outline-dark color-btn mr-2 mb-2"
+                data-color-id="<?php echo e($colorId); ?>"
+                data-image="<?php echo e(asset('storage/' . $color->image)); ?>"
+                data-quantity="<?php echo e($totalQty); ?>">
+            <?php echo e($color->name_color); ?>
 
-                                            </button>
-                                        <?php endif; ?>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </div>
-                            </div>
+        </button>
+    <?php endif; ?>
+<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-                            <!-- Kích thước -->
-                            <div class="form-group mb-3">
-                                <label>Kích thước:</label>
-                                <div class="d-flex gap-2 flex-wrap" id="size-options">
-                                    <?php $__currentLoopData = $product->variants; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $variant): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <button type="button"
-                                                class="btn btn-outline-dark size-btn <?php echo e($variant->quantity == 0 ? 'disabled' : ''); ?>"
-                                                data-variant-id="<?php echo e($variant->id_variant); ?>"
-                                                data-color-id="<?php echo e($variant->color_id); ?>"
-                                                data-price="<?php echo e($variant->price); ?>"
-                                                data-quantity="<?php echo e($variant->quantity); ?>"
-                                                <?php echo e($variant->quantity == 0 ? 'disabled' : ''); ?>>
-                                            <?php echo e($variant->size->name ?? 'N/A'); ?>
 
-                                        </button>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </div>
-                            </div>
+<!-- Kích thước -->
+<div class="form-group mb-3">
+    <label>Kích thước:</label>
+    <div class="d-flex flex-wrap" id="size-options">
+        <?php $__currentLoopData = $product->variants; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $variant): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <button type="button"
+                    class="btn btn-outline-dark size-btn mr-2 mb-2 <?php echo e($variant->quantity == 0 ? 'disabled' : ''); ?>"
+                    data-variant-id="<?php echo e($variant->id_variant); ?>"
+                    data-color-id="<?php echo e($variant->color_id); ?>"
+                    data-price="<?php echo e($variant->price); ?>"
+                    data-quantity="<?php echo e($variant->quantity); ?>"
+                    <?php echo e($variant->quantity == 0 ? 'disabled' : ''); ?>>
+                <?php echo e($variant->size->name ?? 'N/A'); ?>
+
+            </button>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </div>
+</div>
+
 
                             <!-- Số lượng -->
-                            <div class="product_count mb-3">
-                                <label>Số lượng:</label>
-                                <div class="input-group" style="width: 140px;">
-                                    <button class="btn btn-outline-secondary" type="button" id="decrease-btn">−</button>
-                                    <input type="text" name="quantity" id="sst" min="1" value="1" class="form-control text-center">
-                                    <button class="btn btn-outline-secondary" type="button" id="increase-btn">+</button>
-                                </div>
-                            </div>
+<div class="product_count mb-3">
+    <label for="sst">Số lượng:</label>
+    <div class="d-flex align-items-center" style="gap: 12px;">
+        <button class="qty-btn" type="button" id="decrease-btn">-</button>
+        <input type="text" name="quantity" id="sst" min="1" value="1" class="qty-input" readonly>
+        <button class="qty-btn" type="button" id="increase-btn">+</button>
+    </div>
+</div>
+
+
 
                             <!-- Nút Thêm vào giỏ -->
                             <div class="card_area d-flex align-items-center gap-3">
@@ -133,7 +132,7 @@
 
                             <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
                         </form>
-
+<!-- <button class="primary-btn">abc abc </button> -->
                         <!-- Nút Mua ngay -->
                         <form action="<?php echo e(route('account.checkout.form')); ?>" method="GET" class="mt-3" id="buy-now-form">
                             <?php echo csrf_field(); ?>
@@ -365,14 +364,16 @@
     });
 ?>
 
-    </section>
-    
+    <!-- </section>
+     -->
 
     <!--================End Product Description Area =================-->
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('styles'); ?>
 <style>
+
+    
 .fade-image {
     transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 1;
@@ -383,6 +384,10 @@
     transform: scale(0.97);
 }
 
+ .qty-input:focus {
+        outline: none;
+        box-shadow: none; /* bỏ viền khi click vào input */
+    }
 </style>
 <?php $__env->stopPush(); ?>
 
@@ -397,6 +402,9 @@ const quantityInput = document.getElementById('add-cart-quantity');             
 
     const colorButtons = document.querySelectorAll('.color-btn');
     const sizeButtons = document.querySelectorAll('.size-btn');
+    // Ẩn toàn bộ size khi trang load
+sizeButtons.forEach(btn => btn.style.display = 'none');
+
     const mainImage = document.getElementById('main-image');
     const priceDisplay = document.getElementById('dynamic-price');
     const stockDisplay = document.getElementById('dynamic-stock');
@@ -427,6 +435,8 @@ const quantityInput = document.getElementById('add-cart-quantity');             
 // console.log("color variants:", selectedVariantInput);
 
 // console.log("variant_id:", document.getElementById("variant_id"));
+
+
 
 
 
@@ -488,12 +498,26 @@ const quantityInput = document.getElementById('add-cart-quantity');             
 
             resetSelections();
 
-            // ✅ Auto chọn size đầu tiên còn hàng
-            const firstSize = Array.from(sizeButtons).find(btn => btn.dataset.colorId === colorId && !btn.disabled);
-            if (firstSize) {
-                log("First size found:", firstSize.dataset.variantId);
-                firstSize.click();
-            }
+            // Lọc size
+sizeButtons.forEach(btn => {
+    if (btn.dataset.colorId === colorId) {
+        btn.style.display = 'inline-block';
+    } else {
+        btn.style.display = 'none';
+        btn.classList.remove('active', 'btn-dark');
+    }
+});
+
+// ⚠️ Reset trước khi chọn size
+resetSelections();
+
+// ✅ Auto chọn size đầu tiên còn hàng
+const firstSize = Array.from(sizeButtons).find(btn => btn.dataset.colorId === colorId && !btn.disabled);
+if (firstSize) {
+    console.log("First size found:", firstSize.dataset.variantId);
+    firstSize.click();
+}
+
         });
     });
 
@@ -543,37 +567,50 @@ sizeButtons.forEach(btn => {
         else if (val > maxQty) input.value = maxQty;
     });
 
-    // 👉 Auto chọn màu đầu tiên
-    if (colorButtons.length > 0) {
-        colorButtons[0].click();
-    }
+    // // 👉 Auto chọn màu đầu tiên
+    // if (colorButtons.length > 0) {
+    //     colorButtons[0].click();
+    // }
 
     // 👉 Mua ngay
+// 👉 Mua ngay
 const buyNowForm = document.querySelector('form[action="<?php echo e(route('account.checkout.form')); ?>"]');
 if (buyNowForm) {
     buyNowForm.addEventListener('submit', function (e) {
-        const variant = hiddenVariantInput.value;
-        const qty = input.value;
+        const variantId = document.getElementById('add-cart-variant-id')?.value;
+        const quantity = document.getElementById('sst')?.value;
 
-        // 👉 Thêm log kiểm tra
         console.log('🔍 Submit Buy Now Form');
-        console.log('Variant ID:', variant);
-        console.log('Quantity:', qty);
+        console.log('Variant ID:', variantId);
+        console.log('Quantity:', quantity);
 
-        if (!variant) {
+        // ✅ Validate giống addToCart
+        if (!variantId) {
             e.preventDefault();
             Swal.fire({
                 icon: 'warning',
-                title: 'Chưa chọn size',
-                text: 'Vui lòng chọn kích thước trước khi mua ngay.'
+                title: 'Chưa chọn kích thước',
+                text: 'Vui lòng chọn size trước khi mua ngay.'
             });
             return;
         }
 
-        document.getElementById('selectedQty').value = qty;
-        selectedVariantInput.value = variant;
+        if (quantity < 1) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Số lượng không hợp lệ',
+                text: 'Số lượng phải lớn hơn 0!'
+            });
+            return;
+        }
+
+        // ✅ Gán dữ liệu vào input ẩn để submit
+        document.getElementById('selectedQty').value = quantity;
+        document.getElementById('selectedVariant').value = variantId;
     });
 }
+
 
 });
 

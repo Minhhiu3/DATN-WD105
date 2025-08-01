@@ -34,75 +34,76 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($cartItems as $item)
-                                @php
-                                    $variant = $item->variant ?? $item['variant'] ?? null;
-                                    $product = $variant?->product ?? null;
-                                @endphp
+@foreach($cartItems as $item)
 
-                                @if ($variant && $product)
-                                    @php
-                                        $size = $variant->size;
-                                        $quantity = $item->quantity ?? $item['quantity'];
-                                        $price = $variant->price;
-                                        $total = $price * $quantity;
-                                    @endphp
-                                    <tr data-variant-id="{{ $variant->id_variant }}">
-                                        <td>
-                                            <div class="media">
-                                                <div class="d-flex">
-                                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name_product }}" style="width: 100px; height: 100px; object-fit: cover;">
-                                                </div>
-                                                <div class="media-body">
-                                                    <h4>{{ $product->name_product }}</h4>
-                                                    <p>Size: {{ $size ? $size->name : 'Không xác định' }}</p>
-                                                    <small class="text-muted">Còn lại: {{ $variant->quantity }} sản phẩm</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <h5 class="item-price">{{ number_format($price, 0, ',', '.') }} VNĐ</h5>
-                                        </td>
-                                        <td>
-                                            <div class="product_count">
-                                                <input type="number" name="qty" value="{{ $quantity }}"
-                                                    class="input-text qty"
-                                                    min="1"
-                                                    max="{{ $variant->quantity }}"
-                                                    data-variant-id="{{ $variant->id_variant }}"
-                                                    data-price="{{ $price }}"
-                                                    onchange="updateQuantity({{ $variant->id_variant }}, this.value, {{ $variant->quantity }})">
-                                                <button onclick="changeQuantity({{ $variant->id_variant }}, 1, {{ $variant->quantity }})"
-                                                    class="increase items-count" type="button">
-                                                    <i class="lnr lnr-chevron-up"></i>
-                                                </button>
-                                                <button onclick="changeQuantity({{ $variant->id_variant }}, -1, {{ $variant->quantity }})"
-                                                    class="reduced items-count" type="button">
-                                                    <i class="lnr lnr-chevron-down"></i>
-                                                </button>
-                                            </div>
-                                            <div class="quantity-error text-danger" style="display: none; font-size: 12px;"></div>
-                                        </td>
-                                        <td>
-                                            <h5 class="item-total">{{ number_format($total, 0, ',', '.') }} VNĐ</h5>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-danger btn-sm" onclick="removeFromCart({{ $variant->id_variant }})">
-                                                <i class="fa fa-trash"></i> Xóa
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @else
-                                    <tr class="text-danger">
-                                        <td colspan="5">
-                                            Sản phẩm này không còn tồn tại hoặc đã bị xóa.
-                                            <button class="btn btn-sm btn-danger" onclick="removeFromCart({{ $item->variant_id ?? $item['variant_id'] ?? 0 }})">
-                                                Xóa khỏi giỏ hàng
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endforeach
+    @php
+        $variant = $item->variant ?? $item['variant'] ?? null;
+        $product = $variant?->product ?? null;
+        $color = $variant?->color ?? null;
+        $size = $variant?->size ?? null;
+        $quantity = $item->quantity ?? $item['quantity'] ?? 1;
+        $price = $variant->price ?? 0;
+        $total = $price * $quantity;
+        $img = $color->image ?? 'k tim thay img';
+
+    @endphp
+
+    @if ($variant && $product)
+        <tr data-variant-id="{{ $variant->id_variant }}">
+            <td>
+                <div class="media">
+                    <div class="d-flex">
+                        <img src="{{ asset('storage/' . ($img ?? 'default.jpg')) }}"
+                             alt="{{ $product->name_product }}"
+                             style="width: 100px; height: 100px; object-fit: cover;">
+                    </div>
+                    <div class="media-body">
+                        <h4>{{ $product->name_product }}</h4>
+                        <p>Size: {{ $size->name ?? 'Không xác định' }}</p>
+                        <p>Màu: {{ $color->name_color ?? 'Không xác định' }}</p>
+                        <small class="text-muted">Còn lại: {{ $variant->quantity }} sản phẩm</small>
+                    </div>
+                </div>
+            </td>
+            <td><h5 class="item-price">{{ number_format($price, 0, ',', '.') }} VNĐ</h5></td>
+            <td>
+                <div class="product_count">
+                    <input type="number" name="qty" value="{{ $quantity }}" class="input-text qty"
+                           min="1" max="{{ $variant->quantity }}"
+                           data-variant-id="{{ $variant->id_variant }}"
+                           data-price="{{ $price }}"
+                           onchange="updateQuantity({{ $variant->id_variant }}, this.value, {{ $variant->quantity }})">
+                    <button onclick="changeQuantity({{ $variant->id_variant }}, 1, {{ $variant->quantity }})"
+                            class="increase items-count" type="button">
+                        <i class="lnr lnr-chevron-up"></i>
+                    </button>
+                    <button onclick="changeQuantity({{ $variant->id_variant }}, -1, {{ $variant->quantity }})"
+                            class="reduced items-count" type="button">
+                        <i class="lnr lnr-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="quantity-error text-danger" style="display: none; font-size: 12px;"></div>
+            </td>
+            <td><h5 class="item-total">{{ number_format($total, 0, ',', '.') }} VNĐ</h5></td>
+            <td>
+                <button class="btn btn-danger btn-sm" onclick="removeFromCart({{ $variant->id_variant }})">
+                    <i class="fa fa-trash"></i> Xóa
+                </button>
+            </td>
+        </tr>
+    @else
+        <tr class="text-danger">
+            <td colspan="5">
+                Sản phẩm này không còn tồn tại hoặc đã bị xóa.
+                <button class="btn btn-sm btn-danger"
+                        onclick="removeFromCart({{ $item->variant_id ?? $item['variant_id'] ?? 0 }})">
+                    Xóa khỏi giỏ hàng
+                </button>
+            </td>
+        </tr>
+    @endif
+@endforeach
+
                         </tbody>
                     </table>
                 </div>
@@ -147,9 +148,9 @@
                                 </div>
                             </div>
                             <div class="checkout_btn_inner d-flex align-items-center">
-                                <a class="gray_btn" href="{{ route('products') }}">Tiếp tục mua sắm</a>
+                                <a class="primary-btn" href="{{ route('products') }}">Tiếp tục mua</a>
                                 <form action="{{ route('account.checkout.cart') }}" method="GET" class="d-inline-block">
-                                    <button type="submit" class="primary-btn">Thanh toán</button>
+                                    <button type="submit" class="btn primary-btn">Thanh toán</button>
                                 </form>
                             </div>
                             <div class="text-center mt-3">

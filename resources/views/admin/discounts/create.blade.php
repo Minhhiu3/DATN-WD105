@@ -102,7 +102,7 @@
         </div>
     @endif
 
-    <form action="{{ route('discounts.store') }}" method="POST" class="form-modern">
+    <form action="{{ route('admin.discounts.store') }}" method="POST" class="form-modern">
         @csrf
 
         {{-- Mã giảm giá --}}

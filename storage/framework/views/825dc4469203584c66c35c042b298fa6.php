@@ -33,75 +33,76 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $__currentLoopData = $cartItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <?php
-                                    $variant = $item->variant ?? $item['variant'] ?? null;
-                                    $product = $variant?->product ?? null;
-                                ?>
+<?php $__currentLoopData = $cartItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
-                                <?php if($variant && $product): ?>
-                                    <?php
-                                        $size = $variant->size;
-                                        $quantity = $item->quantity ?? $item['quantity'];
-                                        $price = $variant->price;
-                                        $total = $price * $quantity;
-                                    ?>
-                                    <tr data-variant-id="<?php echo e($variant->id_variant); ?>">
-                                        <td>
-                                            <div class="media">
-                                                <div class="d-flex">
-                                                    <img src="<?php echo e(asset('storage/' . $product->image)); ?>" alt="<?php echo e($product->name_product); ?>" style="width: 100px; height: 100px; object-fit: cover;">
-                                                </div>
-                                                <div class="media-body">
-                                                    <h4><?php echo e($product->name_product); ?></h4>
-                                                    <p>Size: <?php echo e($size ? $size->name : 'Không xác định'); ?></p>
-                                                    <small class="text-muted">Còn lại: <?php echo e($variant->quantity); ?> sản phẩm</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <h5 class="item-price"><?php echo e(number_format($price, 0, ',', '.')); ?> VNĐ</h5>
-                                        </td>
-                                        <td>
-                                            <div class="product_count">
-                                                <input type="number" name="qty" value="<?php echo e($quantity); ?>"
-                                                    class="input-text qty"
-                                                    min="1"
-                                                    max="<?php echo e($variant->quantity); ?>"
-                                                    data-variant-id="<?php echo e($variant->id_variant); ?>"
-                                                    data-price="<?php echo e($price); ?>"
-                                                    onchange="updateQuantity(<?php echo e($variant->id_variant); ?>, this.value, <?php echo e($variant->quantity); ?>)">
-                                                <button onclick="changeQuantity(<?php echo e($variant->id_variant); ?>, 1, <?php echo e($variant->quantity); ?>)"
-                                                    class="increase items-count" type="button">
-                                                    <i class="lnr lnr-chevron-up"></i>
-                                                </button>
-                                                <button onclick="changeQuantity(<?php echo e($variant->id_variant); ?>, -1, <?php echo e($variant->quantity); ?>)"
-                                                    class="reduced items-count" type="button">
-                                                    <i class="lnr lnr-chevron-down"></i>
-                                                </button>
-                                            </div>
-                                            <div class="quantity-error text-danger" style="display: none; font-size: 12px;"></div>
-                                        </td>
-                                        <td>
-                                            <h5 class="item-total"><?php echo e(number_format($total, 0, ',', '.')); ?> VNĐ</h5>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-danger btn-sm" onclick="removeFromCart(<?php echo e($variant->id_variant); ?>)">
-                                                <i class="fa fa-trash"></i> Xóa
-                                            </button>
-                                        </td>
-                                    </tr>
-                                <?php else: ?>
-                                    <tr class="text-danger">
-                                        <td colspan="5">
-                                            Sản phẩm này không còn tồn tại hoặc đã bị xóa.
-                                            <button class="btn btn-sm btn-danger" onclick="removeFromCart(<?php echo e($item->variant_id ?? $item['variant_id'] ?? 0); ?>)">
-                                                Xóa khỏi giỏ hàng
-                                            </button>
-                                        </td>
-                                    </tr>
-                                <?php endif; ?>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php
+        $variant = $item->variant ?? $item['variant'] ?? null;
+        $product = $variant?->product ?? null;
+        $color = $variant?->color ?? null;
+        $size = $variant?->size ?? null;
+        $quantity = $item->quantity ?? $item['quantity'] ?? 1;
+        $price = $variant->price ?? 0;
+        $total = $price * $quantity;
+        $img = $color->image ?? 'k tim thay img';
+
+    ?>
+
+    <?php if($variant && $product): ?>
+        <tr data-variant-id="<?php echo e($variant->id_variant); ?>">
+            <td>
+                <div class="media">
+                    <div class="d-flex">
+                        <img src="<?php echo e(asset('storage/' . ($img ?? 'default.jpg'))); ?>"
+                             alt="<?php echo e($product->name_product); ?>"
+                             style="width: 100px; height: 100px; object-fit: cover;">
+                    </div>
+                    <div class="media-body">
+                        <h4><?php echo e($product->name_product); ?></h4>
+                        <p>Size: <?php echo e($size->name ?? 'Không xác định'); ?></p>
+                        <p>Màu: <?php echo e($color->name_color ?? 'Không xác định'); ?></p>
+                        <small class="text-muted">Còn lại: <?php echo e($variant->quantity); ?> sản phẩm</small>
+                    </div>
+                </div>
+            </td>
+            <td><h5 class="item-price"><?php echo e(number_format($price, 0, ',', '.')); ?> VNĐ</h5></td>
+            <td>
+                <div class="product_count">
+                    <input type="number" name="qty" value="<?php echo e($quantity); ?>" class="input-text qty"
+                           min="1" max="<?php echo e($variant->quantity); ?>"
+                           data-variant-id="<?php echo e($variant->id_variant); ?>"
+                           data-price="<?php echo e($price); ?>"
+                           onchange="updateQuantity(<?php echo e($variant->id_variant); ?>, this.value, <?php echo e($variant->quantity); ?>)">
+                    <button onclick="changeQuantity(<?php echo e($variant->id_variant); ?>, 1, <?php echo e($variant->quantity); ?>)"
+                            class="increase items-count" type="button">
+                        <i class="lnr lnr-chevron-up"></i>
+                    </button>
+                    <button onclick="changeQuantity(<?php echo e($variant->id_variant); ?>, -1, <?php echo e($variant->quantity); ?>)"
+                            class="reduced items-count" type="button">
+                        <i class="lnr lnr-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="quantity-error text-danger" style="display: none; font-size: 12px;"></div>
+            </td>
+            <td><h5 class="item-total"><?php echo e(number_format($total, 0, ',', '.')); ?> VNĐ</h5></td>
+            <td>
+                <button class="btn btn-danger btn-sm" onclick="removeFromCart(<?php echo e($variant->id_variant); ?>)">
+                    <i class="fa fa-trash"></i> Xóa
+                </button>
+            </td>
+        </tr>
+    <?php else: ?>
+        <tr class="text-danger">
+            <td colspan="5">
+                Sản phẩm này không còn tồn tại hoặc đã bị xóa.
+                <button class="btn btn-sm btn-danger"
+                        onclick="removeFromCart(<?php echo e($item->variant_id ?? $item['variant_id'] ?? 0); ?>)">
+                    Xóa khỏi giỏ hàng
+                </button>
+            </td>
+        </tr>
+    <?php endif; ?>
+<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
                         </tbody>
                     </table>
                 </div>
@@ -146,9 +147,9 @@
                                 </div>
                             </div>
                             <div class="checkout_btn_inner d-flex align-items-center">
-                                <a class="gray_btn" href="<?php echo e(route('products')); ?>">Tiếp tục mua sắm</a>
+                                <a class="primary-btn" href="<?php echo e(route('products')); ?>">Tiếp tục mua</a>
                                 <form action="<?php echo e(route('account.checkout.cart')); ?>" method="GET" class="d-inline-block">
-                                    <button type="submit" class="primary-btn">Thanh toán</button>
+                                    <button type="submit" class="btn primary-btn">Thanh toán</button>
                                 </form>
                             </div>
                             <div class="text-center mt-3">
