@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderSuccessMail;
+use App\Mail\OrderPlacedMail;
 
 class CheckoutController extends Controller
 {
@@ -52,6 +54,7 @@ class CheckoutController extends Controller
         'quantity'        => 'required|integer|min:1',
         'payment_method'  => 'required|in:cod,vnpay',
         'province'        => 'required|string',
+        'email'           => 'required|email',
         'ward'            => 'required|string',
         'address'         => 'required|string',
     ]);
@@ -90,6 +93,7 @@ class CheckoutController extends Controller
                 'order_code'     => $orderCode,
                 'status'         => 'pending',
                 'payment_method' => 'cod',
+                'email'          => $request->email,
                 'payment_status' => 'unpaid',
                 'province'       => $request->province,
                 'ward'           => $request->ward,
@@ -98,6 +102,15 @@ class CheckoutController extends Controller
                 'grand_total'    => $grand_total,
                 'created_at'     => now(),
             ]);
+            // dd($request->all());
+            // Gửi email thông báo đặt hàng thành công
+            // Mail::to('vmink2004@gmail.com')->send(new OrderPlacedMail($order));
+$emailSend = $request->email;
+Mail::to($emailSend)->send(new OrderPlacedMail($order));
+Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $emailSend);
+            // Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $order->email);
+            // Mail::to((string) $order->email)->send(new OrderPlacedMail($order));
+
 
             OrderItem::create([
                 'order_id'   => $order->id_order,
@@ -128,6 +141,7 @@ class CheckoutController extends Controller
                 'province'      => $request->province,
                 'ward'          => $request->ward,
                 'address'       => $request->address,
+                'email'         => $request->email,
                 'total_amount'  => $finalTotal,     // Tổng tiền sau giảm, chưa cộng phí ship
                 'grand_total'   => $grand_total,    // Tổng tiền đã giảm + phí ship
                 'discount_code' => $discountCode,
@@ -197,6 +211,7 @@ class CheckoutController extends Controller
         $request->validate([
             'payment_method' => 'required|in:cod,vnpay',
             'province'        => 'required|string',
+            'email'           => 'required|email',
             // 'district'        => 'required|string',
             'ward'            => 'required|string',
             'address'         => 'required|string',
@@ -245,11 +260,16 @@ class CheckoutController extends Controller
             'total_amount'   => $finalTotal,
             'province'       => $request->province,
             // 'district'       => $request->district,
+            'email'          => $request->email,
             'ward'           => $request->ward,
             'address'        => $request->address,
             'grand_total'=> $grand_total,
             'created_at'     => now(),
         ]);
+$emailSend = $request->email;
+Mail::to($emailSend)->send(new OrderPlacedMail($order));
+Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $emailSend);
+
 
 
             foreach ($cartItems as $item) {
@@ -313,6 +333,7 @@ class CheckoutController extends Controller
             'payment_method'=> $request->payment_method,
             'province'      => $request->province,
             // 'district'      => $request->district,
+            'email'         => $request->email,
             'ward'          => $request->ward,
             'address'       => $request->address,
             'total_amount'  => $finalTotal,     // Tổng tiền sau giảm, chưa cộng phí ship

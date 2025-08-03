@@ -73,9 +73,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label><b>Email</b></label>
-                    <input type="text" class="form-control" value="{{ auth()->user()->email }}" disabled>
-                </div>
+    <label><b>Email nhận đơn hàng</b></label>
+    <input
+        type="email"
+        name="email"
+        class="form-control"
+        value="{{ old('email', auth()->user()->email) }}"
+        required>
+</div>
+
+
+                <!-- email nguoi nhan hang
+                             <div class="mb-3">
+    <label for="email">Email nhận đơn hàng:</label>
+    <input type="email" name="email" class="form-control" required>
+</div> -->
 
                <!-- Địa chỉ -->
   <div class="col-md-12 form-group">
