@@ -64,19 +64,19 @@
             <div class="col-xl-9 col-lg-8 col-md-7">
                 <!-- Start Filter Bar -->
                 <div class="filter-bar d-flex flex-wrap align-items-center">
-                    <div class="sorting">
-                        <select>
+                    {{-- <div class="sorting">
+                        <select> --}}
                             {{-- <option value="1">Default sorting</option>
                             <option value="1">Default sorting</option>
                             <option value="1">Default sorting</option> --}}
-                        </select>
-                    </div>
+                        {{-- </select>
+                    </div> --}}
                     <div class="sorting mr-auto">
-                        <select>
+                        {{-- <select> --}}
                             {{-- <option value="1">Show 12</option>
                             <option value="1">Show 12</option>
                             <option value="1">Show 12</option> --}}
-                        </select>
+                        {{-- </select> --}}
                     </div>
 
                 </div>
@@ -106,7 +106,7 @@
     @endif
 </div>
                                         <div class="prd-bottom">
-
+{{--
                                             <a href="" class="social-info">
                                                 <span class="ti-bag"></span>
                                                 <p class="hover-text">add to bag</p>
@@ -118,11 +118,11 @@
                                             <a href="" class="social-info">
                                                 <span class="ti-shopping-cart"></span>
                                                 <p class="hover-text" type="submit">Add to cart</p>
-                                            </a>
+                                            </a> --}}
                                             <a href="{{ route('client.product.show', $product->id_product) }}"
                                                 class="social-info">
                                                 <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">view more</p>
+                                                <p class="hover-text">Xem chi tiết</p>
                                             </a>
 
                                         </div>
