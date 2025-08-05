@@ -24,6 +24,7 @@ class Order extends Model
     'district',
     'ward',
     'address',
+    'email',
     'grand_total',
     'created_at',
 ];

@@ -73,7 +73,7 @@
             <h5>🧍 Thông tin khách hàng</h5>
             <ul>
                 <li><strong>Tên:</strong> {{ $user->name ?? 'N/A' }}</li>
-                <li><strong>Email:</strong> {{ $user->email ?? 'N/A' }}</li>
+                <li><strong>Email:</strong> {{ $order->email ?? 'N/A' }}</li>
                 <li><strong>Số điện thoại:</strong> {{ $user->phone_number ?? 'N/A' }}</li>
                 <li><strong>Địa chỉ:</strong> {{ $order->address }},
     {{ $order->ward }},

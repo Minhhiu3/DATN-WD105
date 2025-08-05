@@ -46,7 +46,7 @@
 
             <p><strong>Tên:</strong>{{$order->user->name}}</p>
              <p><strong>Số điện thoại:</strong>{{$order->user->phone_number}}</p>
-              <p><strong>Email:</strong>{{$order->user->email}}</p>
+              <p><strong>Email:</strong>{{$order->email}}</p>
               <p><strong>Địa chỉ:</strong>
     {{ $order->address }},
     {{ $order->ward }},
