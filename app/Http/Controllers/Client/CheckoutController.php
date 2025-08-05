@@ -102,7 +102,8 @@ class CheckoutController extends Controller
                 'grand_total'    => $grand_total,
                 'created_at'     => now(),
             ]);
-            // dd($request->all());
+            
+            // dd($order);
             // Gửi email thông báo đặt hàng thành công
             // Mail::to('vmink2004@gmail.com')->send(new OrderPlacedMail($order));
 $emailSend = $request->email;
