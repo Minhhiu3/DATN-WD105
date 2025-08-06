@@ -164,6 +164,17 @@
                 @endforeach
             </select>
         </div>
+                <div class="mb-3">
+            <label for="brand_id" class="form-label">Thương Hiệu</label>
+            <select name="brand_id" id="brand_id" class="form-select" required>
+                <option value="">-- Chọn Thương Hiệu --</option>
+                @foreach ($brands as $brand)
+                    <option value="{{ $brand->id_brand }}" {{ old('brand_id', $product->brand_id) == $brand->id_brand ? 'selected' : '' }}>
+                        {{ $brand->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
         <div class="mb-3">
             <label for="description" class="form-label">Mô Tả</label>
             <textarea name="description" id="description" cols="30" rows="5" class="form-control" placeholder="Mô tả chi tiết sản phẩm...">{{$product->description?? 'N/A'}}</textarea>

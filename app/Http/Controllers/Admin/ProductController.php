@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\AlbumProduct;
 use App\Models\AdviceProduct;
+use App\Models\Brand;
 use App\Models\Variant;
 use Illuminate\Support\Facades\DB;
 
@@ -23,7 +24,7 @@ class ProductController extends Controller
         $categoris = Category::all();
 
         // Query builder để lọc sản phẩm
-    $productsQuery = Product::with(['category', 'advice_product']);
+        $productsQuery = Product::with(['category', 'advice_product','brand'])->withSum('variants', 'quantity');
 
 
 
@@ -36,7 +37,10 @@ class ProductController extends Controller
         if ($request->filled('category')) {
             $productsQuery->where('category_id', $request->category);
         }
-
+        // Lọc theo danh mục
+        if ($request->filled('brand')) {
+            $productsQuery->where('brand_id', $request->brand);
+        }
         // Phân trang kết quả
         $products = $productsQuery->latest()->paginate(10);
 
@@ -51,8 +55,10 @@ class ProductController extends Controller
     public function create()
     {
         $categories= Category::all();
+        $brands= Brand::all();
+
         // Trả về view để tạo sản phẩm mới
-          return view('admin.products.create', compact('categories'));
+          return view('admin.products.create', compact('categories','brands'));
     }
     /**
      * Store a newly created resource in storage.
@@ -64,6 +70,7 @@ public function store(Request $request)
         'name_product'   => 'required|string|max:255',
         'price'          => 'required|numeric|min:0',
         'category_id'    => 'required|exists:category,id_category', // Sửa đúng bảng categories
+        'brand_id'    => 'required|exists:brands,id_brand', 
         'description'    => 'nullable|string',
         'image'          => 'required|image|mimes:jpeg,jpg,png|max:2048',
         'album.*'        => 'nullable|image|mimes:jpeg,jpg,png|max:2048', // validate từng ảnh album
@@ -76,7 +83,7 @@ public function store(Request $request)
     ]);
 
     // ✅ 2. Chuẩn bị dữ liệu
-    $data = $request->only(['name_product', 'price', 'category_id', 'description']);
+    $data = $request->only(['name_product', 'price', 'category_id', 'brand_id', 'description']);
 
     // ✅ 3. Upload ảnh chính
     if ($request->hasFile('image')) {
@@ -157,8 +164,9 @@ public function show(Product $product)
     public function edit(Product $product)
     {
       $categories= Category::all();
-      $product->load('albumProducts', 'category');
-        return view('admin.products.edit', compact('product', 'categories'));
+      $brands= Brand::all();
+      $product->load('albumProducts', 'category','brand');
+        return view('admin.products.edit', compact('product', 'categories','brands'));
     }
     /**
      * Update the specified resource in storage.
@@ -169,6 +177,7 @@ public function update(Request $request, Product $product)
         'name_product' => 'required|string|max:255',
         'price' => 'required|numeric|min:0',
         'category_id' => 'required|exists:category,id_category',
+        'brand_id'    => 'required|exists:brands,id_brand', 
         'description' => 'nullable|string',
         'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
     ]);
@@ -199,11 +208,26 @@ public function update(Request $request, Product $product)
      */
     public function destroy(Product $product)
     {
+        // 1. Xóa ảnh chính của sản phẩm (nếu có)
+        if ($product->image && file_exists(public_path('uploads/' . $product->image))) {
+            unlink(public_path('uploads/' . $product->image));
+        }
 
+        // 2. Lấy các biến thể thuộc sản phẩm
+        $variants = Variant::where('product_id', $product->id_product)->get();
+
+        foreach ($variants as $variant) {
+            // Xóa ảnh của biến thể (nếu có)
+            if ($variant->image && file_exists(public_path('uploads/' . $variant->image))) {
+                unlink(public_path('uploads/' . $variant->image));
+            }
+            $variant->delete(); // xóa mềm biến thể
+        }
+
+        // 3. Xóa mềm sản phẩm
         $product->delete();
 
-
-        return redirect()->route('admin.products.index')->with('success', 'Xóa mềm Sản phẩm thành công.');
+        return redirect()->route('admin.products.index')->with('success', 'Đã xóa sản phẩm và các biến thể kèm ảnh.');
     }
     /**
      * Search for products by name.
@@ -273,6 +297,23 @@ public function update(Request $request, Product $product)
 
         return redirect()->route('admin.products.trash')->with('success', 'Xóa vĩnh viễn sản phẩm thành công!');
     }
+    public function toggleVisibility($id, Request $request)
+    {
+        $product = Product::findOrFail($id);
+        $product->visibility = $request->visibility;
+        $product->save();
+
+        $message = $product->visibility === 'visible' 
+            ? '✅ Sản phẩm đã được hiển thị.' 
+            : '🚫 Sản phẩm đã bị ẩn.';
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'visibility' => $product->visibility
+        ]);
+    }
+
 
     
 

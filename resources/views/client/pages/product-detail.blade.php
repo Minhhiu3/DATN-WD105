@@ -58,13 +58,16 @@
                         </span> <span>VNĐ</span>
                     </h2>
 
-                    <h6 id="dynamic-stock" class="text-muted">Vui lòng chọn màu và kích thước</h6>
 
                     <ul class="list">
                         <li><span>Danh mục</span>: {{ $product->category->name_category ?? 'Chưa phân loại' }}</li>
                     </ul>
 
+
+
                     <p>{{ $product->description }}</p>
+
+                    <h6 id="dynamic-stock" class="text-muted">Số lượng: <span id="stock-quantity">{{$product->variants->sum('quantity')}}</span> sản phẩm</h6>
 
                     @guest
                         <a href="{{ route('login') }}" class="primary-btn">Đăng nhập để thêm vào giỏ</a>
@@ -423,7 +426,7 @@ sizeButtons.forEach(btn => btn.style.display = 'none');
 }
 
 
-            stockDisplay.innerText = `Số lượng còn lại của màu: ${colorQuantity} sản phẩm`;
+            stockDisplay.innerText = `Số lượng : ${colorQuantity} sản phẩm`;
             stockDisplay.classList.remove('text-danger');
             stockDisplay.classList.add('text-muted');
 

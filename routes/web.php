@@ -19,6 +19,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Admin\ProductReviewController;
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\AdviceProductController;
 use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
@@ -116,6 +117,20 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.categories.update',
         'destroy' => 'admin.categories.destroy',
     ]);
+    // route bảng brands
+    // Brand Management Routes
+    Route::resource('/brands', BrandController::class)->names([
+        'index' => 'admin.brands.index',
+        'create' => 'admin.brands.create',
+        'store' => 'admin.brands.store',
+        'show' => 'admin.brands.show',
+        'edit' => 'admin.brands.edit',
+        'update' => 'admin.brands.update',
+        'destroy' => 'admin.brands.destroy',
+    ]);
+
+    Route::patch('/products/{id}/toggle-visibility', [ProductController::class, 'toggleVisibility'])
+        ->name('admin.products.toggle-visibility');
 
     // Product Management Routes
     Route::resource('products', ProductController::class)->names([

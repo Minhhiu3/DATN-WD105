@@ -117,12 +117,6 @@
         </div>
 
         <div class="mb-3">
-            <label for="max_discount" class="form-label">Giảm tối đa</label>
-            <input type="number" step="0.01" name="max_discount" id="max_discount" class="form-control"
-                value="{{ old('max_discount', $discount->max_discount) }}" placeholder="Nhập giảm tối đa" required>
-        </div>
-
-        <div class="mb-3">
             <label for="min_order_value" class="form-label">Giá trị đơn tối thiểu</label>
             <input type="number" step="0.01" name="min_order_value" id="min_order_value" class="form-control"
                 value="{{ old('min_order_value', $discount->min_order_value) }}" placeholder="Nhập giá trị đơn tối thiểu" required>

@@ -25,6 +25,8 @@ class Order extends Model
     'ward',
     'address',
     'email',
+    'user_name',
+    'phone',
     'grand_total',
     'created_at',
 ];
