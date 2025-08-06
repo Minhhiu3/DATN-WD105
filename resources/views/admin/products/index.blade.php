@@ -175,6 +175,59 @@
         margin-bottom: 15px;
         animation: fadeIn 0.5s ease-out;
     }
+    .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+    .switch input { display: none; }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px; width: 18px;
+        left: 3px; bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: #38bdf8;
+    }
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    .slider.round { border-radius: 24px; }
+    .slider.round:before { border-radius: 50%; }
+.stock-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.stock-badge.in-stock {
+    background: linear-gradient(135deg, #4ade80, #22c55e); /* xanh lá */
+    color: white;
+}
+
+.stock-badge.out-of-stock {
+    background: linear-gradient(135deg, #f87171, #ef4444); /* đỏ */
+    color: white;
+}
+
 </style>
 
 <div class="card card-modern">
@@ -230,11 +283,14 @@
                         <th>Tên</th>
                         <th>Giá</th>                     
                         <th>Danh Mục</th>
+                        <th>Thương Hiệu</th>
                         <th>Giá Sale</th>
+                        <th>Tổng Kho</th>
+                        <th>Trạng Thái Kho</th>
                         <th>Sale</th>
                         <th>Biến Thể</th>                               
                         <th>Album</th>
-
+                        <th>Trạng Thái</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -250,11 +306,21 @@
                             <td>{{ $product->name_product }}</td>
                             <td>{{ number_format($product->price, 0, ',', '.') }} VND</td>
                             <td>{{ $product->category->name_category ?? 'Chưa có' }}</td>
+                            <td>{{ $product->brand->name ?? 'Chưa có' }}</td>
+
                             <td>
                                 @if ($product->advice_product)
                                     {{ $product->advice_product->value }}%
                                 @else
                                     <span class="text-muted">Không có</span>
+                                @endif
+                            </td>
+                            <td>{{ $product->variants_sum_quantity ?? 0 }}</td>
+                            <td>
+                                @if (($product->variants_sum_quantity ?? 0) > 0)
+                                    <span class="stock-badge in-stock">Còn hàng</span>
+                                @else
+                                    <span class="stock-badge out-of-stock">Hết hàng</span>
                                 @endif
                             </td>
 
@@ -276,6 +342,16 @@
                                     <i class="bi bi-images"></i>
                                 </a>
                             </td>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" 
+                                        class="toggle-visibility" 
+                                        data-id="{{ $product->id_product }}" 
+                                        {{ $product->visibility === 'visible' ? 'checked' : '' }}>
+                                    <span class="slider round"></span>
+                                </label>
+                            </td>
+
                             <td>
                                 <a href="{{ route('admin.products.show', $product->id_product) }}" 
                                    class="btn-action btn-view">
@@ -313,4 +389,36 @@
         @endif
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.toggle-visibility').forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            let productId = this.dataset.id;
+            let status = this.checked ? 'visible' : 'hidden';
+
+            fetch(`/admin/products/${productId}/toggle-visibility`, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ visibility: status })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message); // 🟢 hiển thị thông báo từ server
+                } else {
+                    alert('❌ Cập nhật thất bại!');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('❌ Có lỗi xảy ra!');
+            });
+        });
+    });
+});
+</script>
+
 @endsection

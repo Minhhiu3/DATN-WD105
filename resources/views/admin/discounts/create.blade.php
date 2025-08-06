@@ -102,7 +102,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.discounts.store') }}" method="POST" class="form-modern">
+    <form action="{{ route('admin.discounts.store') }}" method="POST" class="form-modern" novalidate>
         @csrf
 
         {{-- Mã giảm giá --}}
@@ -125,21 +125,13 @@
         {{-- Giá trị --}}
         <div class="mb-3">
             <label for="value" class="form-label">Giá Trị</label>
-            <input type="number" step="0.01" name="value" id="value" class="form-control" 
+            <input type="number" step="" name="value" id="value" class="form-control" 
                    value="{{ old('value') }}" placeholder="Nhập giá trị" required>
         </div>
-
-        {{-- Giảm tối đa --}}
-        <div class="mb-3">
-            <label for="max_discount" class="form-label">Giảm Tối Đa</label>
-            <input type="number" step="0.01" name="max_discount" id="max_discount" class="form-control" 
-                   value="{{ old('max_discount') }}" placeholder="Nhập giảm tối đa" required>
-        </div>
-
         {{-- Giá trị đơn tối thiểu --}}
         <div class="mb-3">
             <label for="min_order_value" class="form-label">Giá Trị Đơn Tối Thiểu</label>
-            <input type="number" step="0.01" name="min_order_value" id="min_order_value" class="form-control" 
+            <input type="number" step=""  name="min_order_value" id="min_order_value" class="form-control" 
                    value="{{ old('min_order_value') }}" placeholder="Nhập giá trị đơn tối thiểu" required>
         </div>
 
@@ -175,4 +167,96 @@
         </div>
     </form>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const typeSelect = document.getElementById('type');
+    const valueInput = document.getElementById('value');
+    const form = document.querySelector('form.form-modern');
+    const valueError = document.getElementById('value-error');
+
+    function showValueError(msg) {
+        valueError.textContent = msg;
+        valueError.style.display = 'block';
+        valueInput.classList.add('is-invalid'); // nếu bạn dùng bootstrap
+    }
+
+    function hideValueError() {
+        valueError.textContent = '';
+        valueError.style.display = 'none';
+        valueInput.classList.remove('is-invalid');
+    }
+
+    function checkValueValid() {
+        const val = Number(valueInput.value);
+        if (typeSelect.value === '0') {
+            // loại phần trăm: không được > 100
+            if (isNaN(val) || valueInput.value === '') {
+                showValueError('Vui lòng nhập giá trị giảm (số).');
+                return false;
+            }
+            if (val < 0) {
+                showValueError('Giá trị không được âm.');
+                return false;
+            }
+            if (val > 100) {
+                showValueError('Khi chọn phần trăm, không được vượt quá 100%.');
+                return false;
+            }
+            // hợp lệ
+            hideValueError();
+            return true;
+        } else {
+            // loại cố định: chỉ cần >= 0
+            if (isNaN(val) || valueInput.value === '') {
+                showValueError('Vui lòng nhập giá trị giảm (số).');
+                return false;
+            }
+            if (val < 0) {
+                showValueError('Giá trị không được âm.');
+                return false;
+            }
+            hideValueError();
+            return true;
+        }
+    }
+
+    function updateMaxAttr() {
+        if (typeSelect.value === '0') {
+            valueInput.setAttribute('max', '100');
+        } else {
+            valueInput.removeAttribute('max');
+        }
+        // kiểm tra lại khi đổi type (ví dụ từ VNĐ -> %)
+        checkValueValid();
+    }
+
+    // sự kiện khi đổi loại
+    typeSelect.addEventListener('change', function () {
+        updateMaxAttr();
+    });
+
+    // sự kiện khi nhập value
+    valueInput.addEventListener('input', function () {
+        // không dùng reportValidity() ở đây, dùng message inline
+        checkValueValid();
+    });
+
+    // khi submit form: kiểm tra một lần nữa, nếu có lỗi thì ngăn submit
+    form.addEventListener('submit', function (e) {
+        const ok = checkValueValid();
+        if (!ok) {
+            // cuộn đến thông báo lỗi nếu cần
+            valueError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // khởi tạo trạng thái ban đầu (nếu load lại form với old())
+    updateMaxAttr();
+});
+</script>
+
+
+
 @endsection

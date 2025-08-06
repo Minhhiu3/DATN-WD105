@@ -22,7 +22,13 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
-
+        <!-- ql thương hiệu -->
+        <li class="nav-item">
+            <a href="{{ url('/admin/brands') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                <i class="fa-solid fa-layer-group"></i>
+                <p>Quản lý Thương Hiệu</p>
+            </a>
+        </li>
         <!-- ql size -->
         <li class="nav-item">
             <a href="{{ url('/admin/sizes') }}"

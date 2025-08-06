@@ -395,20 +395,15 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 $discount = 0;
                 break;
         }
-        if ($discount>$coupon->max_discount) {
-            // tiền hiển thi + tiền ship
-            $finalTotalShip = max(0, $subtotal - $coupon->max_discount+ $shippingFee);
-            // tiền chuyền session - tiền ship
-            $finalTotal = max(0, $subtotal - $coupon->max_discount );
-            $voucherMoney = $coupon->max_discount;
-        } else {
-            // tiền hiển thi + tiền ship
+        if ($subtotal < $discount) {
+            return response()->json([
+                'success' => false,
+                'message' => 'số tiền giảm quá lớn so với đơn hàng'
+            ]);
+        }
             $finalTotalShip = max(0, $subtotal - $discount + $shippingFee);
             // tiền chuyền session - tiền ship
             $finalTotal = max(0, $subtotal - $discount );
-            $voucherMoney = $discount;
-
-        }
 
 
 
@@ -416,7 +411,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         session([
             'discount' => [
                 'code' => $coupon->code,
-                'amount' => $voucherMoney,
+                'amount' => $discount,
                 'final_total' => $finalTotal
             ]
         ]);
@@ -424,7 +419,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         return response()->json([
             'success' => true,
             'message' => "Đã áp dụng mã giảm giá!",
-            'discount' => $voucherMoney,
+            'discount' => $discount,
             'final_total' => $finalTotalShip
         ]);
     }
@@ -480,25 +475,20 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             default:
                 $discount = 0;
         }
+        if ($subtotal < $discount) {
+            return response()->json([
+                'success' => false,
+                'message' => 'số tiền giảm quá lớn so với đơn hàng'
+            ]);
+        }
 
-        if ($discount>$coupon->max_discount) {
-            // tiền hiển thi + tiền ship
-            $finalTotalShip = max(0, $subtotal - $coupon->max_discount+ $shippingFee);
-            // tiền chuyền session - tiền ship
-            $finalTotal = max(0, $subtotal - $coupon->max_discount );
-            $voucherMoney = $coupon->max_discount;
-        } else {
-            // tiền hiển thi + tiền ship
             $finalTotalShip = max(0, $subtotal - $discount + $shippingFee);
             // tiền chuyền session - tiền ship
             $finalTotal = max(0, $subtotal - $discount );
-            $voucherMoney = $discount;
-
-        }
         session([
             'discount' => [
                 'code' => $coupon->code,
-                'amount' => $voucherMoney,
+                'amount' => $discount,
                 'final_total' => $finalTotal
             ]
         ]);
@@ -506,7 +496,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         return response()->json([
             'success' => true,
             'message' => 'Đã áp dụng mã giảm giá!',
-            'discount' => $voucherMoney,
+            'discount' => $discount,
             'final_total' => $finalTotalShip
         ]);
 

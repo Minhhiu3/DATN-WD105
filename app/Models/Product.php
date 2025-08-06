@@ -28,6 +28,7 @@ class Product extends Model
         'price',
         'description',
         'category_id',
+        'brand_id',
         'image',
     ];
 
@@ -44,6 +45,10 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id', 'id_category');
+    }
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class, 'brand_id', 'id_brand');
     }
     public function albumProducts(): HasMany
     {
