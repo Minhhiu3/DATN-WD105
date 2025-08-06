@@ -87,9 +87,11 @@
                         <!-- single product -->
                          @forelse($products as $product)
                             <div class="col-lg-4 col-md-6">
-                                <div class="single-product">
-                                    <img src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
-                                    <div class="product-details">
+                                <figure class="single-product">
+                                    <div style="overflow: hidden; display: flex; justify-content: center; align-items: center; height: 250px;">
+                                        <img style="height: 100%; width: auto" src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
+                                    </div>
+                                    <figcaption class="product-details" stype="">
                                         <h6>{{ $product->name_product }}</h6>
                                        @php
     $minPrice = $product->variants->min('price');
@@ -126,8 +128,8 @@
                                             </a>
 
                                         </div>
-                                    </div>
-                                </div>
+                                    </figcaption>
+                                </figure>
                             </div>
                         @empty
             <div class="col-12">

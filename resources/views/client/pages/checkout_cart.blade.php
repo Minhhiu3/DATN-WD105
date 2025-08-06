@@ -47,13 +47,22 @@
                             <!-- Thông tin người dùng -->
                             <div class="form-group">
                                 <label><b>Họ và tên</b></label>
-                                <input type="text" class="form-control" value="{{ auth()->user()->name }}" disabled>
+                                <input 
+                                type="text" 
+                                name="user_name"
+                                class="form-control" 
+                                value="{{ auth()->user()->name }}" 
+                                required>
                             </div>
 
                             <div class="form-group">
                                 <label><b>Số điện thoại</b></label>
-                                <input type="text" class="form-control" value="{{ auth()->user()->phone_number }}"
-                                    disabled>
+                                <input 
+                                type="text"
+                                name="phone" 
+                                class="form-control" 
+                                value="{{ auth()->user()->phone_number }}"
+                                    required>
                             </div>
 
 

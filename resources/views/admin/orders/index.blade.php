@@ -230,7 +230,7 @@
                             <tr>
                                 <td>#{{ $order->id_order }}</td>
                                 <td>{{ $order->order_code }}</td>
-                                <td>{{ $order->user->name ?? 'N/A' }}</td>
+                                <td>{{ $order->user_name ?? 'N/A' }}</td>
                                 <td>{{ number_format($order->grand_total, 0, ',', '.') }}₫</td>
                                 <td>{{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}</td>
                                 <td>{{ ucfirst($order->payment_method) }}</td>

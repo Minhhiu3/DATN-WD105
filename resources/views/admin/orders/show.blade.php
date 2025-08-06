@@ -72,9 +72,9 @@
             {{-- Thông tin người dùng --}}
             <h5>🧍 Thông tin khách hàng</h5>
             <ul>
-                <li><strong>Tên:</strong> {{ $user->name ?? 'N/A' }}</li>
+                <li><strong>Tên:</strong> {{ $order->user_name ?? 'N/A' }}</li>
                 <li><strong>Email:</strong> {{ $order->email ?? 'N/A' }}</li>
-                <li><strong>Số điện thoại:</strong> {{ $user->phone_number ?? 'N/A' }}</li>
+                <li><strong>Số điện thoại:</strong> {{ $order->phone ?? 'N/A' }}</li>
                 <li><strong>Địa chỉ:</strong> {{ $order->address }},
     {{ $order->ward }},
     {{ $order->province }}</li>
