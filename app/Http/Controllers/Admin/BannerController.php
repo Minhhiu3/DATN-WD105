@@ -29,7 +29,6 @@ class BannerController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'product_id' => 'nullable|exists:products,id_product',
         ]);
-
         $banner = new Banner();
         $banner->name = $request->name;
         $banner->product_id = $request->product_id;
@@ -50,6 +49,7 @@ class BannerController extends Controller
 
     public function update(Request $request, Banner $banner)
     {
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',

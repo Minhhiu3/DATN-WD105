@@ -9,6 +9,9 @@ use App\Models\Variant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Mail\OrderPlacedMail;
+
+use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
@@ -88,6 +91,9 @@ public function vnpayReturn(Request $request)
                 'status'         => 'pending',
                 'payment_method' => 'vnpay',
                 'payment_status' => 'paid',
+                'email'          => $orderData['email'],
+                'phone'          => $orderData['phone'],
+                'user_name'      => $orderData['user_name'],
                 'total_amount'   => $orderData['total_amount'],
                 'grand_total'    => $orderData['grand_total'],
                 'province'       => $orderData['province'],
@@ -115,8 +121,16 @@ public function vnpayReturn(Request $request)
            CartItem::where('cart_id', $orderData['cart_id'])->delete();
             session()->forget('pending_order_cart');
 
-            DB::commit();
-            return redirect()->route('home')->with('success', 'Thanh toán thành công, đơn hàng đã được tạo!');
+ DB::commit();
+session()->forget('pending_order_cart');
+
+// Gửi email xác nhận
+$emailSend = $orderData['email'] ?? $pending['email'];
+Mail::to($emailSend)->send(new OrderPlacedMail($order));
+
+
+return redirect()->route('home')->with('success', 'Thanh toán thành công, đơn hàng đã được tạo!');
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Lỗi tạo đơn hàng sau thanh toán: ' . $e->getMessage());
@@ -200,6 +214,9 @@ public function vnpayReturnBuyNow(Request $request)
                 'status'         => 'pending',
                 'payment_method' => 'vnpay',
                 'payment_status' => 'paid',
+                'email'          => $pending['email'],
+                'user_name'      => $pending['user_name'],
+                'phone'          => $pending['phone'],
                 'province'       => $pending['province'],
                 'ward'           => $pending['ward'],
                 'address'        => $pending['address'],
@@ -220,6 +237,10 @@ public function vnpayReturnBuyNow(Request $request)
 
             DB::commit();
             session()->forget('pending_order_buy_now');
+            // Gửi mail
+$emailSend = $pending['email'];
+Mail::to($emailSend)->send(new OrderPlacedMail($order));
+Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $emailSend);
 
             return redirect()->route('home')->with('success', 'Thanh toán thành công, đơn hàng đã được tạo!');
         } catch (\Exception $e) {

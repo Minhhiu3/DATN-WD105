@@ -47,19 +47,36 @@
                             <!-- Thông tin người dùng -->
                             <div class="form-group">
                                 <label><b>Họ và tên</b></label>
-                                <input type="text" class="form-control" value="{{ auth()->user()->name }}" disabled>
+                                <input 
+                                type="text" 
+                                name="user_name"
+                                class="form-control" 
+                                value="{{ auth()->user()->name }}" 
+                                required>
                             </div>
 
                             <div class="form-group">
                                 <label><b>Số điện thoại</b></label>
-                                <input type="text" class="form-control" value="{{ auth()->user()->phone_number }}"
-                                    disabled>
+                                <input 
+                                type="text"
+                                name="phone" 
+                                class="form-control" 
+                                value="{{ auth()->user()->phone_number }}"
+                                    required>
                             </div>
 
-                            <div class="form-group">
-                                <label><b>Email</b></label>
-                                <input type="text" class="form-control" value="{{ auth()->user()->email }}" disabled>
-                            </div>
+
+                            <!-- email nguoi nhan hang -->
+                <div class="form-group">
+    <label><b>Email nhận đơn hàng</b></label>
+    <input
+        type="email"
+        name="email"
+        class="form-control"
+        value="{{ old('email', auth()->user()->email) }}"
+        required>
+</div>
+
                             <!-- Địa chỉ -->
   <div class="col-md-12 form-group">
     <label><b>Tỉnh/Thành</b></label>
