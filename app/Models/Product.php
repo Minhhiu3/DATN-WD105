@@ -66,5 +66,9 @@ class Product extends Model
     {
         return $this->hasOne(AdviceProduct::class, 'product_id', 'id_product');
     }
+    public function productReviews()
+{
+    return $this->hasMany(ProductReview::class, 'product_id', 'id_product');
+}
 
 }

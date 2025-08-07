@@ -17,8 +17,8 @@
             <!-- Cột trái: Ảnh sản phẩm -->
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="main-image mb-3">
-                    <img id="main-image" 
-                         src="{{ asset('storage/' . $product->image) }}" 
+                    <img id="main-image"
+                         src="{{ asset('storage/' . $product->image) }}"
                          alt="{{ $product->name_product }}"
                          class="img-fluid rounded shadow-sm w-100"
                          style="object-fit: cover; max-height: 400px;">
@@ -154,204 +154,120 @@
     <!-- ================= End Product Detail Area ================= -->
 
     <!--================Product Description Area =================-->
-    <section class="product_description_area">
-        <div class="container">
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab"
-                        aria-controls="home" aria-selected="true">Mô tả</a>
-                </li>
+   <section class="product_description_area">
+    <div class="container">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab"
+                   aria-controls="review" aria-selected="true">Đánh giá</a>
+            </li>
+        </ul>
 
-                <li class="nav-item">
-                    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
-                        aria-controls="contact" aria-selected="false">Bình luận</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab"
-                        aria-controls="review" aria-selected="false">Đánh giá</a>
-                </li>
-            </ul>
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    <p></p>
-                    <p></p>
-                </div>
+        <div class="tab-content" id="myTabContent">
+            <!-- Tab đánh giá -->
+            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
+                <div class="row">
+                    <!-- Hiển thị đánh giá -->
+                    <div class="col-lg-6">
+                        <h4>Đánh giá từ người mua</h4>
+                        <div class="average-rating mb-3">
+    <strong>Đánh giá trung bình:</strong>
+    @php
+        $fullStars = floor($averageRating);
+        $halfStar = ($averageRating - $fullStars) >= 0.5;
+        $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+    @endphp
 
-                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="comment_list">
-                                <div class="review_item">
-                                    <div class="media">
-                                        <div class="d-flex">
-                                            <img src="img/product/review-1.png" alt="">
-                                        </div>
-                                        <div class="media-body">
+    {{-- Sao đầy --}}
+    @for ($i = 0; $i < $fullStars; $i++)
+        <i class="fa fa-star" style="color: gold;"></i>
+    @endfor
 
-                                        </div>
+    {{-- Nửa sao --}}
+    @if ($halfStar)
+        <i class="fa fa-star-half-alt" style="color: gold;"></i>
+    @endif
+
+    {{-- Sao trống --}}
+    @for ($i = 0; $i < $emptyStars; $i++)
+        <i class="fa fa-star" style="color: #ccc;"></i>
+    @endfor
+
+    <span>({{ number_format($averageRating, 1) }}/5)</span>
+</div>
+
+                        @forelse ($product->productReviews->where('status', 'visible') as $review)
+                            <div class="review_item mb-4">
+                                <div class="media">
+                                    <div class="d-flex align-items-center mr-3">
+                                        <img src="{{ asset('assets/img/deafault-avt.png') }}" width="50px" alt="User">
                                     </div>
-
+                                    <div class="media-body">
+                                        <h5>{{ $review->user->name ?? 'Ẩn danh' }}</h5>
+                                        <div>
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="fa fa-star{{ $i <= $review->rating ? '' : '-o' }}"></i>
+                                            @endfor
+                                        </div>
+                                        <p>{{ $review->comment }}</p>
+                                    </div>
                                 </div>
-                                <div class="review_item reply">
-                                    <div class="media">
-                                        <div class="d-flex">
-                                            <img src="img/product/review-2.png" alt="">
-                                        </div>
-                                        <div class="media-body">
-
-                                        </div>
-                                    </div>
-
-                                </div>
-
                             </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="review_box">
-                                <h4>Gửi Bình Luận</h4>
-                                <form class="row contact_form" action="contact_process.php" method="post"
-                                    id="contactForm" novalidate="novalidate">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="name" name="name"
-                                                placeholder="Your Full name">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="email" class="form-control" id="email" name="email"
-                                                placeholder="Email Address">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="number" name="number"
-                                                placeholder="Phone Number">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <textarea class="form-control" name="message" id="message" rows="1" placeholder="Message"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 text-right">
-                                        <button type="submit" value="submit" class="btn primary-btn">Submit Now</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        @empty
+                            <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+                        @endforelse
                     </div>
-                </div>
-                <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row total_rate">
-                                <div class="col-6">
-                                    <div class="box_total">
-                                        <h5>Overall</h5>
-                                        <h4>4.0</h4>
-                                        <h6>(03 Reviews)</h6>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="rating_list">
-                                        <h3>Based on 3 Reviews</h3>
-                                        <ul class="list">
-                                            <li><a href="#">5 Star <i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-                                            <li><a href="#">4 Star <i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-                                            <li><a href="#">3 Star <i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-                                            <li><a href="#">2 Star <i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-                                            <li><a href="#">1 Star <i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
+
+                    <!-- Gửi đánh giá -->
+                    <div class="col-lg-6">
+                        <h4>Gửi đánh giá</h4>
+
+                        @if(session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+                        @if($errors->any())
+                            <div class="alert alert-danger">
+                                @foreach ($errors->all() as $error)
+                                    <div>{{ $error }}</div>
+                                @endforeach
                             </div>
-                            <div class="review_list">
-                                <div class="review_item">
-                                    <div class="media">
-                                        <div class="d-flex">
-                                            <img src="img/product/review-1.png" alt="">
-                                        </div>
-                                        <div class="media-body">
-                                            <h4>Blake Ruiz</h4>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </div>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                                        incididunt ut labore et
-                                        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                                        laboris nisi ut aliquip ex ea
-                                        commodo</p>
+                        @endif
+
+                        @if($canReview)
+                            <form action="{{ route('product.reviews.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id_product }}">
+                                <input type="hidden" name="order_id" value="{{ $orderId }}">
+                                  <input type="hidden" name="rating" id="selectedRating" value="0">
+<div class="form-group">
+
+        <div class="star-rating" id="starRating">
+            @for ($i = 1; $i <= 5; $i++)
+                <i class="fa fa-star" data-value="{{ $i }}"></i>
+            @endfor
+        </div>
+    </div>
+
+                                <div class="form-group">
+                                    <label for="comment">Nội dung đánh giá</label>
+                                    <textarea name="comment" id="comment" class="form-control" rows="3"
+                                              placeholder="Viết cảm nhận của bạn..."></textarea>
                                 </div>
 
+                                <button type="submit" class="btn primary-btn">Gửi đánh giá</button>
+                            </form>
+                            @elseif($alreadyReviewed)
+    <p class="text-success">Bạn đã đánh giá sản phẩm này rồi.</p>
 
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="review_box">
-                                <h4>Gửi đánh giá</h4>
-                                <p>Your Rating:</p>
-                                <ul class="list">
-                                    <li><a href="#"><i class="fa fa-star"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-star"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-star"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-star"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-star"></i></a></li>
-                                </ul>
-                                <p>Outstanding</p>
-                                <form class="row contact_form" action="contact_process.php" method="post"
-                                    id="contactForm" novalidate="novalidate">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="name" name="name"
-                                                placeholder="Your Full name" onfocus="this.placeholder = ''"
-                                                onblur="this.placeholder = 'Your Full name'">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="email" class="form-control" id="email" name="email"
-                                                placeholder="Email Address" onfocus="this.placeholder = ''"
-                                                onblur="this.placeholder = 'Email Address'">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="number" name="number"
-                                                placeholder="Phone Number" onfocus="this.placeholder = ''"
-                                                onblur="this.placeholder = 'Phone Number'">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <textarea class="form-control" name="message" id="message" rows="1" placeholder="Review"
-                                                onfocus="this.placeholder = ''" onblur="this.placeholder = 'Review'"></textarea></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 text-right">
-                                        <button type="submit" value="submit" class="primary-btn">Submit Now</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        @else
+                            <p class="text-warning">Bạn chỉ có thể đánh giá sau khi đơn hàng hoàn thành.</p>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</section>
 @php
     $variantMap = $product->variants->mapWithKeys(function($v) {
         return [
@@ -372,7 +288,7 @@
         document.getElementById('selectedQty').value = qty;
 
         const variantId = document.getElementById('variant_id').value;
-        
+
         document.getElementById('selectedVariant').value = variantId;
     });
     </script> --}} -->
@@ -383,7 +299,25 @@
 @push('styles')
 <style>
 
-    
+    .star-rating {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+    }
+
+    .star-rating i {
+        font-size: 2rem;
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .star-rating i.active {
+        color: gold;
+    }
+
+
+
 .fade-image {
     transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 1;
@@ -474,12 +408,12 @@ sizeButtons.forEach(btn => btn.style.display = 'none');
     // 👉 Chọn màu
     colorButtons.forEach(colorBtn => {
         colorBtn.addEventListener('click', () => {
-            
+
             const colorId = colorBtn.dataset.colorId;
             const imageUrl = colorBtn.dataset.image;
             const colorQuantity = colorBtn.dataset.quantity || 0;
             console.log("colorid:", colorId, "imageUrl:", imageUrl, "colorQuantity:", colorQuantity, "size id :", colorBtn.dataset.sizeId);
-            
+
             colorButtons.forEach(btn => btn.classList.remove('active', 'btn-primary'));
             colorBtn.classList.add('active', 'btn-primary');
 
@@ -754,7 +688,27 @@ function updateCartCount() {
 }
 
 
+ document.addEventListener("DOMContentLoaded", function () {
+        const stars = document.querySelectorAll("#starRating i");
+        const ratingInput = document.getElementById("selectedRating");
 
+        stars.forEach((star) => {
+            star.addEventListener("click", function () {
+                const rating = this.getAttribute("data-value");
+                ratingInput.value = rating;
+
+                // Xóa class active khỏi tất cả sao
+                stars.forEach(s => s.classList.remove("active"));
+
+                // Thêm lại class active cho các sao <= rating
+                stars.forEach(s => {
+                    if (s.getAttribute("data-value") <= rating) {
+                        s.classList.add("active");
+                    }
+                });
+            });
+        });
+    });
 </script>
 @endpush
 
