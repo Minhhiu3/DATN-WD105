@@ -83,6 +83,16 @@
             });
         });
         @endif
+        @if(session('error'))
+        window.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Thất bại!',
+                    html: {!! json_encode(nl2br(session('error'))) !!},
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+        @endif
     </script>
 
     <!-- JS Libraries -->

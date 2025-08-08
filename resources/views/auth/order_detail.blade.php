@@ -59,7 +59,7 @@
 <table class="table table-bordered order-table">
     <thead>
         <tr>
-            <th>Thumbnail</th>
+            <th>Ảnh</th>
             <th>Sản phẩm</th>
             <th>Size</th>
             <th>Màu</th>
@@ -72,16 +72,16 @@
         @foreach ($order->orderItems as $item)
             <tr>
                 <td>
-                    <img src="{{ asset('storage/' . ($item->variant->color->image ?? 'default.jpg')) }}"
-                         alt="{{ $item->variant->product->name_product }}"
+                    <img src="{{ asset('storage/' . ($item->image ?? 'default.jpg')) }}"
+                         alt="{{ $item->product_name }}"
                          style="width: 70px; height: 80px; object-fit: cover;">
                 </td>
-                <td>{{ $item->variant->product->name_product ?? 'Không có sản phẩm' }}</td>
-                <td>{{ $item->variant->size->name }}</td>
-                <td>{{ $item->variant->color->name_color }}</td>
+                <td>{{ $item->product_name ?? 'Không có sản phẩm' }}</td>
+                <td>{{ $item->size_name }}</td>
+                <td>{{ $item->color_name }}</td>
                 <td>{{ $item->quantity }}</td>
-                <td>{{ number_format($item->variant->price) }} VNĐ</td>
-                <td>{{ number_format($item->quantity * $item->variant->price) }} VNĐ</td>
+                <td>{{ number_format($item->price) }} VNĐ</td>
+                <td>{{ number_format($item->quantity * $item->price) }} VNĐ</td>
             </tr>
         @endforeach
     </tbody>
