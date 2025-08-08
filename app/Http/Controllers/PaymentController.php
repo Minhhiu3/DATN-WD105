@@ -112,6 +112,11 @@ public function vnpayReturn(Request $request)
                     'order_id'   => $order->id_order,
                     'variant_id' => $item->variant_id,
                     'quantity'   => $item->quantity,
+                    'product_name' => $item->variant->product->name_product,
+                    'price'      => $item->variant->price,
+                    'color_name' => $item->variant->color->name_color ?? 'Không có màu',
+                    'size_name'  => $item->variant->size->name ?? 'Không có size',
+                    'image'      => $item->variant->color->image ?? 'khong-co-hinh-anh.jpg',
                     'created_at' => now(),
                 ]);
 
@@ -129,7 +134,7 @@ $emailSend = $orderData['email'] ?? $pending['email'];
 Mail::to($emailSend)->send(new OrderPlacedMail($order));
 
 
-return redirect()->route('home')->with('success', 'Thanh toán thành công, đơn hàng đã được tạo!');
+return redirect()->route('home')->with('success', 'Thanh toán thành công');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -151,13 +156,14 @@ public function paymentVnpayBuyNow()
     $vnp_Returnurl = route('vnpay.return.buy_now');
     $vnp_TmnCode = "EXCCT61K";
     $vnp_HashSecret = "CP0XHLTRZJQRZGUCBI3XPP3C5HQDNB7E";
-
-    $vnp_TxnRef = 'BN' . time();
+$orderCode = 'ORDER' . time();
+    $vnp_TxnRef = $orderCode;
     $vnp_OrderInfo = "Thanh toán mua ngay";
     $vnp_Amount = $pending['grand_total'] * 100;
     $vnp_Locale = "vn";
     $vnp_IpAddr = request()->ip();
-
+$pending['order_code'] = $orderCode;
+session(['pending_order_buy_now' => $pending]);
     $inputData = [
         "vnp_Version" => "2.1.0",
         "vnp_TmnCode" => $vnp_TmnCode,
@@ -198,9 +204,11 @@ public function vnpayReturnBuyNow(Request $request)
     ]);
     $pending = session('pending_order_buy_now');
 
-
+    if (!$pending || !isset($pending['order_code']) || $pending['order_code'] !== $orderCode) {
+        return redirect()->route('home')->with('error','Thông tin đơn hàng mua ngay không hợp lệ hoặc hết hạn.');
+    }
     if (!$pending) {
-        return redirect()->route('home')->withErrors('Không tìm thấy thông tin đơn hàng mua ngay.');
+        return redirect()->route('home')->with('error','Không tìm thấy thông tin đơn hàng mua ngay.');
     }
 
     if ($request->vnp_ResponseCode == '00') {
@@ -229,6 +237,11 @@ public function vnpayReturnBuyNow(Request $request)
                 'order_id'   => $order->id_order,
                 'variant_id' => $pending['variant_id'],
                 'quantity'   => $pending['quantity'],
+                'product_name' => $pending['product_name'],
+                'price'      => $pending['price'],
+                'color_name' => $pending['color_name'] ?? 'Không có màu',
+                'size_name'  => $pending['size_name'] ?? 'Không có size',
+                'image'      => $pending['image'] ?? 'khong-co-hinh-anh.jpg',
                 'created_at' => now(),
             ]);
 
@@ -242,7 +255,7 @@ $emailSend = $pending['email'];
 Mail::to($emailSend)->send(new OrderPlacedMail($order));
 Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $emailSend);
 
-            return redirect()->route('home')->with('success', 'Thanh toán thành công, đơn hàng đã được tạo!');
+            return redirect()->route('home')->with('success', 'Thanh toán thành công');
         } catch (\Exception $e) {
             DB::rollBack();
 

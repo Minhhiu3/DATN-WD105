@@ -193,7 +193,7 @@ public function update(Request $request, $order_id)
     }
 
     $order->status = $request->status;
-    if ($request->status === 'delivered' || $request->status === 'received') {
+    if ($request->status === 'received') {
         $order->payment_status = 'paid';
     } elseif ($request->status === 'canceled') {
         $order->payment_status = 'canceled'; // Hoặc trạng thái phù hợp khác

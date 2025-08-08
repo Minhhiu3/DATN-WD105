@@ -28,12 +28,17 @@ class CheckoutController extends Controller
             'quantity'   => 'required|integer|min:1',
         ]);
 
+
         $variant = Variant::with(['product', 'size'])->findOrFail($request->variant_id);
         $quantity = $request->quantity;
 
         if ($variant->quantity < $quantity) {
             return redirect()->back()->withErrors('Số lượng sản phẩm không đủ trong kho.');
         }
+        if (!$variant || $variant->trashed() || !$variant->product || $variant->product->trashed()) {
+            return redirect()->back()->withErrors('Sản phẩm đã bị xóa hoặc ngừng bán.');
+        }
+
 
         return view('client.pages.checkout', compact('variant', 'quantity'));
     }
@@ -62,7 +67,10 @@ class CheckoutController extends Controller
     ]);
 
     $user = Auth::user();
-    $variant = Variant::findOrFail($request->variant_id);
+   $variant = Variant::with(['product', 'color', 'size'])->findOrFail($request->variant_id);
+    if (!$variant || $variant->trashed() || !$variant->product || $variant->product->trashed()) {
+        return redirect()->back()->withErrors('Sản phẩm đã bị xóa hoặc ngừng bán.');
+    }
 
     if ($variant->quantity < $request->quantity) {
         return redirect()->back()->withErrors('Số lượng sản phẩm không đủ trong kho.');
@@ -121,6 +129,11 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 'order_id'   => $order->id_order,
                 'variant_id' => $variant->id_variant,
                 'quantity'   => $request->quantity,
+                 'product_name' => $variant->product->name_product,
+    'price'        => $variant->price,
+    'color_name'   => $variant->color->name_color ?? null,
+    'size_name'    => $variant->size->name ?? null,
+    'image'        => $variant->color->image ?? null,
                 'created_at' => now(),
             ]);
 
@@ -152,6 +165,11 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 'total_amount'  => $finalTotal,     // Tổng tiền sau giảm, chưa cộng phí ship
                 'grand_total'   => $grand_total,    // Tổng tiền đã giảm + phí ship
                 'discount_code' => $discountCode,
+                 'product_name'  => $variant->product->name ?? '',
+            'price'         => $variant->price ?? 0,
+            'color_name'    => $variant->color->name_color ?? 'Không có màu',
+            'size_name'     => $variant->size->name ?? 'Không có size',
+            'image'         => $variant->color->image ?? 'khong-co-hinh-anh.jpg',
             ]
         ]);
 
@@ -171,18 +189,39 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         // Lấy cart của user
         $cart = Cart::where('user_id', $user->id_user)->first();
 
+
+        // Kiểm tra từng sản phẩm trong giỏ hàng
         if (!$cart) {
             return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
         }
+
+
 
         // Lấy cart items kèm variant, product, size
         $cartItems = CartItem::with(['variant.product', 'variant.size'])
             ->where('cart_id', $cart->id_cart)
             ->get();
-
+  foreach ($cartItems as $item) {
+        if (!$item->variant) {
+            return redirect()->route('cart')
+                ->with('error', "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\ntrong giỏ hàng đã bị xóa hoặc ngừng bán.\nVui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
+        }
+ if (
+            !$item->variant || $item->variant->trashed() ||
+            !$item->variant->product || $item->variant->product->trashed()
+        ) {
+            return redirect()->back()->with('error', "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\ntrong giỏ hàng đã bị xóa hoặc ngừng bán.\nVui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
+        }
+        if ($item->quantity > $item->variant->quantity) {
+            return redirect()->route('cart')
+                ->with('error',
+    "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\nKhông đủ số lượng\nChỉ còn {$item->variant->quantity} sản phẩm.");
+        }
+    }
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
         }
+
 
         return view('client.pages.checkout_cart', compact('cartItems'));
     }
@@ -213,6 +252,18 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
         }
+        foreach ($cartItems as $item) {
+        if (
+            !$item->variant || $item->variant->trashed() ||
+            !$item->variant->product || $item->variant->product->trashed()
+        ) {
+            return redirect()->back()->with('error', "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\ntrong giỏ hàng đã bị xóa hoặc ngừng bán.\nVui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
+        }
+        if ($item->variant->quantity < $item->quantity) {
+            return redirect()->back()->with('error',
+    "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\nKhông đủ số lượng\nChỉ còn {$item->variant->quantity} sản phẩm.");
+        }
+    }
 
         // Validate địa chỉ và phương thức thanh toán
         $request->validate([
@@ -236,11 +287,11 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
 
                 // Check sản phẩm bị xóa mềm
                 if (!$variant || $variant->trashed() || !$variant->product || $variant->product->trashed()) {
-                    throw new \Exception("Sản phẩm {$variant->product->name_product},màu:{$variant->color->name_color},size:{$variant->size->name} trong giỏ hàng đã bị xóa hoặc ngừng bán. Vui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
+                    throw new \Exception("Sản phẩm {$item->variant->product->name_product}, màu:{$item->variant->color->name_color}, size:{$item->variant->size->name} trong giỏ hàng đã bị xóa hoặc ngừng bán. Vui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
                 }
 
                 if ($variant->quantity < $item->quantity) {
-                    throw new \Exception("Sản phẩm {$variant->product->name_product},màu:{$variant->color->name_color},size:{$variant->size->name} không đủ hàng.");
+                    throw new \Exception("Sản phẩm {$item->variant->product->name_product}, màu:{$item->variant->color->name_color}, size:{$item->variant->size->name} không đủ hàng. Chỉ còn {$variant->quantity} sản phẩm");
                 }
 
                 $totalAmount += $variant->price * $item->quantity;
@@ -288,6 +339,13 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                     'order_id'   => $order->id_order,
                     'variant_id' => $item->variant_id,
                     'quantity'   => $item->quantity,
+                    'product_name' => $item->variant->product->name_product,
+                    'price'        => $item->variant->price,
+                    'color_name'   => $item->variant->color->name_color ?? null,
+                    'size_name'    => $item->variant->size->name ?? null,
+                    'image'        => $item->variant->color->image ?? null,
+
+
                     'created_at' => now(),
                 ]);
 
