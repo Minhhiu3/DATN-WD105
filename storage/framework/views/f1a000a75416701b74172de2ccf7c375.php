@@ -35,22 +35,20 @@
                 </div>
                 <div class="sidebar-filter mt-50 ">
                     <div class="top-filter-head ">Lọc</div>
-                    
-                    <div class="common-filter ">
-                        <div class="head">Size</div>
 
-                        <ul class="main-categories sidebar-categories">
-                            <?php $__currentLoopData = $sizes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li class="main-nav-list">
-                                    <a href="#">
-                                        <?php echo e($size->name); ?>
+                 <div class="common-filter">
+    <div class="head">Size</div>
 
-                                    </a>
-                                </li>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </ul>
-                    </div>
-                    <div class="common-filter">
+    <div class="d-flex flex-wrap gap-2">
+        <?php $__currentLoopData = $sizes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <button type="button" class="btn btn-outline-dark size-square">
+                <?php echo e($size->name); ?>
+
+            </button>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </div>
+</div>
+                    <div class="common-filter mb-5">
                         <div class="head">Price</div>
                         <form method="get" action="<?php echo e(route('products.filterByPrice')); ?>">
                             <select name="price_range" onchange="this.form.submit()" id="">
@@ -68,16 +66,12 @@
                 <div class="filter-bar d-flex flex-wrap align-items-center">
                     <div class="sorting">
                         <select>
-                            <option value="1">Default sorting</option>
-                            <option value="1">Default sorting</option>
-                            <option value="1">Default sorting</option>
+                            
                         </select>
                     </div>
                     <div class="sorting mr-auto">
                         <select>
-                            <option value="1">Show 12</option>
-                            <option value="1">Show 12</option>
-                            <option value="1">Show 12</option>
+                            
                         </select>
                     </div>
 
@@ -93,9 +87,20 @@
                                     <img src="<?php echo e(asset('/storage/' . $product->image)); ?>" alt="<?php echo e($product->image); ?>">
                                     <div class="product-details">
                                         <h6><?php echo e($product->name_product); ?></h6>
-                                        <div class="price">
-                                            <h6><?php echo e(number_format($product->price, 0, ',', '.')); ?> VNĐ</h6>
-                                        </div>
+                                       <?php
+    $minPrice = $product->variants->min('price');
+    $maxPrice = $product->variants->max('price');
+?>
+
+<div class="price">
+    <?php if($minPrice === null): ?>
+        <h6>Đang cập nhật</h6>
+    <?php elseif($minPrice == $maxPrice): ?>
+        <h6><?php echo e(number_format($minPrice, 0, ',', '.')); ?> VNĐ</h6>
+    <?php else: ?>
+        <h6><?php echo e(number_format($minPrice, 0, ',', '.')); ?> – <?php echo e(number_format($maxPrice, 0, ',', '.')); ?> VNĐ</h6>
+    <?php endif; ?>
+</div>
                                         <div class="prd-bottom">
 
                                             <a href="" class="social-info">
@@ -115,7 +120,7 @@
                                                 <span class="lnr lnr-move"></span>
                                                 <p class="hover-text">view more</p>
                                             </a>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -146,9 +151,7 @@
         </div>
     </div>
 
-    <!-- Start related-product Area -->
-    
-    <!-- End related-product Area -->
+
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH E:\xampp\htdocs\DATN-WD105\resources\views/client/pages/products.blade.php ENDPATH**/ ?>

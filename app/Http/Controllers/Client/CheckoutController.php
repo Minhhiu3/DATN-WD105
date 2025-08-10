@@ -153,28 +153,26 @@ class CheckoutController extends Controller
         DB::beginTransaction();
 
         try {
-            $totalAmount = 0;
-$grand_total =0;
-            foreach ($cartItems as $item) {
-                $variant = $item->variant;
+        $totalAmount = 0;
+        $grand_total = 0;
 
-                if (!$variant) {
-                    throw new \Exception("Sản phẩm không tồn tại.");
-                }
+        foreach ($cartItems as $item) {
+            $variant = $item->variant;
 
-                if ($variant->quantity < $item->quantity) {
-                    throw new \Exception("Sản phẩm {$variant->product->name_product} không đủ hàng.");
-                }
-
-                $totalAmount += $variant->price * $item->quantity;
+            if (!$variant) {
+                throw new \Exception("Sản phẩm không tồn tại.");
             }
 
+            if ($variant->quantity < $item->quantity) {
+                throw new \Exception("Sản phẩm {$variant->product->name_product} không đủ hàng.");
+            }
 
-$shippingFee = 30000;
-           $grand_total =  $totalAmount +$shippingFee;
-            $orderCode = $this->generateOrderCode();
+            $totalAmount += $variant->price * $item->quantity;
+        }
 
-
+        $shippingFee = 30000;
+        $grand_total = $totalAmount + $shippingFee;
+        $orderCode = $this->generateOrderCode();
 
         $order = Order::create([
             'user_id'        => $user->id_user,
@@ -187,34 +185,26 @@ $shippingFee = 30000;
             'district'       => $request->district,
             'ward'           => $request->ward,
             'address'        => $request->address,
-            'grand_total'=> $grand_total,
+            'grand_total'    => $grand_total,
             'created_at'     => now(),
         ]);
 
-            foreach ($cartItems as $item) {
-                OrderItem::create([
-                    'order_id'   => $order->id_order,
-                    'variant_id' => $item->variant_id,
-                    'quantity'   => $item->quantity,
-                    'created_at' => now(),
-                ]);
-
-
-        DB::commit();
-        return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return redirect()->back()->withErrors( $e->getMessage());
-    }
-}
-
+        foreach ($cartItems as $item) {
+            OrderItem::create([
+                'order_id'   => $order->id_order,
+                'variant_id' => $item->variant_id,
+                'quantity'   => $item->quantity,
+                'created_at' => now(),
+            ]);
+        }
 
         DB::commit();
         return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+
     } catch (\Exception $e) {
         DB::rollBack();
         return redirect()->back()->withErrors('Lỗi đặt hàng: ' . $e->getMessage());
     }
-}
 
+}
 }
