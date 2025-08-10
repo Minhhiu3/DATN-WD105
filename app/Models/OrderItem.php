@@ -16,8 +16,13 @@ class OrderItem extends Model
         'order_id',
         'variant_id',
         'quantity',
-        'payment_method',
-        'total_amount',
+        'product_name',
+        'price',
+        'color_name',
+        'size_name',
+        'image',
+        // 'payment_method',
+
 
     ];
 

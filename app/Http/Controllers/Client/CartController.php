@@ -19,7 +19,7 @@ class CartController extends Controller
             // Lấy giỏ hàng từ database cho user đã đăng nhập
             $cart = Cart::where('user_id', Auth::id())->first();
             if ($cart) {
-                $cartItems = CartItem::with(['variant.product', 'variant.size'])
+                $cartItems = CartItem::with(['variant.product', 'variant.size','variant.color'])
                     ->where('cart_id', $cart->id_cart)
                     ->get();
             } else {
@@ -47,10 +47,10 @@ class CartController extends Controller
                 'variant_id' => 'required|exists:variant,id_variant',
                 'quantity' => 'required|integer|min:1',
             ]);
+//abc nac
+            $variant = Variant::with(['product', 'size', 'color'])->find($request->variant_id);
 
-            $variant = Variant::with(['product', 'size'])->find($request->variant_id);
-
-            if (!$variant) {
+            if (!$variant || $variant->deleted_at) {
                 return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại']);
             }
 
@@ -107,10 +107,9 @@ class CartController extends Controller
 
             $variant = Variant::find($request->variant_id);
 
-            if (!$variant) {
-                return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại']);
+            if (!$variant || !$variant->product || $variant->deleted_at) {
+                return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại hoặc ngưng bán, vui lòng xóa khỏi giỏ hàng']);
             }
-
             // Kiểm tra số lượng tồn kho
             if ($request->quantity > $variant->quantity) {
                 return response()->json([
@@ -229,7 +228,7 @@ class CartController extends Controller
             if (Auth::check()) {
                 $cart = Cart::where('user_id', Auth::id())->first();
                 if ($cart) {
-                    $cartItems = CartItem::with(['variant.product', 'variant.size'])
+                    $cartItems = CartItem::with(['variant.product', 'variant.size', 'variant.color'])
                         ->where('cart_id', $cart->id_cart)
                         ->get();
                 } else {

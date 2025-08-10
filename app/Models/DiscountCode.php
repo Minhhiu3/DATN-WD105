@@ -17,7 +17,6 @@ class DiscountCode extends Model
         'code',
         'type',
         'value',
-        'max_discount',
         'min_order_value',
         'user_specific',
         'start_date',

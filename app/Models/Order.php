@@ -24,6 +24,9 @@ class Order extends Model
     'district',
     'ward',
     'address',
+    'email',
+    'user_name',
+    'phone',
     'grand_total',
     'created_at',
 ];
@@ -50,4 +53,8 @@ class Order extends Model
     {
         return "{$this->address}, {$this->ward}, {$this->district}, {$this->province}";
     }
+    public function productReviews()
+{
+    return $this->hasMany(ProductReview::class, 'order_id', 'id_order');
+}
 }

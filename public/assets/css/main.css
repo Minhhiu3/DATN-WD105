@@ -74,6 +74,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent; }
 
+
 /* Start primary btn css
 ============================================================================================ */
 .primary-btn {
@@ -81,7 +82,7 @@
   overflow: hidden;
   color: #fff;
   padding: 0 30px;
-  line-height: 50px;
+  line-height: 40px;
   border-radius: 50px;
   display: inline-block;
   text-transform: uppercase;
@@ -1255,6 +1256,7 @@ h1, h2, h3, h4, h5, h6 {
       margin: 0; }
   @media (max-width: 991px) {
     .banner-area .banner-img {
+      margin: 20px;
       display: none; } }
 
 .add-bag {
@@ -3988,7 +3990,7 @@ label {
     background: transparent;
     box-shadow: none;
     cursor: pointer;
-    position: absolute;
+    /* position: absolute; */
     right: 0px;
     font-size: 14px;
     color: #cccccc;
@@ -5799,4 +5801,15 @@ label {
         pointer-events: none;
         opacity: 0.5;
     }
+    /* #province, #ward {
+    display: block !important;
+} */
+ #search_input_box {
+    display: none; /* Mặc định ẩn */
+    transition: all 0.3s ease; /* hiệu ứng mượt */
+}
+#search_input_box.active {
+    display: block; /* Khi mở sẽ hiển thị */
+}
+
 /*# sourceMappingURL=main.css.map */

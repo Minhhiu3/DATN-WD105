@@ -7,11 +7,11 @@
         <div class="container">
             <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
                 <div class="col-first">
-                    <h1>Shop Category page</h1>
+                    <h1>Cửa Hàng</h1>
                     <nav class="d-flex align-items-center">
-                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="category.html">Fashon Category</a>
+                        <a href="#">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="#">Cửa hàng</a>
+
                     </nav>
                 </div>
             </div>
@@ -24,27 +24,27 @@
                 <div class="sidebar-categories">
                     <div class="head">Danh mục sản phẩm</div>
 
-                    <ul class="main-categories">
-                        @foreach ($categories as $category)
-                            <li class="main-nav-list"><a data-toggle="collapse" aria-expanded="false"
-                                    aria-controls="fruitsVegetable"></span>{{ $category->name_category }}</a>
-
-                            </li>
-                        @endforeach
-
-                    </ul>
+                   <ul class="main-categories">
+    @foreach ($categories as $category)
+        <li class="main-nav-list">
+            <a href="{{ route('products', ['category' => $category->id_category]) }}">
+                {{ $category->name_category }}
+            </a>
+        </li>
+    @endforeach
+</ul>
                 </div>
                 <div class="sidebar-filter mt-50 ">
                     <div class="top-filter-head ">Lọc</div>
 
-                 <div class="common-filter">
+      <div class="common-filter">
     <div class="head">Size</div>
-
     <div class="d-flex flex-wrap gap-2">
         @foreach ($sizes as $size)
-            <button type="button" class="btn btn-outline-dark size-square">
+            <a href="{{ route('products', ['size' => $size->name]) }}"
+               class="btn btn-outline-dark size-square {{ request('size') == $size->name ? 'active' : '' }}">
                 {{ $size->name }}
-            </button>
+            </a>
         @endforeach
     </div>
 </div>
@@ -64,19 +64,19 @@
             <div class="col-xl-9 col-lg-8 col-md-7">
                 <!-- Start Filter Bar -->
                 <div class="filter-bar d-flex flex-wrap align-items-center">
-                    <div class="sorting">
-                        <select>
+                    {{-- <div class="sorting">
+                        <select> --}}
                             {{-- <option value="1">Default sorting</option>
                             <option value="1">Default sorting</option>
                             <option value="1">Default sorting</option> --}}
-                        </select>
-                    </div>
+                        {{-- </select>
+                    </div> --}}
                     <div class="sorting mr-auto">
-                        <select>
+                        {{-- <select> --}}
                             {{-- <option value="1">Show 12</option>
                             <option value="1">Show 12</option>
                             <option value="1">Show 12</option> --}}
-                        </select>
+                        {{-- </select> --}}
                     </div>
 
                 </div>
@@ -87,9 +87,11 @@
                         <!-- single product -->
                          @forelse($products as $product)
                             <div class="col-lg-4 col-md-6">
-                                <div class="single-product">
-                                    <img src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
-                                    <div class="product-details">
+                                <figure class="single-product">
+                                    <div style="overflow: hidden; display: flex; justify-content: center; align-items: center; height: 250px;">
+                                        <img style="height: 100%; width: auto" src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
+                                    </div>
+                                    <figcaption class="product-details" stype="">
                                         <h6>{{ $product->name_product }}</h6>
                                        @php
     $minPrice = $product->variants->min('price');
@@ -106,7 +108,7 @@
     @endif
 </div>
                                         <div class="prd-bottom">
-
+{{--
                                             <a href="" class="social-info">
                                                 <span class="ti-bag"></span>
                                                 <p class="hover-text">add to bag</p>
@@ -118,16 +120,16 @@
                                             <a href="" class="social-info">
                                                 <span class="ti-shopping-cart"></span>
                                                 <p class="hover-text" type="submit">Add to cart</p>
-                                            </a>
+                                            </a> --}}
                                             <a href="{{ route('client.product.show', $product->id_product) }}"
                                                 class="social-info">
                                                 <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">view more</p>
+                                                <p class="hover-text">Xem chi tiết</p>
                                             </a>
 
                                         </div>
-                                    </div>
-                                </div>
+                                    </figcaption>
+                                </figure>
                             </div>
                         @empty
             <div class="col-12">

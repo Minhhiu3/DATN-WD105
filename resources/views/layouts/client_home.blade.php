@@ -21,6 +21,11 @@
     <link rel="stylesheet" href="{{ asset('assets/css/magnific-popup.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
 
+    <!-- Google Font: Roboto -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
     <style>
         #mini-cart {
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -31,7 +36,26 @@
         .nav-item.position-relative:focus-within #mini-cart {
             display: block !important;
         }
+        body {
+    font-family: 'Roboto', sans-serif;
+}
+
+        /* Bỏ viền cho tất cả các nút Bootstrap */
+    .btn {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Tuỳ chỉnh lại hover nếu cần */
+    .btn:hover,
+    .btn:focus {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+
     </style>
+    @stack('styles')
 </head>
 
 <body>
@@ -55,6 +79,16 @@
                 title: 'Thành công!',
                 text: "{{ session('success') }}",
                 icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        });
+        @endif
+        @if(session('error'))
+        window.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Thất bại!',
+                    html: {!! json_encode(nl2br(session('error'))) !!},
+                icon: 'error',
                 confirmButtonText: 'OK'
             });
         });
