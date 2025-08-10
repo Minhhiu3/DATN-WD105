@@ -297,39 +297,37 @@
                 {{-- {{ dd($products) }} --}}
                   <!-- single product -->
                         @foreach ($products as $product)
-                            <div class="col-lg-3 col-md-6">
-                                <div class="single-product">
-                                    <img src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
-                                    <div class="product-details">
-                                        <h6>{{ $product->name_product }}</h6>
-                                                                          @php
-    $minPrice = $product->variants->min('price');
-    $maxPrice = $product->variants->max('price');
-@endphp
+<div class="col-lg-4 col-md-6">
+    <figure class="single-product">
+        <div style="overflow: hidden; display: flex; justify-content: center; align-items: center; height: 250px;">
+            <img style="height: 100%; width: auto" src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
+        </div>
+        <figcaption class="product-details" style="text-align: center;">
+            <h6>{{ $product->name_product }}</h6>
+            @php
+                $minPrice = $product->variants->min('price');
+                $maxPrice = $product->variants->max('price');
+            @endphp
+            <div class="price">
+                @if ($minPrice === null)
+                    <h6>Đang cập nhật</h6>
+                @elseif ($minPrice == $maxPrice)
+                    <h6>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</h6>
+                @else
+                    <h6>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</h6>
+                @endif
+            </div>
+                      <div class="">
 
-<div class="price">
-    @if ($minPrice === null)
-        <h6>Đang cập nhật</h6>
-    @elseif ($minPrice == $maxPrice)
-        <h6>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</h6>
-    @else
-        <h6>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</h6>
-    @endif
-</div>
-                                        <div class="prd-bottom">
-
-
-
-                                            
                                             <a href="{{ route('client.product.show', $product->id_product) }}"
                                                 class="social-info">
-                                                <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">view more</p>
+                                                <p class="primary-btn">Xem chi tiết</p>
                                             </a>
+
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
+        </figcaption>
+    </figure>
+</div>
                         @endforeach
 
 

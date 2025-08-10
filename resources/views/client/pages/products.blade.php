@@ -107,24 +107,11 @@
         <h6>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</h6>
     @endif
 </div>
-                                        <div class="prd-bottom">
-{{--
-                                            <a href="" class="social-info">
-                                                <span class="ti-bag"></span>
-                                                <p class="hover-text">add to bag</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-heart"></span>
-                                                <p class="hover-text">Wishlist</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="ti-shopping-cart"></span>
-                                                <p class="hover-text" type="submit">Add to cart</p>
-                                            </a> --}}
+                                        <div class="">
+
                                             <a href="{{ route('client.product.show', $product->id_product) }}"
                                                 class="social-info">
-                                                <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">Xem chi tiết</p>
+                                                <p class="primary-btn">Xem chi tiết</p>
                                             </a>
 
                                         </div>
