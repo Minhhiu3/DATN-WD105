@@ -21,7 +21,7 @@ class ClientProductController extends Controller
         $keyword = $request->input('keyword');
           $category = $request->input('category');
     $size = $request->input('size');
-     $products = Product::with(['category', 'albumProducts'])
+     $products = Product::where('visibility', 'visible')->with(['category', 'albumProducts'])
         ->when($keyword, function ($query, $keyword) {
             $query->where('name_product', 'like', "%$keyword%");
         })
