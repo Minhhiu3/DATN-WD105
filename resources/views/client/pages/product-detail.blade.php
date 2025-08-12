@@ -47,18 +47,61 @@
             <div class="col-lg-6 " >
                 <div class="s_product_text" style="margin-left: 20px; margin-top: 20px;">
                     <h3>{{ $product->name_product }}</h3>
-
+                    <div style="display: flex">
                     <h2>
                         <span id="dynamic-price">
                             @if ($product->variants->count() > 0)
-                                {{ number_format($product->variants->min('price'), 0, ',', '.') }}
+                                @php
+                                   $sale = ($product->advice_product->value/100)*$product->variants->min('price');
+                                   $sale_price = $product->variants->min('price') - $sale
+                                @endphp
+                                {{ number_format(($sale_price), 0, ',', '.') }}
                             @else
                                 <span class="text-danger">Đang cập nhật</span>
                             @endif
                         </span> <span>VNĐ</span>
                     </h2>
+                    <h4 style="margin-left: 15px; margin-top: 3px;">
+                        <span id="dynamic-price" style="text-decoration: line-through;">
+                            @if ($product->variants->count() > 0)
+                                {{ number_format(($product->variants->min('price')), 0, ',', '.') }} VNĐ
+                            @else
+                                <span class="text-danger">Đang cập nhật</span>
+                            @endif
+                        </span>
+                    </h4>
 
 
+                </div>
+                    
+                    @php 
+                        $sale = $product->advice_product;
+                    $now = \Carbon\Carbon::now();
+                        $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                    $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                    @endphp
+
+                    @if (
+                        $sale &&
+                        $sale->status === "on" && $now->between($start, $end)
+                    )
+                    {{-- Ô vuông % giảm giá tông vàng-cam --}}
+                    <div style="
+                        position: absolute;
+                        top: 10%;
+                        left: 65%;
+                        background: linear-gradient(135deg, #ff7e00, #ffb400);
+                        color: white;
+                        padding: 5px 8px;
+                        border-radius: 5px;
+                        font-weight: bold;
+                        font-size: 14px;
+                        z-index: 10;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    ">
+                        -{{$product->advice_product->value}}%
+                    </div>
+                    @endif
                     <ul class="list">
                         <li><span>Danh mục</span>: {{ $product->category->name_category ?? 'Chưa phân loại' }}</li>
                     </ul>

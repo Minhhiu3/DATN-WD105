@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/ion.rangeSlider.skinFlat.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/magnific-popup.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/main.css')); ?>">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
     <!-- Google Font: Roboto -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">

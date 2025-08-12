@@ -17,7 +17,9 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderSuccessMail;
 use App\Mail\OrderPlacedMail;
-
+use App\Models\UserVoucher;
+use App\Models\AdviceProduct;
+use Carbon\Carbon;
 class CheckoutController extends Controller
 {
     // Hiển thị form thanh toán
@@ -40,8 +42,15 @@ class CheckoutController extends Controller
         }
 
 
-        return view('client.pages.checkout', compact('variant', 'quantity'));
-    }
+        $user = Auth::user();
+
+        // Lấy voucher của user (có thể join lấy thêm info voucher)
+        // Giả sử user_vouchers có discount_id, liên kết với bảng discount_codes
+        $userVouchers = UserVoucher::where('user_id', $user->id_user)
+            ->where('used', '0')
+            ->with('discount') // Quan hệ discountCode trong model UserVoucher
+            ->get();
+        return view('client.pages.checkout', compact('variant', 'quantity','userVouchers'));    }
 
     // Xử lý đặt hàng
     private function generateOrderCode()
@@ -129,16 +138,40 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 'order_id'   => $order->id_order,
                 'variant_id' => $variant->id_variant,
                 'quantity'   => $request->quantity,
-                 'product_name' => $variant->product->name_product,
-    'price'        => $variant->price,
-    'color_name'   => $variant->color->name_color ?? null,
-    'size_name'    => $variant->size->name ?? null,
-    'image'        => $variant->color->image ?? null,
+                'product_name' => $variant->product->name_product,
+                'price'        => $variant->price,
+                'color_name'   => $variant->color->name_color ?? null,
+                'size_name'    => $variant->size->name ?? null,
+                'image'        => $variant->color->image ?? null,
                 'created_at' => now(),
             ]);
 
             $variant->decrement('quantity', $request->quantity);
+            if($discount){
+                $discountId = $discount['discountId'] ?? null;
 
+                $userVoucher = UserVoucher::where('user_id', $user->id_user)
+                    ->where('discount_id', $discountId)
+                    ->first();
+        
+                if ($userVoucher && $userVoucher->used == '0' ) {
+                    UserVoucher::where('user_id', Auth::id())
+                        ->where('discount_id', $discountId)
+                        ->update([
+                            'used' => '1',
+                            'used_at' => now(),
+                        ]);
+
+                }else{
+                    UserVoucher::create([
+                        'user_id'    => Auth::id(),
+                        'discount_id'=> $discountId,
+                        'used'       => 1,
+                        'used_at'    => now(),
+                    ]);
+                }
+            }
+           
             DB::commit();
             // Xóa session mã giảm giá sau khi đặt hàng thành công
             session()->forget('discount');
@@ -206,7 +239,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             return redirect()->route('cart')
                 ->with('error', "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\ntrong giỏ hàng đã bị xóa hoặc ngừng bán.\nVui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
         }
- if (
+        if (
             !$item->variant || $item->variant->trashed() ||
             !$item->variant->product || $item->variant->product->trashed()
         ) {
@@ -221,9 +254,12 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
         }
+                $userVouchers = UserVoucher::where('user_id', $user->id_user)
+            ->where('used', '0')
+            ->with('discount') // Quan hệ discountCode trong model UserVoucher
+            ->get();
 
-
-        return view('client.pages.checkout_cart', compact('cartItems'));
+        return view('client.pages.checkout_cart', compact('cartItems','userVouchers'));
     }
     public function placeOrderFromCart(Request $request)
     {
@@ -353,10 +389,36 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             }
 
             CartItem::where('cart_id', $cart->id_cart)->delete();
+             if($discount){
+                $discountId = $discount['discountId'] ?? null;
+
+                $userVoucher = UserVoucher::where('user_id', $user->id_user)
+                    ->where('discount_id', $discountId)
+                    ->first();
+        
+                if ($userVoucher && $userVoucher->used == '0' ) {
+                    UserVoucher::where('user_id', Auth::id())
+                        ->where('discount_id', $discountId)
+                        ->update([
+                            'used' => '1',
+                            'used_at' => now(),
+                        ]);
+
+                }else{
+                    UserVoucher::create([
+                        'user_id'    => Auth::id(),
+                        'discount_id'=> $discountId,
+                        'used'       => 1,
+                        'used_at'    => now(),
+                    ]);
+                }
+            }
 
         DB::commit();
         // return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
                    if ($request->payment_method === 'cod') {
+                        session()->forget('discount');
+
                     return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
                 }
 
@@ -420,16 +482,22 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
 }
 // áp mã giảm giá cho đơn hàng
 
-    public function apply(Request $request)
+   public function apply(Request $request)
     {
         $request->validate([
             'coupon_code' => 'required|string',
         ]);
-
+        $user = Auth::user();
         $coupon = DiscountCode::where('code', $request->coupon_code)->first();
-
+        $userVoucher = UserVoucher::where('user_id', $user->id_user)
+            ->where('discount_id', $coupon->discount_id)
+            ->first();
+        
         if (!$coupon) {
             return response()->json(['success' => false, 'message' => 'Mã không hợp lệ']);
+        }
+        if ($userVoucher && $userVoucher->used == '1') {
+            return response()->json(['success' => false, 'message' => 'Mã giảm giá bạn đã dùng rồi !']);
         }
 
         if (!now()->between($coupon->start_date, $coupon->end_date)) {
@@ -440,10 +508,19 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         }
 
 
-
+        
         // Tính tổng đơn
         $variant = Variant::find($request->variant_id);
-        $subtotal = $variant->price * $request->quantity;
+        $adviceProduct = AdviceProduct::where('product_id', $variant->product_id)
+            ->whereDate('start_date', '<=', Carbon::today())
+            ->whereDate('end_date', '>=', Carbon::today())
+            ->first();
+        if ($adviceProduct && $adviceProduct->status == "on" ) {
+            $pricevariantSale = $variant->price * ($adviceProduct->value/100);
+            $subtotal = ($variant->price - $pricevariantSale )* $request->quantity;
+        }else {
+            $subtotal = $variant->price * $request->quantity;
+        }
         if ($subtotal < $coupon->min_order_value) {
             return response()->json([
                 'success' => false,
@@ -482,13 +559,14 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             'discount' => [
                 'code' => $coupon->code,
                 'amount' => $discount,
-                'final_total' => $finalTotal
+                'final_total' => $finalTotal,
+                'discountId' =>  $coupon->discount_id
             ]
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => "Đã áp dụng mã giảm giá!",
+            'message' => "🎉 Đã áp dụng mã giảm giá!",
             'discount' => $discount,
             'final_total' => $finalTotalShip
         ]);
@@ -518,13 +596,27 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         if ($coupon->is_active == '0') {
             return response()->json(['success' => false, 'message' => 'Mã giảm giá đã bị vô hiệu hóa']);
         }
+$subtotal = 0;
+$today = Carbon::today();
 
-        $subtotal = 0;
-        foreach ($cart->cartItems as $item) {
-            if ($item->variant) {
-                $subtotal += $item->variant->price * $item->quantity;
-            }
-        }
+foreach ($cart->cartItems as $item) {
+    $variant = $item->variant;
+    $price = $variant->price;
+
+    $adviceProduct = AdviceProduct::where('product_id', $variant->product_id)
+        ->whereDate('start_date', '<=', $today)
+        ->whereDate('end_date', '>=', $today)
+        ->where('status', 'on')
+        ->first();
+
+    if ($adviceProduct) {
+        $price -= $price * ($adviceProduct->value / 100);
+    }
+
+    $subtotal += $price * $item->quantity;
+}
+
+
         if ($subtotal < $coupon->min_order_value) {
             return response()->json([
                 'success' => false,
@@ -555,14 +647,15 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             $finalTotalShip = max(0, $subtotal - $discount + $shippingFee);
             // tiền chuyền session - tiền ship
             $finalTotal = max(0, $subtotal - $discount );
+            
         session([
             'discount' => [
                 'code' => $coupon->code,
                 'amount' => $discount,
-                'final_total' => $finalTotal
+                'final_total' => $finalTotal,
+                'discountId' =>  $coupon->discount_id
             ]
         ]);
-
         return response()->json([
             'success' => true,
             'message' => 'Đã áp dụng mã giảm giá!',

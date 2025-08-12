@@ -308,6 +308,34 @@
                 $minPrice = $product->variants->min('price');
                 $maxPrice = $product->variants->max('price');
             @endphp
+             @php 
+    $sale = $product->advice_product;
+$now = \Carbon\Carbon::now();
+    $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+$end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+@endphp
+
+@if (
+    $sale &&
+    $sale->status === "on" && $now->between($start, $end)
+)
+                                        {{-- Ô vuông % giảm giá tông vàng-cam --}}
+                                        <div style="
+                                            position: absolute;
+                                            top: 10px;
+                                            left: 22px;
+                                            background: linear-gradient(135deg, #ff7e00, #ffb400);
+                                            color: white;
+                                            padding: 5px 8px;
+                                            border-radius: 5px;
+                                            font-weight: bold;
+                                            font-size: 14px;
+                                            z-index: 10;
+                                            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                                        ">
+                                            -{{$product->advice_product->value}}%
+                                        </div>
+                                        @endif
             <div class="price">
                 @if ($minPrice === null)
                     <h6>Đang cập nhật</h6>
