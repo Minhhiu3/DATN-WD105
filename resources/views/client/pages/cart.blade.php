@@ -77,14 +77,7 @@
                                                            data-variant-id="{{ $variant->id_variant }}"
                                                            data-price="{{ $price }}"
                                                            onchange="updateQuantity({{ $variant->id_variant }}, this.value, {{ $variant->quantity }})">
-                                                    <button onclick="changeQuantity({{ $variant->id_variant }}, 1, {{ $variant->quantity }})"
-                                                            class="increase items-count" type="button">
-                                                        <i class="lnr lnr-chevron-up"></i>
-                                                    </button>
-                                                    <button onclick="changeQuantity({{ $variant->id_variant }}, -1, {{ $variant->quantity }})"
-                                                            class="reduced items-count" type="button">
-                                                        <i class="lnr lnr-chevron-down"></i>
-                                                    </button>
+                                                 
                                                 </div>
                                                 <div class="quantity-error text-danger" style="display: none; font-size: 12px;"></div>
                                             </td>

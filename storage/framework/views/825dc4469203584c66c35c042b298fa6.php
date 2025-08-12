@@ -76,14 +76,7 @@
                                                            data-variant-id="<?php echo e($variant->id_variant); ?>"
                                                            data-price="<?php echo e($price); ?>"
                                                            onchange="updateQuantity(<?php echo e($variant->id_variant); ?>, this.value, <?php echo e($variant->quantity); ?>)">
-                                                    <button onclick="changeQuantity(<?php echo e($variant->id_variant); ?>, 1, <?php echo e($variant->quantity); ?>)"
-                                                            class="increase items-count" type="button">
-                                                        <i class="lnr lnr-chevron-up"></i>
-                                                    </button>
-                                                    <button onclick="changeQuantity(<?php echo e($variant->id_variant); ?>, -1, <?php echo e($variant->quantity); ?>)"
-                                                            class="reduced items-count" type="button">
-                                                        <i class="lnr lnr-chevron-down"></i>
-                                                    </button>
+                                                 
                                                 </div>
                                                 <div class="quantity-error text-danger" style="display: none; font-size: 12px;"></div>
                                             </td>

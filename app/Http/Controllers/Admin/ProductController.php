@@ -278,7 +278,7 @@ public function update(Request $request, Product $product)
         $product = Product::onlyTrashed()->findOrFail($id);
         $product->variants()->onlyTrashed()->restore(); // Khôi phục biến thể
         $product->albumProducts()->onlyTrashed()->restore(); // Khôi phục ảnh album
-        $product->adviceProduct()->onlyTrashed()->restore(); // Khôi phục khuyến mãi
+        $product->advice_Product()->onlyTrashed()->restore(); // Khôi phục khuyến mãi
         $product->restore(); // Khôi phục sản phẩm
 
         return redirect()->route('admin.products.trash')->with('success', 'Khôi phục sản phẩm thành công!');
@@ -292,7 +292,7 @@ public function update(Request $request, Product $product)
         $product = Product::onlyTrashed()->findOrFail($id);
         $product->variants()->onlyTrashed()->forceDelete(); // Xóa cứng biến thể
         $product->albumProducts()->onlyTrashed()->forceDelete(); // Xóa cứng ảnh album
-        $product->adviceProduct()->onlyTrashed()->forceDelete(); // Xóa cứng khuyến mãi
+        $product->advice_Product()->onlyTrashed()->forceDelete(); // Xóa cứng khuyến mãi
         $product->forceDelete(); // Xóa cứng sản phẩm
 
         return redirect()->route('admin.products.trash')->with('success', 'Xóa vĩnh viễn sản phẩm thành công!');
