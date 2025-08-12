@@ -76,7 +76,8 @@ Route::prefix('account')->middleware('auth')->group(function () {
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('account.placeOrder');
     Route::put('/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
     Route::get('/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
-    Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
+    //Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
+    Route::post('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
     Route::post('/place-order-cart', [CheckoutController::class, 'placeOrderFromCart'])->name('account.placeOrder.cart');
     Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment'])->name('account.vnpay.payment'); // VNPAY payment route
     Route::get('/payment/vnpay', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay');
@@ -137,6 +138,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/products/{id}/toggle-visibility', [ProductController::class, 'toggleVisibility'])
         ->name('admin.products.toggle-visibility');
 
+        // Thùng rác sản phẩm
+    Route::get('products/trash', [ProductController::class, 'trash'])->name('admin.products.trash');
+    Route::post('products/restore/{id}', [ProductController::class, 'restore'])->name('admin.products.restore');
+    Route::delete('products/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('admin.products.forceDelete');
     // Product Management Routes
     Route::resource('products', ProductController::class)->names([
         'index' => 'admin.products.index',
@@ -148,10 +153,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.products.destroy',
     ]);
 
-    // Thùng rác sản phẩm
-    Route::get('products/trash', [ProductController::class, 'trash'])->name('admin.products.trash');
-    Route::post('products/restore/{id}', [ProductController::class, 'restore'])->name('admin.products.restore');
-    Route::delete('products/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('admin.products.forceDelete');
+    
     // Size Management Routes
     Route::resource('/sizes', SizeController::class)->names([
         'index' => 'admin.sizes.index',

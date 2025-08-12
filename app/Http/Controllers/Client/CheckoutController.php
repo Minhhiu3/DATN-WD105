@@ -215,52 +215,91 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
 
 
     //mua từ giỏ hàng
-    public function checkoutCart()
-    {
-        $user = Auth::user();
+public function checkoutCart(Request $request)
+{
+    $user = Auth::user();
 
-        // Lấy cart của user
-        $cart = Cart::where('user_id', $user->id_user)->first();
+    // Debug 1: Log toàn bộ request input
+    \Log::info('CheckoutCart - Full Request Input:', ['request' => $request->all()]);
 
+    // Lấy selected_variants từ request
+    $selectedVariants = json_decode($request->input('selected_variants'), true);
 
-        // Kiểm tra từng sản phẩm trong giỏ hàng
-        if (!$cart) {
-            return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
-        }
+    // Debug 2: Log $selectedVariants
+    \Log::info('CheckoutCart - Selected Variants:', ['selected_variants' => $selectedVariants]);
 
+    if (empty($selectedVariants)) {
+        \Log::warning('CheckoutCart - No selected variants');
+        return redirect()->route('cart')->with('error', 'Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+    }
 
+    // Lấy cart của user
+    $cart = Cart::where('user_id', $user->id_user)->first();
 
-        // Lấy cart items kèm variant, product, size
-        $cartItems = CartItem::with(['variant.product', 'variant.size'])
-            ->where('cart_id', $cart->id_cart)
-            ->get();
-  foreach ($cartItems as $item) {
-        if (!$item->variant) {
-            return redirect()->route('cart')
-                ->with('error', "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\ntrong giỏ hàng đã bị xóa hoặc ngừng bán.\nVui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
-        }
-        if (
-            !$item->variant || $item->variant->trashed() ||
-            !$item->variant->product || $item->variant->product->trashed()
-        ) {
-            return redirect()->back()->with('error', "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\ntrong giỏ hàng đã bị xóa hoặc ngừng bán.\nVui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
+    if (!$cart) {
+        \Log::warning('CheckoutCart - Cart not found', ['user_id' => $user->id_user]);
+        return redirect()->route('cart')->with('error', 'Giỏ hàng không tồn tại.');
+    }
+
+    // Debug 3: Log toàn bộ cart items trước khi lọc
+    $allCartItems = CartItem::where('cart_id', $cart->id_cart)->get();
+    \Log::info('CheckoutCart - All Cart Items Before Filtering:', ['all_cart_items' => $allCartItems->toArray()]);
+
+    // Bật log SQL
+    \DB::enableQueryLog();
+
+    // Ép kiểu selected_variants thành số nguyên
+    $selectedVariants = array_map('intval', $selectedVariants);
+
+    // Lấy cart items kèm variant, product, size, chỉ lọc theo selected_variants
+    $cartItemz = CartItem::with(['variant.product', 'variant.size', 'variant.color'])
+        ->where('cart_id', $cart->id_cart)
+        ->whereIn('variant_id', $selectedVariants)
+        ->get();
+
+    // Debug 4: Log SQL query và $cartItems
+    \Log::info('CheckoutCart - SQL Query:', \DB::getQueryLog());
+    \Log::info('CheckoutCart - Filtered Cart Items:', ['cart_items' => $cartItemz->toArray()]);
+
+    // Debug 5: Kiểm tra số lượng sản phẩm và variant_id
+    $cartItemVariantIds = $cartItemz->pluck('variant_id')->toArray();
+    \Log::info('CheckoutCart - Cart Item Variant IDs:', ['variant_ids' => $cartItemVariantIds]);
+    if ($cartItemVariantIds != $selectedVariants) {
+        \Log::warning('CheckoutCart - Mismatch between selected variants and cart items', [
+            'selected_variants' => $selectedVariants,
+            'cart_item_variant_ids' => $cartItemVariantIds
+        ]);
+    }
+
+    if ($cartItemz->isEmpty()) {
+        \Log::warning('CheckoutCart - Empty cart items after filtering', ['selected_variants' => $selectedVariants]);
+        return redirect()->route('cart')->with('error', 'Không tìm thấy sản phẩm được chọn trong giỏ hàng.');
+    }
+
+    // Kiểm tra từng sản phẩm được chọn
+    foreach ($cartItemz as $item) {
+        if (!$item->variant || $item->variant->trashed() || !$item->variant->product || $item->variant->product->trashed()) {
+            \Log::error('CheckoutCart - Invalid product', [
+                'variant_id' => $item->variant_id,
+                'product_name' => $item->variant->product->name_product ?? 'N/A'
+            ]);
+            return redirect()->route('cart')->with('error', "Sản phẩm '{$item->variant->product->name_product}' đã bị xóa hoặc ngừng bán.");
         }
         if ($item->quantity > $item->variant->quantity) {
-            return redirect()->route('cart')
-                ->with('error',
-    "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\nKhông đủ số lượng\nChỉ còn {$item->variant->quantity} sản phẩm.");
+            \Log::error('CheckoutCart - Insufficient quantity', [
+                'variant_id' => $item->variant_id,
+                'requested' => $item->quantity,
+                'available' => $item->variant->quantity
+            ]);
+            return redirect()->route('cart')->with('error', "Sản phẩm '{$item->variant->product->name_product}' không đủ số lượng. Chỉ còn {$item->variant->quantity} sản phẩm.");
         }
     }
-        if ($cartItems->isEmpty()) {
-            return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
-        }
-                $userVouchers = UserVoucher::where('user_id', $user->id_user)
-            ->where('used', '0')
-            ->with('discount') // Quan hệ discountCode trong model UserVoucher
-            ->get();
+//  dd($selectedVariants, $cartItemz);
+    // Truyền cartItems và selectedVariants sang view
+    return view('client.pages.checkout_cart', compact('cartItemz', 'selectedVariants'));
+}
 
-        return view('client.pages.checkout_cart', compact('cartItems','userVouchers'));
-    }
+
     public function placeOrderFromCart(Request $request)
     {
         $user = Auth::user();
@@ -271,35 +310,45 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
         }
 
-        // $cartItems = CartItem::with('variant.product')
-        //     ->where('cart_id', $cart->id_cart)
-        //     ->get();
+        // Lấy selected_variants từ request (từ hidden input trong form thanh toán)
+        $selectedVariants = json_decode($request->input('selected_variants'), true);
+
+        if (empty($selectedVariants)) {
+            return redirect()->route('cart')->withErrors('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+        }
+
+        // Lấy cart items kèm variant, product, size, chỉ lọc theo selected_variants
         $cartItems = CartItem::with([
-        'variant' => function ($q) {
-            $q->withTrashed()->with([
-                'product' => function ($q2) {
-                    $q2->withTrashed();
-                },
-                'size'
+            'variant' => function ($q) {
+                $q->withTrashed()->with([
+                    'product' => function ($q2) {
+                        $q2->withTrashed();
+                    },
+                    'size',
+                    'color'
                 ]);
             }
-            ])->where('cart_id', $cart->id_cart)->get();
+        ])->where('cart_id', $cart->id_cart)
+          ->whereIn('variant_id', $selectedVariants)
+          ->get();
 
         if ($cartItems->isEmpty()) {
-            return redirect()->route('cart')->withErrors('Giỏ hàng trống.');
+            return redirect()->route('cart')->withErrors('Không tìm thấy sản phẩm được chọn trong giỏ hàng.');
         }
+
+        // Kiểm tra từng sản phẩm được chọn
         foreach ($cartItems as $item) {
-        if (
-            !$item->variant || $item->variant->trashed() ||
-            !$item->variant->product || $item->variant->product->trashed()
-        ) {
-            return redirect()->back()->with('error', "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\ntrong giỏ hàng đã bị xóa hoặc ngừng bán.\nVui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
+            if (
+                !$item->variant || $item->variant->trashed() ||
+                !$item->variant->product || $item->variant->product->trashed()
+            ) {
+                return redirect()->back()->with('error', "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\ntrong giỏ hàng đã bị xóa hoặc ngừng bán.\nVui lòng xóa khỏi giỏ hàng để tiếp tục thanh toán.");
+            }
+            if ($item->variant->quantity < $item->quantity) {
+                return redirect()->back()->with('error',
+        "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\nKhông đủ số lượng\nChỉ còn {$item->variant->quantity} sản phẩm.");
+            }
         }
-        if ($item->variant->quantity < $item->quantity) {
-            return redirect()->back()->with('error',
-    "Sản phẩm '{$item->variant->product->name_product}'\nMàu: {$item->variant->color->name_color} | Size: {$item->variant->size->name}\nKhông đủ số lượng\nChỉ còn {$item->variant->quantity} sản phẩm.");
-        }
-    }
 
         // Validate địa chỉ và phương thức thanh toán
         $request->validate([
@@ -388,31 +437,8 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 $item->variant->decrement('quantity', $item->quantity);
             }
 
-            CartItem::where('cart_id', $cart->id_cart)->delete();
-             if($discount){
-                $discountId = $discount['discountId'] ?? null;
-
-                $userVoucher = UserVoucher::where('user_id', $user->id_user)
-                    ->where('discount_id', $discountId)
-                    ->first();
-        
-                if ($userVoucher && $userVoucher->used == '0' ) {
-                    UserVoucher::where('user_id', Auth::id())
-                        ->where('discount_id', $discountId)
-                        ->update([
-                            'used' => '1',
-                            'used_at' => now(),
-                        ]);
-
-                }else{
-                    UserVoucher::create([
-                        'user_id'    => Auth::id(),
-                        'discount_id'=> $discountId,
-                        'used'       => 1,
-                        'used_at'    => now(),
-                    ]);
-                }
-            }
+            // Chỉ xóa các sản phẩm được chọn khỏi giỏ hàng
+            CartItem::where('cart_id', $cart->id_cart)->whereIn('variant_id', $selectedVariants)->delete();
 
         DB::commit();
         // return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
@@ -456,22 +482,23 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 $finalTotal = $totalAmount;
                 $grand_total = $totalAmount + $shippingFee;
             }
-        // Lưu thông tin đơn hàng tạm vào session hoặc truyền qua request
+        // Lưu thông tin đơn hàng tạm vào session session hoặc truyền qua request
          session([
         'pending_order_cart' => [
-            'user_id'       => $user->id_user,
-            'cart_id'       => $cart->id_cart,
-            'payment_method'=> $request->payment_method,
-            'province'      => $request->province,
+            'user_id'           => $user->id_user,
+            'cart_id'           => $cart->id_cart,
+            'selected_variants' => $selectedVariants,  // Lưu selected_variants để sau này lọc khi xử lý VNPay callback
+            'payment_method'    => $request->payment_method,
+            'province'          => $request->province,
             // 'district'      => $request->district,
-            'phone'         => $request->phone,
-            'user_name'     => $request->user_name,
-            'email'         => $request->email,
-            'ward'          => $request->ward,
-            'address'       => $request->address,
-            'total_amount'  => $finalTotal,     // Tổng tiền sau giảm, chưa cộng phí ship
-            'grand_total'   => $grand_total,    // Tổng tiền đã giảm + phí ship
-            'discount_code' => $discountCode,
+            'phone'             => $request->phone,
+            'user_name'         => $request->user_name,
+            'email'             => $request->email,
+            'ward'              => $request->ward,
+            'address'           => $request->address,
+            'total_amount'      => $finalTotal,     // Tổng tiền sau giảm, chưa cộng phí ship
+            'grand_total'       => $grand_total,    // Tổng tiền đã giảm + phí ship
+            'discount_code'     => $discountCode,
 
         ]
     ]);
@@ -576,13 +603,30 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
     try {
         $request->validate([
             'coupon_code' => 'required|string',
+            'selected_variants' => 'json',  // Expect selected_variants as JSON string
         ]);
 
         $user = Auth::user();
-        $cart = Cart::with('cartItems.variant')->where('user_id', $user->id_user)->first();
+        $cart = Cart::where('user_id', $user->id_user)->first();
 
-        if (!$cart || $cart->cartItems->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'Giỏ hàng trống']);
+        if (!$cart) {
+            return response()->json(['success' => false, 'message' => 'Giỏ hàng không tồn tại']);
+        }
+
+        $selectedVariants = json_decode($request->selected_variants, true);
+
+        if (empty($selectedVariants)) {
+            return response()->json(['success' => false, 'message' => 'Vui lòng chọn sản phẩm để áp dụng mã giảm giá']);
+        }
+
+        // Filter cart items based on selected_variants
+        $cartItems = CartItem::with('variant')
+            ->where('cart_id', $cart->id_cart)
+            ->whereIn('variant_id', $selectedVariants)
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy sản phẩm được chọn']);
         }
 
         $coupon = DiscountCode::where('code', $request->coupon_code)->first();
@@ -596,27 +640,13 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         if ($coupon->is_active == '0') {
             return response()->json(['success' => false, 'message' => 'Mã giảm giá đã bị vô hiệu hóa']);
         }
-$subtotal = 0;
-$today = Carbon::today();
 
-foreach ($cart->cartItems as $item) {
-    $variant = $item->variant;
-    $price = $variant->price;
-
-    $adviceProduct = AdviceProduct::where('product_id', $variant->product_id)
-        ->whereDate('start_date', '<=', $today)
-        ->whereDate('end_date', '>=', $today)
-        ->where('status', 'on')
-        ->first();
-
-    if ($adviceProduct) {
-        $price -= $price * ($adviceProduct->value / 100);
-    }
-
-    $subtotal += $price * $item->quantity;
-}
-
-
+        $subtotal = 0;
+        foreach ($cartItems as $item) {
+            if ($item->variant) {
+                $subtotal += $item->variant->price * $item->quantity;
+            }
+        }
         if ($subtotal < $coupon->min_order_value) {
             return response()->json([
                 'success' => false,
