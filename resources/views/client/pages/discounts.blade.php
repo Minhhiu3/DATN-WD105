@@ -79,7 +79,15 @@
         font-weight: bold;
         transition: background 0.3s ease;
     }
-
+    .btn-use {
+        background: #f5f3f0;
+        color: #131111;
+        padding: 6px 16px;
+        border: none;
+        border-radius: 10px;
+        font-weight: bold;
+        transition: background 0.3s ease;
+    }
     .btn-save:hover {
         background: #d35400;
     }
@@ -107,12 +115,22 @@
                 <div class="voucher-details">Áp dụng cho đơn từ {{ number_format(($voucher->min_order_value), 0, ',', '.') }} vnd</div>
                 <div class="voucher-expire">HSD: {{$voucher->end_date}}</div>
                 <div class="voucher-footer">
-                <button 
+                   @csrf
+                                   @if (Auth::check() && $voucher->userVouchers->isNotEmpty())
+                    
+                    <button 
+                        class="btn-use btn-use-voucher" 
+                    >
+                        Đã lưu mã
+                    </button>
+                @else
+                    <button 
                     class="btn-save btn-save-voucher" 
                     data-discount-id="{{ $voucher->discount_id }}"
-                >
+                    >
                     Lưu mã
-                </button>
+                    </button>
+                @endif
                 </div>
             </div>
         @elseif($voucher->type === '1')
@@ -133,13 +151,23 @@
                 <div class="voucher-footer">
                     <form action="/save-voucher-user" method="POST">
                         @csrf
-                        {{-- <input type="hidden" name="discount_code_id" value="{{$voucher->discount_id }}"> --}}
-                        <button 
-                        class="btn-save btn-save-voucher" 
-                        data-discount-id="{{ $voucher->discount_id }}"
-                        >
-                        Lưu mã
-                        </button>
+                                   @if (Auth::check() && $voucher->userVouchers->isNotEmpty())
+                    
+                    <button 
+                        class="btn-use btn-use-voucher" 
+                    >
+                        Đã lưu mã
+                    </button>
+                @else
+                    <button 
+                    class="btn-save btn-save-voucher" 
+                    data-discount-id="{{ $voucher->discount_id }}"
+                    >
+                    Lưu mã
+                    </button>
+                @endif
+                    
+       
                     </form>
                 </div>
             </div>
@@ -147,7 +175,6 @@
             🔥
         @endif
          @endforeach
-
     </div>
 </section>
 <script>
@@ -176,12 +203,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const data = await response.json();
+   if (response.status === 401) {
+        window.location.href = '{{ route('login') }}';
+        alert('Bạn cần đăng nhập đẻ lưu mã !');
 
+          return;
+        }
         if (response.ok && data.success) {
           alert('Lưu mã thành công!');
           // Thay đổi giao diện nút sau khi lưu
           button.textContent = 'Đã lưu';
           button.disabled = true;
+          location.reload();
+
         } else {
           alert(data.message || 'Lưu mã thất bại!');
         }

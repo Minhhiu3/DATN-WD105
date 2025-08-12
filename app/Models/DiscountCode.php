@@ -23,4 +23,8 @@ class DiscountCode extends Model
         'end_date',
         'is_active',
     ];
+        public function userVouchers()
+{
+    return $this->hasMany(UserVoucher::class, 'discount_id', 'discount_id');
+}
 }

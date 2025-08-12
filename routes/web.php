@@ -36,7 +36,7 @@ Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->na
 Route::get('/products/filter', [ClientProductController::class, 'filterByPrice'])->name('products.filterByPrice');
 Route::get('/discounts', [ClientDiscountController::class, 'index'])->name('discounts');
     // lưu voucher vao tài khoản 
-    Route::post('/save-voucher-user', [ClientDiscountController::class, 'saveVoucherUser'])->name('save.voucherUser');
+    Route::post('/save-voucher-user', [ClientDiscountController::class, 'saveVoucherUser'])->name('save.voucherUser')->middleware('auth');
 Route::get('/contact', function () {
     return view('client.pages.contact');
 })->name('contact');

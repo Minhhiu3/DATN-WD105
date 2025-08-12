@@ -295,8 +295,13 @@ public function checkoutCart(Request $request)
         }
     }
 //  dd($selectedVariants, $cartItemz);
+                $userVouchers = UserVoucher::where('user_id', $user->id_user)
+            ->where('used', '0')
+            ->with('discount') // Quan hệ discountCode trong model UserVoucher
+            ->get();
     // Truyền cartItems và selectedVariants sang view
-    return view('client.pages.checkout_cart', compact('cartItemz', 'selectedVariants'));
+
+    return view('client.pages.checkout_cart', compact('cartItemz', 'selectedVariants','userVouchers'));
 }
 
 
@@ -502,10 +507,35 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
 
         ]
     ]);
+    
     session()->forget('discount');
     // Chuyển hướng tới VNPay để thanh toán
     return redirect()->route('payment.vnpay');
     }
+     if($discount){
+                $discountId = $discount['discountId'] ?? null;
+
+                $userVoucher = UserVoucher::where('user_id', $user->id_user)
+                    ->where('discount_id', $discountId)
+                    ->first();
+        
+                if ($userVoucher && $userVoucher->used == '0' ) {
+                    UserVoucher::where('user_id', Auth::id())
+                        ->where('discount_id', $discountId)
+                        ->update([
+                            'used' => '1',
+                            'used_at' => now(),
+                        ]);
+
+                }else{
+                    UserVoucher::create([
+                        'user_id'    => Auth::id(),
+                        'discount_id'=> $discountId,
+                        'used'       => 1,
+                        'used_at'    => now(),
+                    ]);
+                }
+            }
 }
 // áp mã giảm giá cho đơn hàng
 
@@ -544,9 +574,11 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             ->first();
         if ($adviceProduct && $adviceProduct->status == "on" ) {
             $pricevariantSale = $variant->price * ($adviceProduct->value/100);
-            $subtotal = ($variant->price - $pricevariantSale )* $request->quantity;
+            $subtotal = ($variant->price - $pricevariantSale ) * $request->quantity;
+            
         }else {
             $subtotal = $variant->price * $request->quantity;
+            
         }
         if ($subtotal < $coupon->min_order_value) {
             return response()->json([
@@ -555,7 +587,6 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             ]);
         }
 
-        $shippingFee = 30000;
         $type = (int) $coupon->type; // ép kiểu chắc chắn
 
         switch ($type) {
@@ -575,7 +606,9 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 'message' => 'số tiền giảm quá lớn so với đơn hàng'
             ]);
         }
-            $finalTotalShip = max(0, $subtotal - $discount + $shippingFee);
+$shippingFee = ($adviceProduct && $adviceProduct->status == "on") ? 30000 : 30000;
+
+$finalTotalShip = max(0, $subtotal - $discount) + $shippingFee;
             // tiền chuyền session - tiền ship
             $finalTotal = max(0, $subtotal - $discount );
 
@@ -614,6 +647,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         }
 
         $selectedVariants = json_decode($request->selected_variants, true);
+// Log::info('selected_variants', [$request->selected_variants]);
 
         if (empty($selectedVariants)) {
             return response()->json(['success' => false, 'message' => 'Vui lòng chọn sản phẩm để áp dụng mã giảm giá']);
@@ -644,7 +678,23 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
         $subtotal = 0;
         foreach ($cartItems as $item) {
             if ($item->variant) {
-                $subtotal += $item->variant->price * $item->quantity;
+                $variant = $item->variant; // đã load sẵn, không cần find()
+
+                $adviceProduct = AdviceProduct::where('product_id', $variant->product_id)
+                    ->whereDate('start_date', '<=', Carbon::today())
+                    ->whereDate('end_date', '>=', Carbon::today())
+                    ->first();
+
+                if ($adviceProduct && $adviceProduct->status == "on") {
+                    $discountAmount = $item->variant->price * ($adviceProduct->value / 100);
+                    $price = $item->variant->price - $discountAmount;
+                } else {
+                    $price = $item->variant->price;
+                }
+
+                $subtotal += $price * $item->quantity;
+                $shippingFee = ($adviceProduct && $adviceProduct->status == "on") ? 30000 : 30000;
+
             }
         }
         if ($subtotal < $coupon->min_order_value) {
@@ -653,7 +703,6 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 'message' => 'Đơn hàng phải từ ' . number_format($coupon->min_order_value, 0, ',', '.') . 'đ mới được áp dụng mã giảm giá'
             ]);
         }
-        $shippingFee = 30000;
         $discount = 0;
         $type = (int) $coupon->type;
 
@@ -686,6 +735,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 'discountId' =>  $coupon->discount_id
             ]
         ]);
+        
         return response()->json([
             'success' => true,
             'message' => 'Đã áp dụng mã giảm giá!',
