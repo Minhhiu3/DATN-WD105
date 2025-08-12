@@ -128,7 +128,7 @@
                             <div class="card_area d-flex align-items-center gap-3">
                                 <input type="hidden" name="variant_id" id="add-cart-variant-id" value="">
                                 <input type="hidden" name="quantity" id="add-cart-quantity">
-                                <button type="submit" class="primary-btn" id="add-to-cart-btn">Thêm vào giỏ hàngt</button>
+                                <button type="submit" class="primary-btn" id="add-to-cart-btn">Thêm vào giỏ hàng</button>
                             </div>
 
                             <div id="cart-message" class="alert alert-danger d-none mt-3"></div>

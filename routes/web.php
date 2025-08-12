@@ -71,7 +71,8 @@ Route::prefix('account')->middleware('auth')->group(function () {
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('account.placeOrder');
     Route::put('/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
     Route::get('/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
-    Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
+    //Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
+    Route::post('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
     Route::post('/place-order-cart', [CheckoutController::class, 'placeOrderFromCart'])->name('account.placeOrder.cart');
     Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment'])->name('account.vnpay.payment'); // VNPAY payment route
     Route::get('/payment/vnpay', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay');
