@@ -54,9 +54,9 @@ class CartController extends Controller
                 return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại']);
             }
 
-            // if ($variant->quantity < $request->quantity) {
-            //     return response()->json(['success' => false, 'message' => 'Số lượng không đủ']);
-            // }
+            if ($variant->quantity < $request->quantity) {
+                return response()->json(['success' => false, 'message' => 'Số lượng không đủ']);
+            }
 
             $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
             $cartItem = CartItem::where('cart_id', $cart->id_cart)

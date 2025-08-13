@@ -129,8 +129,8 @@
 
     <div class="card-body">
         @if (session('error'))
-            <div class="alert alert-danger-modern">
-                <i class="bi bi-x-circle-fill"></i> {{ session('error') }}
+            <div class="alert alert-danger">
+                {{ session('error') }}
             </div>
         @endif
 

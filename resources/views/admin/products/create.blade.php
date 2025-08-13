@@ -213,7 +213,10 @@
 
         <div class="mb-3">
             <label for="value" class="form-label">Value</label>
-            <input type="number" name="value" id="value" class="form-control" value="{{ old('value') }}" placeholder="Nhập phần trăm giảm giá..." required>
+            <input type="number" name="value" id="value" class="form-control"
+                   value="{{ old('value') }}"
+                   placeholder="Nhập phần trăm giảm giá..."
+                   min="1" max="99" required>
         </div>
 
         <div class="row">

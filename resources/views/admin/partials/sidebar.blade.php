@@ -78,12 +78,7 @@
         </li>
 
 
-        <li class="nav-item">
-            <a href="{{ url('/settings') }}" class="nav-link {{ request()->is('settings') ? 'active' : '' }}">
-                <i class="nav-icon fas fa-cog"></i>
-                <p>Settings</p>
-            </a>
-        </li>
+
     </ul>
 </nav>
 <!-- /.sidebar-menu -->
