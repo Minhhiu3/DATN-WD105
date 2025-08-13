@@ -521,10 +521,9 @@ $subTotal = (int) $cartItems->sum(function($item) {
 });
 
 $shippingFee = 30000;
-$discount = 227803; // Lấy từ DB hoặc tính toán, ép int luôn
-
-$grandTotal = max(0, (int) round(($subTotal + $shippingFee) - $discount));
+$grandTotal = (int) round($subTotal + $shippingFee);
 @endphp
+
 
 
                             <ul class="list list_2">

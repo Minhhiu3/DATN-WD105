@@ -597,14 +597,10 @@ if (buyNowForm) {
 // 👉 Thêm vào giỏ hàng
 function addToCart(event) {
     event.preventDefault();
-
-   const variantId = document.getElementById('add-cart-variant-id')?.value;
-
-    const quantity = document.getElementById('sst')?.value;
-
-    // 👉 Log dữ liệu để debug
-    console.log("🟢 [addToCart] variant_id =", variantId || "abc");
-    console.log("🟢 [addToCart] quantity =", quantity);
+    const variantId = document.getElementById('add-cart-variant-id')?.value;
+    const quantity = parseInt(document.getElementById('sst')?.value);
+    const variants = <?php echo json_encode($variantMap, 15, 512) ?>;
+    const maxQty = variants[variantId]?.quantity ?? 0;
 
     if (!variantId) {
         Swal.fire({
@@ -614,12 +610,11 @@ function addToCart(event) {
         });
         return;
     }
-
-    if (quantity < 1) {
+    if (quantity < 1 || quantity > maxQty) {
         Swal.fire({
             icon: 'warning',
             title: 'Số lượng không hợp lệ',
-            text: 'Số lượng phải lớn hơn 0!'
+            text: `Chỉ còn ${maxQty} sản phẩm trong kho!`
         });
         return;
     }
@@ -745,6 +740,17 @@ function updateCartCount() {
             });
         });
     });
+
+// Khi chọn biến thể mới
+function onVariantChange(variantId) {
+    const variants = <?php echo json_encode($variantMap, 15, 512) ?>; // $variantMap là mảng variant_id => {quantity: ...}
+    const maxQty = variants[variantId]?.quantity ?? 1;
+    const qtyInput = document.getElementById('sst');
+    qtyInput.max = maxQty;
+    if (parseInt(qtyInput.value) > maxQty || parseInt(qtyInput.value) < 1) {
+        qtyInput.value = 1;
+    }
+}
 </script>
 <?php $__env->stopPush(); ?>
 

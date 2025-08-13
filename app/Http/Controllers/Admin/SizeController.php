@@ -53,8 +53,16 @@ public function store(Request $request)
         return redirect()->route('admin.sizes.index')->with('success', 'Cập nhật danh mục mới thành công.');
     }
 
-    public function destroy(size $size)
+    public function destroy(Size $size)
     {
+        // Kiểm tra xem size có đang được dùng ở bảng variant không
+        $count = $size->variants()->count(); // Giả sử đã có quan hệ variants trong model Size
+
+        if ($count > 0) {
+            return redirect()->route('admin.sizes.index')
+                ->with('error', 'Không thể xóa size này vì đang có sản phẩm sử dụng!');
+        }
+
         $size->delete();
 
         return redirect()->route('admin.sizes.index')->with('success', 'Xóa danh mục thành công.');
