@@ -31,7 +31,8 @@ class CheckoutController extends Controller
         ]);
 
 
-        $variant = Variant::with(['product', 'size'])->findOrFail($request->variant_id);
+        $variant = Variant::with(['product', 'size','adviceProduct'])->findOrFail($request->variant_id);
+
         $quantity = $request->quantity;
 
         if ($variant->quantity < $quantity) {
@@ -252,7 +253,7 @@ public function checkoutCart(Request $request)
     $selectedVariants = array_map('intval', $selectedVariants);
 
     // Lấy cart items kèm variant, product, size, chỉ lọc theo selected_variants
-    $cartItemz = CartItem::with(['variant.product', 'variant.size', 'variant.color'])
+    $cartItemz = CartItem::with(['variant.product', 'variant.size', 'variant.color', 'variant.adviceProduct'])
         ->where('cart_id', $cart->id_cart)
         ->whereIn('variant_id', $selectedVariants)
         ->get();
@@ -627,8 +628,8 @@ $finalTotalShip = max(0, $subtotal - $discount) + $shippingFee;
         return response()->json([
             'success' => true,
             'message' => "🎉 Đã áp dụng mã giảm giá!",
-            'discount' => $discount,
-            'final_total' => $finalTotalShip
+            'discount' => (int) round($discount),
+            'final_total' => (int) round($finalTotalShip)
         ]);
     }
    public function applyCouponCart(Request $request)
@@ -739,8 +740,8 @@ $finalTotalShip = max(0, $subtotal - $discount) + $shippingFee;
         return response()->json([
             'success' => true,
             'message' => 'Đã áp dụng mã giảm giá!',
-            'discount' => $discount,
-            'final_total' => $finalTotalShip
+            'discount' => (int) round($discount),
+            'final_total' => (int) round($finalTotalShip)
         ]);
 
     } catch (\Exception $e) {
