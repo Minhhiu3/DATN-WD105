@@ -193,7 +193,7 @@ public function update(Request $request, $order_id)
         return response()->json(['success' => false, 'message' => 'Không thể quay về trạng thái trước!']);
     }
     if ($order->status === 'delivered'){
-         return response()->json(['success' => false, 'message' => 'Không thể cap nhật trạng thái đã nhận.']);
+         return response()->json(['success' => false, 'message' => 'Admin Không thể cập nhật trạng thái đã nhận.']);
     }
 
     $order->status = $request->status;
