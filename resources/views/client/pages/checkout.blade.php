@@ -144,7 +144,7 @@
 
     <!-- Hidden fields cho Laravel -->
     <input type="hidden" id="variantId" name="variant_id" value="{{ $variant->id_variant }}">
-    <input type="hidden" id="quantity" name="quantity" value="1">
+    <input type="hidden" id="quantity" name="quantity" value="{{$quantity}}">
 
     <div class="smv-footer">
         <button type="button" id="smv-cancel" class="smv-btn-cancel">Trở lại</button>
@@ -474,19 +474,26 @@ function showCouponMessage(message, type = 'success') {
                         <li>
                             <b>{{ $variant->product->name_product }} (Size: {{ $variant->size->name }}, Color: {{$variant->color->name_color}})</b>
                             <span class="middle">x {{ $quantity }}</span>
-                            <span class="last">{{ number_format($variant->price * $quantity, 0, ',', '.') }} VNĐ</span>
+                            @php 
+                                if ($variant->adviceProduct) {
+                                    $priceSale= $variant->price - ($variant->price*($variant->adviceProduct->value/100 ));
+                                }else {
+                                  $priceSale = $variant->price;
+                                }
+                            @endphp
+                            <span class="last">{{ number_format($priceSale * $quantity, 0, ',', '.') }} VNĐ</span>
                         </li>
                     </ul>
                             @php
-            $subTotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
-            $shippingFee = 30000;
-            $grandTotal = $subTotal + $shippingFee;
-        @endphp
+                                $subTotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
+                                $shippingFee = 30000;
+                                $grandTotal = $subTotal + $shippingFee;
+                            @endphp
                     <ul class="list list_2">
                         <li><a href="#">Phí vận chuyển <span>{{ number_format($shippingFee, 0, ',', '.') }} VNĐ</span></a></li>
                         <li><a href="#">Tiền giảm giá <span id="discount-amount">{{ number_format(0, 0, ',', '.') }} VNĐ</span></a></li>
                         <li><a href="#">Tổng tiền
-                                <span id="order-total">{{ number_format($variant->price * $quantity + $shippingFee, 0, ',', '.') }} VNĐ</span></a>
+                                <span id="order-total">{{ number_format($priceSale * $quantity + $shippingFee, 0, ',', '.') }} VNĐ</span></a>
                         </li>
                     </ul>
 

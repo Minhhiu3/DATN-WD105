@@ -499,25 +499,38 @@ function showCouponMessage(message, type = 'success') {
                                             $product = $variant->product;
                                             $size = $variant->size;
                                             $color = $variant->color;
+                                            if ($variant->adviceProduct) {
+                                                $priceSale= $variant->price - ($variant->price*($variant->adviceProduct->value/100 ));
+                                            }else {
+                                            $priceSale = $variant->price;
+                                            }
                                         @endphp
                                         <li>
                                             <b>{{ $product->name_product }} (Size
                                                 {{ $size->name ?? 'N/A' }}, Color: {{ $color->name_color ?? 'N/A' }}) [Mã sản phẩm: {{ $item->variant_id }}]</b>
                                             <span class="middle">x {{ $item->quantity }}</span>
                                             <span
-                                                class="last">{{ number_format($variant->price * $item->quantity, 0, ',', '.') }}
+                                                class="last">{{ number_format($priceSale * $item->quantity, 0, ',', '.') }}
                                                 VNĐ</span>
                                         </li>
                                     @endforeach
                                 @endif
                             </ul>
 
-                            @php
+@php
+$subTotal = (int) $cartItems->sum(function($item) {
+    $price = $item->variant->adviceProduct
+        ? $item->variant->price - ($item->variant->price * ($item->variant->adviceProduct->value / 100))
+        : $item->variant->price;
 
-                                $subTotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
-                                $shippingFee = 30000;
-                                $grandTotal = $subTotal + $shippingFee;
-                            @endphp
+    return (int) round($price * $item->quantity);
+});
+
+$shippingFee = 30000;
+$grandTotal = (int) round($subTotal + $shippingFee);
+@endphp
+
+
 
                             <ul class="list list_2">
                                 <li><a href="#">Tạm tính <span>{{ number_format($subTotal, 0, ',', '.') }}
@@ -526,8 +539,8 @@ function showCouponMessage(message, type = 'success') {
                                             VNĐ</span></a></li>
                                 <li><a href="#">Tiền giảm giá <span id="discount-amount">{{ number_format(0, 0, ',', '.') }}
                                             VNĐ</span></a></li>
-                                <li><a href="#">Tổng thanh toán <span id="order-total">{{ number_format($grandTotal, 0, ',', '.') }}
-                                            VNĐ</span></a></li>
+                                <li><a href="#">Tổng thanh toán <span id="order-total">            {{ number_format($grandTotal, 0, ',', '.') }} VNĐ
+</span></a></li>
                             </ul>
                         </div>
                     </div>
