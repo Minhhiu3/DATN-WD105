@@ -29,7 +29,7 @@
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;  /* ✅ Căn giữa nội dung */
+    justify-content: center;  /*  Căn giữa nội dung */
     padding: 0;
 }
 .banner-content {
