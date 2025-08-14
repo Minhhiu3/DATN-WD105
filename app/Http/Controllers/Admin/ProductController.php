@@ -76,10 +76,19 @@ public function store(Request $request)
         'album.*'        => 'nullable|image|mimes:jpeg,jpg,png|max:2048', // validate từng ảnh album
 
         // ✅ Validate dữ liệu advice_product
-        'value'          => 'required|integer|min:0',
-        'start_date'     => 'required|date',
-        'end_date'       => 'required|date|after_or_equal:start_date',
-        'status'         => 'required|in:on,off', // Enum chỉ chấp nhận on/off
+        // 'value'          => 'required|integer|min:1|max:99', // chỉ cho phép từ 1 đến 99 (%)
+        // 'start_date'     => 'required|date',
+        // 'end_date'       => 'required|date|after_or_equal:start_date',
+                'start_date.required' => 'Vui lòng chọn ngày bắt đầu.',
+        'end_date.required'   => 'Vui lòng chọn ngày kết thúc.',
+        'end_date.after_or_equal' => 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu',
+        'value.required' => 'Vui lòng nhập phần trăm giảm giá.',
+        'value.integer'  => 'Phần trăm giảm giá phải là số nguyên.',
+        'value.min'      => 'Phần trăm giảm giá phải lớn hơn 0%.',
+        'value.max'      => 'Phần trăm giảm giá phải nhỏ hơn 100%.',
+                'status'         => 'required|in:on,off', // Enum chỉ chấp nhận on/off
+    ], [
+
     ]);
 
     // ✅ 2. Chuẩn bị dữ liệu
@@ -278,7 +287,7 @@ public function update(Request $request, Product $product)
         $product = Product::onlyTrashed()->findOrFail($id);
         $product->variants()->onlyTrashed()->restore(); // Khôi phục biến thể
         $product->albumProducts()->onlyTrashed()->restore(); // Khôi phục ảnh album
-        $product->adviceProduct()->onlyTrashed()->restore(); // Khôi phục khuyến mãi
+        $product->advice_Product()->onlyTrashed()->restore(); // Khôi phục khuyến mãi
         $product->restore(); // Khôi phục sản phẩm
 
         return redirect()->route('admin.products.trash')->with('success', 'Khôi phục sản phẩm thành công!');
@@ -292,7 +301,7 @@ public function update(Request $request, Product $product)
         $product = Product::onlyTrashed()->findOrFail($id);
         $product->variants()->onlyTrashed()->forceDelete(); // Xóa cứng biến thể
         $product->albumProducts()->onlyTrashed()->forceDelete(); // Xóa cứng ảnh album
-        $product->adviceProduct()->onlyTrashed()->forceDelete(); // Xóa cứng khuyến mãi
+        $product->advice_Product()->onlyTrashed()->forceDelete(); // Xóa cứng khuyến mãi
         $product->forceDelete(); // Xóa cứng sản phẩm
 
         return redirect()->route('admin.products.trash')->with('success', 'Xóa vĩnh viễn sản phẩm thành công!');

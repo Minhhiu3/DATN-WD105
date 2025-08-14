@@ -16,8 +16,8 @@
             <!-- Cột trái: Ảnh sản phẩm -->
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="main-image mb-3">
-                    <img id="main-image" 
-                         src="<?php echo e(asset('storage/' . $product->image)); ?>" 
+                    <img id="main-image"
+                         src="<?php echo e(asset('storage/' . $product->image)); ?>"
                          alt="<?php echo e($product->name_product); ?>"
                          class="img-fluid rounded shadow-sm w-100"
                          style="object-fit: cover; max-height: 400px;">
@@ -46,19 +46,62 @@
             <div class="col-lg-6 " >
                 <div class="s_product_text" style="margin-left: 20px; margin-top: 20px;">
                     <h3><?php echo e($product->name_product); ?></h3>
-
+                    <div style="display: flex">
                     <h2>
                         <span id="dynamic-price">
                             <?php if($product->variants->count() > 0): ?>
-                                <?php echo e(number_format($product->variants->min('price'), 0, ',', '.')); ?>
+                                <?php
+                                   $sale = ($product->advice_product->value/100)*$product->variants->min('price');
+                                   $sale_price = $product->variants->min('price') - $sale
+                                ?>
+                                <?php echo e(number_format(($sale_price), 0, ',', '.')); ?>
 
                             <?php else: ?>
                                 <span class="text-danger">Đang cập nhật</span>
                             <?php endif; ?>
                         </span> <span>VNĐ</span>
                     </h2>
+                    <h4 style="margin-left: 15px; margin-top: 3px;">
+                        <span id="dynamic-price" style="text-decoration: line-through;">
+                            <?php if($product->variants->count() > 0): ?>
+                                <?php echo e(number_format(($product->variants->min('price')), 0, ',', '.')); ?> VNĐ
+                            <?php else: ?>
+                                <span class="text-danger">Đang cập nhật</span>
+                            <?php endif; ?>
+                        </span>
+                    </h4>
 
 
+                </div>
+                    
+                    <?php 
+                        $sale = $product->advice_product;
+                    $now = \Carbon\Carbon::now();
+                        $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                    $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                    ?>
+
+                    <?php if(
+                        $sale &&
+                        $sale->status === "on" && $now->between($start, $end)
+                    ): ?>
+                    
+                    <div style="
+                        position: absolute;
+                        top: 10%;
+                        left: 65%;
+                        background: linear-gradient(135deg, #ff7e00, #ffb400);
+                        color: white;
+                        padding: 5px 8px;
+                        border-radius: 5px;
+                        font-weight: bold;
+                        font-size: 14px;
+                        z-index: 10;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    ">
+                        -<?php echo e($product->advice_product->value); ?>%
+                    </div>
+                    <?php endif; ?>
                     <ul class="list">
                         <li><span>Danh mục</span>: <?php echo e($product->category->name_category ?? 'Chưa phân loại'); ?></li>
                     </ul>
@@ -130,7 +173,7 @@
                             <div class="card_area d-flex align-items-center gap-3">
                                 <input type="hidden" name="variant_id" id="add-cart-variant-id" value="">
                                 <input type="hidden" name="quantity" id="add-cart-quantity">
-                                <button type="submit" class="primary-btn" id="add-to-cart-btn">Add to Cart</button>
+                                <button type="submit" class="primary-btn" id="add-to-cart-btn">Thêm vào giỏ hàng</button>
                             </div>
 
                             <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
@@ -156,204 +199,120 @@
     <!-- ================= End Product Detail Area ================= -->
 
     <!--================Product Description Area =================-->
-    <section class="product_description_area">
-        <div class="container">
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab"
-                        aria-controls="home" aria-selected="true">Mô tả</a>
-                </li>
+   <section class="product_description_area">
+    <div class="container">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab"
+                   aria-controls="review" aria-selected="true">Đánh giá</a>
+            </li>
+        </ul>
 
-                <li class="nav-item">
-                    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
-                        aria-controls="contact" aria-selected="false">Bình luận</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab"
-                        aria-controls="review" aria-selected="false">Đánh giá</a>
-                </li>
-            </ul>
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    <p></p>
-                    <p></p>
-                </div>
+        <div class="tab-content" id="myTabContent">
+            <!-- Tab đánh giá -->
+            <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
+                <div class="row">
+                    <!-- Hiển thị đánh giá -->
+                    <div class="col-lg-6">
+                        <h4>Đánh giá từ người mua</h4>
+                        <div class="average-rating mb-3">
+    <strong>Đánh giá trung bình:</strong>
+    <?php
+        $fullStars = floor($averageRating);
+        $halfStar = ($averageRating - $fullStars) >= 0.5;
+        $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+    ?>
 
-                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="comment_list">
-                                <div class="review_item">
-                                    <div class="media">
-                                        <div class="d-flex">
-                                            <img src="img/product/review-1.png" alt="">
-                                        </div>
-                                        <div class="media-body">
+    
+    <?php for($i = 0; $i < $fullStars; $i++): ?>
+        <i class="fa fa-star" style="color: gold;"></i>
+    <?php endfor; ?>
 
-                                        </div>
+    
+    <?php if($halfStar): ?>
+        <i class="fa fa-star-half-alt" style="color: gold;"></i>
+    <?php endif; ?>
+
+    
+    <?php for($i = 0; $i < $emptyStars; $i++): ?>
+        <i class="fa fa-star" style="color: #ccc;"></i>
+    <?php endfor; ?>
+
+    <span>(<?php echo e(number_format($averageRating, 1)); ?>/5)</span>
+</div>
+
+                        <?php $__empty_1 = true; $__currentLoopData = $product->productReviews->where('status', 'visible'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $review): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <div class="review_item mb-4">
+                                <div class="media">
+                                    <div class="d-flex align-items-center mr-3">
+                                        <img src="<?php echo e(asset('assets/img/deafault-avt.png')); ?>" width="50px" alt="User">
                                     </div>
-
+                                    <div class="media-body">
+                                        <h5><?php echo e($review->user->name ?? 'Ẩn danh'); ?></h5>
+                                        <div>
+                                            <?php for($i = 1; $i <= 5; $i++): ?>
+                                                <i class="fa fa-star<?php echo e($i <= $review->rating ? '' : '-o'); ?>"></i>
+                                            <?php endfor; ?>
+                                        </div>
+                                        <p><?php echo e($review->comment); ?></p>
+                                    </div>
                                 </div>
-                                <div class="review_item reply">
-                                    <div class="media">
-                                        <div class="d-flex">
-                                            <img src="img/product/review-2.png" alt="">
-                                        </div>
-                                        <div class="media-body">
-
-                                        </div>
-                                    </div>
-
-                                </div>
-
                             </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="review_box">
-                                <h4>Gửi Bình Luận</h4>
-                                <form class="row contact_form" action="contact_process.php" method="post"
-                                    id="contactForm" novalidate="novalidate">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="name" name="name"
-                                                placeholder="Your Full name">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="email" class="form-control" id="email" name="email"
-                                                placeholder="Email Address">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="number" name="number"
-                                                placeholder="Phone Number">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <textarea class="form-control" name="message" id="message" rows="1" placeholder="Message"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 text-right">
-                                        <button type="submit" value="submit" class="btn primary-btn">Submit Now</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+                        <?php endif; ?>
                     </div>
-                </div>
-                <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row total_rate">
-                                <div class="col-6">
-                                    <div class="box_total">
-                                        <h5>Overall</h5>
-                                        <h4>4.0</h4>
-                                        <h6>(03 Reviews)</h6>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="rating_list">
-                                        <h3>Based on 3 Reviews</h3>
-                                        <ul class="list">
-                                            <li><a href="#">5 Star <i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-                                            <li><a href="#">4 Star <i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-                                            <li><a href="#">3 Star <i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-                                            <li><a href="#">2 Star <i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-                                            <li><a href="#">1 Star <i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                        class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
+
+                    <!-- Gửi đánh giá -->
+                    <div class="col-lg-6">
+                        <h4>Gửi đánh giá</h4>
+
+                        <?php if(session('success')): ?>
+                            <div class="alert alert-success"><?php echo e(session('success')); ?></div>
+                        <?php endif; ?>
+                        <?php if($errors->any()): ?>
+                            <div class="alert alert-danger">
+                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div><?php echo e($error); ?></div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
-                            <div class="review_list">
-                                <div class="review_item">
-                                    <div class="media">
-                                        <div class="d-flex">
-                                            <img src="img/product/review-1.png" alt="">
-                                        </div>
-                                        <div class="media-body">
-                                            <h4>Blake Ruiz</h4>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </div>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                                        incididunt ut labore et
-                                        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                                        laboris nisi ut aliquip ex ea
-                                        commodo</p>
+                        <?php endif; ?>
+
+                        <?php if($canReview): ?>
+                            <form action="<?php echo e(route('product.reviews.store')); ?>" method="POST">
+                                <?php echo csrf_field(); ?>
+                                <input type="hidden" name="product_id" value="<?php echo e($product->id_product); ?>">
+                                <input type="hidden" name="order_id" value="<?php echo e($orderId); ?>">
+                                  <input type="hidden" name="rating" id="selectedRating" value="0">
+<div class="form-group">
+
+        <div class="star-rating" id="starRating">
+            <?php for($i = 1; $i <= 5; $i++): ?>
+                <i class="fa fa-star" data-value="<?php echo e($i); ?>"></i>
+            <?php endfor; ?>
+        </div>
+    </div>
+
+                                <div class="form-group">
+                                    <label for="comment">Nội dung đánh giá</label>
+                                    <textarea name="comment" id="comment" class="form-control" rows="3"
+                                              placeholder="Viết cảm nhận của bạn..."></textarea>
                                 </div>
 
+                                <button type="submit" class="btn primary-btn">Gửi đánh giá</button>
+                            </form>
+                            <?php elseif($alreadyReviewed): ?>
+    <p class="text-success">Bạn đã đánh giá sản phẩm này rồi.</p>
 
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="review_box">
-                                <h4>Gửi đánh giá</h4>
-                                <p>Your Rating:</p>
-                                <ul class="list">
-                                    <li><a href="#"><i class="fa fa-star"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-star"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-star"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-star"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-star"></i></a></li>
-                                </ul>
-                                <p>Outstanding</p>
-                                <form class="row contact_form" action="contact_process.php" method="post"
-                                    id="contactForm" novalidate="novalidate">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="name" name="name"
-                                                placeholder="Your Full name" onfocus="this.placeholder = ''"
-                                                onblur="this.placeholder = 'Your Full name'">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="email" class="form-control" id="email" name="email"
-                                                placeholder="Email Address" onfocus="this.placeholder = ''"
-                                                onblur="this.placeholder = 'Email Address'">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="number" name="number"
-                                                placeholder="Phone Number" onfocus="this.placeholder = ''"
-                                                onblur="this.placeholder = 'Phone Number'">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <textarea class="form-control" name="message" id="message" rows="1" placeholder="Review"
-                                                onfocus="this.placeholder = ''" onblur="this.placeholder = 'Review'"></textarea></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 text-right">
-                                        <button type="submit" value="submit" class="primary-btn">Submit Now</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        <?php else: ?>
+                            <p class="text-warning">Bạn chỉ có thể đánh giá sau khi đơn hàng hoàn thành.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</section>
 <?php
     $variantMap = $product->variants->mapWithKeys(function($v) {
         return [
@@ -376,7 +335,25 @@
 <?php $__env->startPush('styles'); ?>
 <style>
 
-    
+    .star-rating {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+    }
+
+    .star-rating i {
+        font-size: 2rem;
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .star-rating i.active {
+        color: gold;
+    }
+
+
+
 .fade-image {
     transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 1;
@@ -464,15 +441,15 @@ sizeButtons.forEach(btn => btn.style.display = 'none');
         addToCartBtn.disabled = true;
     }
 
-    // 👉 Chọn màu
+    //  Chọn màu
     colorButtons.forEach(colorBtn => {
         colorBtn.addEventListener('click', () => {
-            
+
             const colorId = colorBtn.dataset.colorId;
             const imageUrl = colorBtn.dataset.image;
             const colorQuantity = colorBtn.dataset.quantity || 0;
             console.log("colorid:", colorId, "imageUrl:", imageUrl, "colorQuantity:", colorQuantity, "size id :", colorBtn.dataset.sizeId);
-            
+
             colorButtons.forEach(btn => btn.classList.remove('active', 'btn-primary'));
             colorBtn.classList.add('active', 'btn-primary');
 
@@ -514,7 +491,7 @@ sizeButtons.forEach(btn => {
 // ⚠️ Reset trước khi chọn size
 resetSelections();
 
-// ✅ Auto chọn size đầu tiên còn hàng
+//  Auto chọn size đầu tiên còn hàng
 const firstSize = Array.from(sizeButtons).find(btn => btn.dataset.colorId === colorId && !btn.disabled);
 if (firstSize) {
     console.log("First size found:", firstSize.dataset.variantId);
@@ -524,7 +501,7 @@ if (firstSize) {
         });
     });
 
-    // 👉 Chọn size
+    //  Chọn size
 sizeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         // Bỏ active khỏi tất cả nút size
@@ -570,24 +547,20 @@ sizeButtons.forEach(btn => {
         else if (val > maxQty) input.value = maxQty;
     });
 
-    // // 👉 Auto chọn màu đầu tiên
+    // //  Auto chọn màu đầu tiên
     // if (colorButtons.length > 0) {
     //     colorButtons[0].click();
     // }
 
-    // 👉 Mua ngay
-// 👉 Mua ngay
+    //  Mua ngay
 const buyNowForm = document.querySelector('form[action="<?php echo e(route('account.checkout.form')); ?>"]');
 if (buyNowForm) {
     buyNowForm.addEventListener('submit', function (e) {
-        const variantId = document.getElementById('add-cart-variant-id')?.value;
+        // Lấy variantId và quantity từ nút size đang chọn và input số lượng
+        const selectedSizeBtn = document.querySelector('.size-btn.btn-dark');
+        const variantId = selectedSizeBtn ? selectedSizeBtn.dataset.variantId : '';
         const quantity = document.getElementById('sst')?.value;
 
-        console.log('🔍 Submit Buy Now Form');
-        console.log('Variant ID:', variantId);
-        console.log('Quantity:', quantity);
-
-        // ✅ Validate giống addToCart
         if (!variantId) {
             e.preventDefault();
             Swal.fire({
@@ -608,7 +581,7 @@ if (buyNowForm) {
             return;
         }
 
-        // ✅ Gán dữ liệu vào input ẩn để submit
+        // Gán dữ liệu vào input ẩn để submit
         document.getElementById('selectedQty').value = quantity;
         document.getElementById('selectedVariant').value = variantId;
     });
@@ -617,17 +590,13 @@ if (buyNowForm) {
 
 });
 
-// 👉 Thêm vào giỏ hàng
+//  Thêm vào giỏ hàng
 function addToCart(event) {
     event.preventDefault();
-
-   const variantId = document.getElementById('add-cart-variant-id')?.value;
-
-    const quantity = document.getElementById('sst')?.value;
-
-    // 👉 Log dữ liệu để debug
-    console.log("🟢 [addToCart] variant_id =", variantId || "abc");
-    console.log("🟢 [addToCart] quantity =", quantity);
+    const variantId = document.getElementById('add-cart-variant-id')?.value;
+    const quantity = parseInt(document.getElementById('sst')?.value);
+    const variants = <?php echo json_encode($variantMap, 15, 512) ?>;
+    const maxQty = variants[variantId]?.quantity ?? 0;
 
     if (!variantId) {
         Swal.fire({
@@ -637,12 +606,11 @@ function addToCart(event) {
         });
         return;
     }
-
-    if (quantity < 1) {
+    if (quantity < 1 || quantity > maxQty) {
         Swal.fire({
             icon: 'warning',
             title: 'Số lượng không hợp lệ',
-            text: 'Số lượng phải lớn hơn 0!'
+            text: `Chỉ còn ${maxQty} sản phẩm trong kho!`
         });
         return;
     }
@@ -656,7 +624,7 @@ function addToCart(event) {
     formData.append('quantity', quantity);
     formData.append('_token', '<?php echo e(csrf_token()); ?>');
 
-    // 👉 Log toàn bộ formData
+    //  Log toàn bộ formData
     for (let [key, value] of formData.entries()) {
         console.log(`📦 FormData: ${key} = ${value}`);
     }
@@ -674,13 +642,13 @@ function addToCart(event) {
         try {
             data = JSON.parse(text);
         } catch (err) {
-            console.error("❌ JSON parse error:", err);
+            console.error(" JSON parse error:", err);
             Swal.fire({ icon: 'error', title: 'Lỗi máy chủ', text: text });
             return;
         }
 
         if (!response.ok) {
-            console.warn("❌ Response not OK:", response.status, data);
+            console.warn(" Response not OK:", response.status, data);
             if (response.status === 422 && data.errors) {
                 const messages = Object.values(data.errors).flat().join(', ');
                 Swal.fire({ icon: 'error', title: 'Lỗi nhập liệu', text: messages });
@@ -716,7 +684,7 @@ function addToCart(event) {
         }
     })
     .catch(error => {
-        console.error('❌ Lỗi khi gửi yêu cầu:', error);
+        console.error(' Lỗi khi gửi yêu cầu:', error);
         Swal.fire({ icon: 'error', title: 'Lỗi không xác định', text: 'Vui lòng thử lại sau.' });
     })
     .finally(() => {
@@ -726,7 +694,7 @@ function addToCart(event) {
 }
 
 
-// 👉 Cập nhật số lượng giỏ hàng
+//  Cập nhật số lượng giỏ hàng
 function updateCartCount() {
     const cartCountEl = document.getElementById('cart-count');
     if (cartCountEl) {
@@ -747,7 +715,38 @@ function updateCartCount() {
 }
 
 
+ document.addEventListener("DOMContentLoaded", function () {
+        const stars = document.querySelectorAll("#starRating i");
+        const ratingInput = document.getElementById("selectedRating");
 
+        stars.forEach((star) => {
+            star.addEventListener("click", function () {
+                const rating = this.getAttribute("data-value");
+                ratingInput.value = rating;
+
+                // Xóa class active khỏi tất cả sao
+                stars.forEach(s => s.classList.remove("active"));
+
+                // Thêm lại class active cho các sao <= rating
+                stars.forEach(s => {
+                    if (s.getAttribute("data-value") <= rating) {
+                        s.classList.add("active");
+                    }
+                });
+            });
+        });
+    });
+
+// Khi chọn biến thể mới
+function onVariantChange(variantId) {
+    const variants = <?php echo json_encode($variantMap, 15, 512) ?>; // $variantMap là mảng variant_id => {quantity: ...}
+    const maxQty = variants[variantId]?.quantity ?? 1;
+    const qtyInput = document.getElementById('sst');
+    qtyInput.max = maxQty;
+    if (parseInt(qtyInput.value) > maxQty || parseInt(qtyInput.value) < 1) {
+        qtyInput.value = 1;
+    }
+}
 </script>
 <?php $__env->stopPush(); ?>
 

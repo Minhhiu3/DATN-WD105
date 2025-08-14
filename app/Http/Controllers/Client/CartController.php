@@ -47,39 +47,35 @@ class CartController extends Controller
                 'variant_id' => 'required|exists:variant,id_variant',
                 'quantity' => 'required|integer|min:1',
             ]);
-//abc nac
+
             $variant = Variant::with(['product', 'size', 'color'])->find($request->variant_id);
 
             if (!$variant || $variant->deleted_at) {
                 return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại']);
             }
 
-            // if ($variant->quantity < $request->quantity) {
-            //     return response()->json(['success' => false, 'message' => 'Số lượng không đủ']);
-            // }
+            if ($variant->quantity < $request->quantity) {
+                return response()->json(['success' => false, 'message' => 'Số lượng không đủ']);
+            }
 
             $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
             $cartItem = CartItem::where('cart_id', $cart->id_cart)
                 ->where('variant_id', $request->variant_id)
                 ->first();
 
+            if ($cartItem) {
+                $totalQty = $cartItem->quantity + $request->quantity;
 
-       if ($cartItem) {
-    $totalQty = $cartItem->quantity + $request->quantity;
+                if ($totalQty > $variant->quantity) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Số lượng hàng không đủ. Chỉ còn ' . $variant->quantity . ' sản phẩm'
+                    ]);
+                }
 
-
-    if ($totalQty > $variant->quantity) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Số lượng hàng không đủ. Chỉ còn ' . $variant->quantity . ' sản phẩm'
-        ]);
-    }
-
-
-    $cartItem->quantity = $totalQty;
-    $cartItem->save();
-} else {
-
+                $cartItem->quantity = $totalQty;
+                $cartItem->save();
+            } else {
                 CartItem::create([
                     'cart_id' => $cart->id_cart,
                     'variant_id' => $request->variant_id,
@@ -87,10 +83,10 @@ class CartController extends Controller
                 ]);
             }
 
-           return response()->json([
-    'success' => true,
-    'message' => 'Đã thêm vào giỏ hàng!'
-]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã thêm vào giỏ hàng!'
+            ]);
         } catch (\Exception $e) {
             Log::error('Add to cart error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Lỗi server: ' . $e->getMessage()], 500);

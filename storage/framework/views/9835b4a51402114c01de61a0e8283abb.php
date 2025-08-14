@@ -20,9 +20,12 @@
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/ion.rangeSlider.skinFlat.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/magnific-popup.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/main.css')); ?>">
-    
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+
     <!-- Google Font: Roboto -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 
     <style>
         #mini-cart {
@@ -77,6 +80,16 @@
                 title: 'Thành công!',
                 text: "<?php echo e(session('success')); ?>",
                 icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        });
+        <?php endif; ?>
+        <?php if(session('error')): ?>
+        window.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Thất bại!',
+                    html: <?php echo json_encode(nl2br(session('error'))); ?>,
+                icon: 'error',
                 confirmButtonText: 'OK'
             });
         });

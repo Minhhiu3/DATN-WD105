@@ -47,18 +47,61 @@
             <div class="col-lg-6 " >
                 <div class="s_product_text" style="margin-left: 20px; margin-top: 20px;">
                     <h3>{{ $product->name_product }}</h3>
-
+                    <div style="display: flex">
                     <h2>
                         <span id="dynamic-price">
                             @if ($product->variants->count() > 0)
-                                {{ number_format($product->variants->min('price'), 0, ',', '.') }}
+                                @php
+                                   $sale = ($product->advice_product->value/100)*$product->variants->min('price');
+                                   $sale_price = $product->variants->min('price') - $sale
+                                @endphp
+                                {{ number_format(($sale_price), 0, ',', '.') }}
                             @else
                                 <span class="text-danger">Đang cập nhật</span>
                             @endif
                         </span> <span>VNĐ</span>
                     </h2>
+                    <h4 style="margin-left: 15px; margin-top: 3px;">
+                        <span id="dynamic-price" style="text-decoration: line-through;">
+                            @if ($product->variants->count() > 0)
+                                {{ number_format(($product->variants->min('price')), 0, ',', '.') }} VNĐ
+                            @else
+                                <span class="text-danger">Đang cập nhật</span>
+                            @endif
+                        </span>
+                    </h4>
 
 
+                </div>
+                    
+                    @php 
+                        $sale = $product->advice_product;
+                    $now = \Carbon\Carbon::now();
+                        $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                    $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                    @endphp
+
+                    @if (
+                        $sale &&
+                        $sale->status === "on" && $now->between($start, $end)
+                    )
+                    {{-- Ô vuông % giảm giá tông vàng-cam --}}
+                    <div style="
+                        position: absolute;
+                        top: 10%;
+                        left: 65%;
+                        background: linear-gradient(135deg, #ff7e00, #ffb400);
+                        color: white;
+                        padding: 5px 8px;
+                        border-radius: 5px;
+                        font-weight: bold;
+                        font-size: 14px;
+                        z-index: 10;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    ">
+                        -{{$product->advice_product->value}}%
+                    </div>
+                    @endif
                     <ul class="list">
                         <li><a href="{{ route('products', ['category' => $product->category->id_category]) }}"><span>Danh mục</span>: {{ $product->category->name_category ?? 'Chưa phân loại' }}</a></li>
                     </ul>
@@ -408,7 +451,7 @@ sizeButtons.forEach(btn => btn.style.display = 'none');
         addToCartBtn.disabled = true;
     }
 
-    // 👉 Chọn màu
+    //  Chọn màu
     colorButtons.forEach(colorBtn => {
         colorBtn.addEventListener('click', () => {
 
@@ -458,7 +501,7 @@ sizeButtons.forEach(btn => {
 // ⚠️ Reset trước khi chọn size
 resetSelections();
 
-// ✅ Auto chọn size đầu tiên còn hàng
+//  Auto chọn size đầu tiên còn hàng
 const firstSize = Array.from(sizeButtons).find(btn => btn.dataset.colorId === colorId && !btn.disabled);
 if (firstSize) {
     console.log("First size found:", firstSize.dataset.variantId);
@@ -468,7 +511,7 @@ if (firstSize) {
         });
     });
 
-    // 👉 Chọn size
+    //  Chọn size
 sizeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         // Bỏ active khỏi tất cả nút size
@@ -514,24 +557,20 @@ sizeButtons.forEach(btn => {
         else if (val > maxQty) input.value = maxQty;
     });
 
-    // // 👉 Auto chọn màu đầu tiên
+    // //  Auto chọn màu đầu tiên
     // if (colorButtons.length > 0) {
     //     colorButtons[0].click();
     // }
 
-    // 👉 Mua ngay
-// 👉 Mua ngay
+    //  Mua ngay
 const buyNowForm = document.querySelector('form[action="{{ route('account.checkout.form') }}"]');
 if (buyNowForm) {
     buyNowForm.addEventListener('submit', function (e) {
-        const variantId = document.getElementById('add-cart-variant-id')?.value;
+        // Lấy variantId và quantity từ nút size đang chọn và input số lượng
+        const selectedSizeBtn = document.querySelector('.size-btn.btn-dark');
+        const variantId = selectedSizeBtn ? selectedSizeBtn.dataset.variantId : '';
         const quantity = document.getElementById('sst')?.value;
 
-        console.log('🔍 Submit Buy Now Form');
-        console.log('Variant ID:', variantId);
-        console.log('Quantity:', quantity);
-
-        // ✅ Validate giống addToCart
         if (!variantId) {
             e.preventDefault();
             Swal.fire({
@@ -552,7 +591,7 @@ if (buyNowForm) {
             return;
         }
 
-        // ✅ Gán dữ liệu vào input ẩn để submit
+        // Gán dữ liệu vào input ẩn để submit
         document.getElementById('selectedQty').value = quantity;
         document.getElementById('selectedVariant').value = variantId;
     });
@@ -561,17 +600,13 @@ if (buyNowForm) {
 
 });
 
-// 👉 Thêm vào giỏ hàng
+//  Thêm vào giỏ hàng
 function addToCart(event) {
     event.preventDefault();
-
-   const variantId = document.getElementById('add-cart-variant-id')?.value;
-
-    const quantity = document.getElementById('sst')?.value;
-
-    // 👉 Log dữ liệu để debug
-    console.log("🟢 [addToCart] variant_id =", variantId || "abc");
-    console.log("🟢 [addToCart] quantity =", quantity);
+    const variantId = document.getElementById('add-cart-variant-id')?.value;
+    const quantity = parseInt(document.getElementById('sst')?.value);
+    const variants = @json($variantMap);
+    const maxQty = variants[variantId]?.quantity ?? 0;
 
     if (!variantId) {
         Swal.fire({
@@ -581,12 +616,11 @@ function addToCart(event) {
         });
         return;
     }
-
-    if (quantity < 1) {
+    if (quantity < 1 || quantity > maxQty) {
         Swal.fire({
             icon: 'warning',
             title: 'Số lượng không hợp lệ',
-            text: 'Số lượng phải lớn hơn 0!'
+            text: `Chỉ còn ${maxQty} sản phẩm trong kho!`
         });
         return;
     }
@@ -600,7 +634,7 @@ function addToCart(event) {
     formData.append('quantity', quantity);
     formData.append('_token', '{{ csrf_token() }}');
 
-    // 👉 Log toàn bộ formData
+    //  Log toàn bộ formData
     for (let [key, value] of formData.entries()) {
         console.log(`📦 FormData: ${key} = ${value}`);
     }
@@ -618,13 +652,13 @@ function addToCart(event) {
         try {
             data = JSON.parse(text);
         } catch (err) {
-            console.error("❌ JSON parse error:", err);
+            console.error(" JSON parse error:", err);
             Swal.fire({ icon: 'error', title: 'Lỗi máy chủ', text: text });
             return;
         }
 
         if (!response.ok) {
-            console.warn("❌ Response not OK:", response.status, data);
+            console.warn(" Response not OK:", response.status, data);
             if (response.status === 422 && data.errors) {
                 const messages = Object.values(data.errors).flat().join(', ');
                 Swal.fire({ icon: 'error', title: 'Lỗi nhập liệu', text: messages });
@@ -660,7 +694,7 @@ function addToCart(event) {
         }
     })
     .catch(error => {
-        console.error('❌ Lỗi khi gửi yêu cầu:', error);
+        console.error(' Lỗi khi gửi yêu cầu:', error);
         Swal.fire({ icon: 'error', title: 'Lỗi không xác định', text: 'Vui lòng thử lại sau.' });
     })
     .finally(() => {
@@ -670,7 +704,7 @@ function addToCart(event) {
 }
 
 
-// 👉 Cập nhật số lượng giỏ hàng
+//  Cập nhật số lượng giỏ hàng
 function updateCartCount() {
     const cartCountEl = document.getElementById('cart-count');
     if (cartCountEl) {
@@ -712,6 +746,17 @@ function updateCartCount() {
             });
         });
     });
+
+// Khi chọn biến thể mới
+function onVariantChange(variantId) {
+    const variants = @json($variantMap); // $variantMap là mảng variant_id => {quantity: ...}
+    const maxQty = variants[variantId]?.quantity ?? 1;
+    const qtyInput = document.getElementById('sst');
+    qtyInput.max = maxQty;
+    if (parseInt(qtyInput.value) > maxQty || parseInt(qtyInput.value) < 1) {
+        qtyInput.value = 1;
+    }
+}
 </script>
 @endpush
 

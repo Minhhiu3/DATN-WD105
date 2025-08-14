@@ -26,12 +26,17 @@ use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\ProductReviewController as ClientProductReviewController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Client\ClientDiscountController;
+
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ClientProductController::class, 'index'])->name('products');
 Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->name('client.product.show');
 Route::get('/products/filter', [ClientProductController::class, 'filterByPrice'])->name('products.filterByPrice');
+Route::get('/discounts', [ClientDiscountController::class, 'index'])->name('discounts');
+    // lưu voucher vao tài khoản 
+    Route::post('/save-voucher-user', [ClientDiscountController::class, 'saveVoucherUser'])->name('save.voucherUser')->middleware('auth');
 Route::get('/contact', function () {
     return view('client.pages.contact');
 })->name('contact');
@@ -72,6 +77,7 @@ Route::prefix('account')->middleware('auth')->group(function () {
     Route::put('/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
     Route::get('/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
     Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
+    Route::post('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
     Route::post('/place-order-cart', [CheckoutController::class, 'placeOrderFromCart'])->name('account.placeOrder.cart');
     Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment'])->name('account.vnpay.payment'); // VNPAY payment route
     Route::get('/payment/vnpay', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay');
@@ -132,6 +138,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/products/{id}/toggle-visibility', [ProductController::class, 'toggleVisibility'])
         ->name('admin.products.toggle-visibility');
 
+        // Thùng rác sản phẩm
+    Route::get('products/trash', [ProductController::class, 'trash'])->name('admin.products.trash');
+    Route::post('products/restore/{id}', [ProductController::class, 'restore'])->name('admin.products.restore');
+    Route::delete('products/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('admin.products.forceDelete');
     // Product Management Routes
     Route::resource('products', ProductController::class)->names([
         'index' => 'admin.products.index',
@@ -143,10 +153,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.products.destroy',
     ]);
 
-    // Thùng rác sản phẩm
-    Route::get('products/trash', [ProductController::class, 'trash'])->name('admin.products.trash');
-    Route::post('products/restore/{id}', [ProductController::class, 'restore'])->name('admin.products.restore');
-    Route::delete('products/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('admin.products.forceDelete');
+    
     // Size Management Routes
     Route::resource('/sizes', SizeController::class)->names([
         'index' => 'admin.sizes.index',
