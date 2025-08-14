@@ -103,8 +103,11 @@
                     </div>
                     @endif
                     <ul class="list">
-                        <li><span>Danh mục</span>: {{ $product->category->name_category ?? 'Chưa phân loại' }}</li>
+                        <li><a href="{{ route('products', ['category' => $product->category->id_category]) }}"><span>Danh mục</span>: {{ $product->category->name_category ?? 'Chưa phân loại' }}</a></li>
                     </ul>
+
+
+
 
 
 
