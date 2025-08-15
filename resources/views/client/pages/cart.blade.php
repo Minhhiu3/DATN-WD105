@@ -43,7 +43,7 @@
                                         $size = $variant?->size ?? null;
                                         $quantity = $item->quantity ?? $item['quantity'] ?? 1;
                                         $price = $variant->price ?? 0;
-                                        $total = $price * $quantity;
+                                        // $total = $price * $quantity;
                                         $img = $color->image ?? 'default.jpg';
                                     @endphp
 
@@ -69,7 +69,43 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td><h5 class="item-price">{{ number_format($price, 0, ',', '.') }} VNĐ</h5></td>
+                                            <td>
+                                               @php 
+    $sale = $item->variant->product->adviceProduct; 
+    $price = $item->variant->price; // Giá gốc variant
+
+    $sale_price = $price; // Mặc định = giá gốc
+
+    if (
+        $sale &&
+        $sale->status === "on" &&
+        !empty($sale->start_date) &&
+        !empty($sale->end_date) &&
+        now()->between(
+            \Carbon\Carbon::parse($sale->start_date)->startOfDay(),
+            \Carbon\Carbon::parse($sale->end_date)->endOfDay()
+        )
+    ) {
+        $discountAmount = ($sale->value / 100) * $price;
+        $sale_price = $price - $discountAmount;
+    }
+    $sale_price_total=$sale_price * $quantity;
+@endphp
+
+{{-- Giá sau khi giảm --}}
+<h5 class="item-price">{{ number_format($sale_price, 0, ',', '.') }} VNĐ</h5>
+
+{{-- Nếu có giảm giá thì hiển thị giá gốc bị gạch --}}
+@if ($sale_price < $price)
+    <h5 class="item-price" style="
+        text-decoration: line-through; 
+        color: #888; 
+        opacity: 0.7;
+    ">{{ number_format($price, 0, ',', '.') }} VNĐ</h5>
+@endif
+
+
+                                            </td>
                                             <td>
                                                 <div class="product_count">
                                                     <input type="number" name="qty" value="{{ $quantity }}" class="input-text qty"
@@ -81,7 +117,7 @@
                                                 </div>
                                                 <div class="quantity-error text-danger" style="display: none; font-size: 12px;"></div>
                                             </td>
-                                            <td><h5 class="item-total">{{ number_format($total, 0, ',', '.') }} VNĐ</h5></td>
+                                            <td><h5 class="item-total">{{ number_format($sale_price_total, 0, ',', '.') }} VNĐ</h5></td>
                                             <td>
                                                 <button class="btn btn-danger btn-sm" onclick="removeFromCart({{ $variant->id_variant }})">
                                                     <i class="fa fa-trash"></i> Xóa

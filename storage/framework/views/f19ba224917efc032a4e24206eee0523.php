@@ -47,12 +47,19 @@
                 <div class="s_product_text" style="margin-left: 20px; margin-top: 20px;">
                     <h3><?php echo e($product->name_product); ?></h3>
                     <div style="display: flex">
-                    <h2>
-                        <span id="dynamic-price">
+                    <h2> 
+                        
+                        <span id="dynamic-price-sale">
                             <?php if($product->variants->count() > 0): ?>
                                 <?php
-                                   $sale = ($product->advice_product->value/100)*$product->variants->min('price');
-                                   $sale_price = $product->variants->min('price') - $sale
+                                   $price = $product->variants->min('price');
+                                   if($product->advice_product->status == "on"){
+                                    $sale = ($product->advice_product->value/100)*$product->variants->min('price');
+                                    $sale_price =  $price - $sale;
+                                   }else {
+                                     $sale_price =  $price;
+                                   }
+                                   
                                 ?>
                                 <?php echo e(number_format(($sale_price), 0, ',', '.')); ?>
 
@@ -61,7 +68,11 @@
                             <?php endif; ?>
                         </span> <span>VNĐ</span>
                     </h2>
-                    <h4 style="margin-left: 15px; margin-top: 3px;">
+                    <?php if($product->advice_product->status == "off"): ?>
+                        <span id="dynamic-price"></span>
+                    <?php endif; ?>
+                    <?php if($product->advice_product->status === "on"): ?>
+                        <h4 style="margin-left: 15px; margin-top: 3px;">
                         <span id="dynamic-price" style="text-decoration: line-through;">
                             <?php if($product->variants->count() > 0): ?>
                                 <?php echo e(number_format(($product->variants->min('price')), 0, ',', '.')); ?> VNĐ
@@ -70,38 +81,41 @@
                             <?php endif; ?>
                         </span>
                     </h4>
+                            <?php 
+                                $sale = $product->advice_product;
+                            $now = \Carbon\Carbon::now();
+                                $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                            $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                            ?>
+                            
+                            <div style="
+                                display: inline-block;
+                                height: 35px;
+                                line-height: 35px; /* canh giữa dọc bằng chính chiều cao */
+                                background: linear-gradient(135deg, #ff7e00, #ffb400);
+                                color: #fff;
+                                border-radius: 8px;
+                                font-weight: 700;
+                                font-size: 14px;
+                                white-space: nowrap;
+                                box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+                                padding: 0 12px;   /* có thể để 0 nếu bạn thực sự không muốn padding */
+                                vertical-align: middle; 
+                                margin-left: 20px;
+                                ">
+
+                                -<?php echo e($product->advice_product->value); ?>%
+                            </div>
+                    
+                    <?php else: ?>
+                        
+                    <?php endif; ?>
+                   
 
 
                 </div>
                     
-                    <?php 
-                        $sale = $product->advice_product;
-                    $now = \Carbon\Carbon::now();
-                        $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
-                    $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
-                    ?>
-
-                    <?php if(
-                        $sale &&
-                        $sale->status === "on" && $now->between($start, $end)
-                    ): ?>
                     
-                    <div style="
-                        position: absolute;
-                        top: 10%;
-                        left: 65%;
-                        background: linear-gradient(135deg, #ff7e00, #ffb400);
-                        color: white;
-                        padding: 5px 8px;
-                        border-radius: 5px;
-                        font-weight: bold;
-                        font-size: 14px;
-                        z-index: 10;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                    ">
-                        -<?php echo e($product->advice_product->value); ?>%
-                    </div>
-                    <?php endif; ?>
                     <ul class="list">
                         <li><span>Danh mục</span>: <?php echo e($product->category->name_category ?? 'Chưa phân loại'); ?></li>
                     </ul>
@@ -387,6 +401,7 @@ sizeButtons.forEach(btn => btn.style.display = 'none');
 
     const mainImage = document.getElementById('main-image');
     const priceDisplay = document.getElementById('dynamic-price');
+    const priceSaleDisplay = document.getElementById('dynamic-price-sale');
     const stockDisplay = document.getElementById('dynamic-stock');
     const input = document.getElementById('sst');
     const hiddenVariantInput = document.getElementById('variant_id');
@@ -508,11 +523,30 @@ sizeButtons.forEach(btn => {
         sizeButtons.forEach(b => b.classList.remove('active', 'btn-dark'));
         // Gắn active cho nút đang chọn
         btn.classList.add('active', 'btn-dark');
+        const adviceStatus= <?php echo json_encode($product->advice_product->status ?? null, 15, 512) ?>;
+        const adviceValue= <?php echo json_encode($product->advice_product->value ?? null, 15, 512) ?>;
 
         // Cập nhật giá
         const price = parseFloat(btn.dataset.price);
-        const formattedPrice = price.toLocaleString('vi-VN');
-        priceDisplay.innerText = formattedPrice;
+        
+           if (adviceValue && adviceValue > 0 && adviceStatus === "on") {
+            let finalPrice = price - (price * (adviceValue / 100));
+            finalPrice = Math.round(finalPrice);
+            priceSaleDisplay.innerText = finalPrice.toLocaleString('vi-VN');
+            priceDisplay.innerText = price.toLocaleString('vi-VN') + " VNĐ"; // gạch ngang
+            priceDisplay.style.textDecoration = "line-through";
+        } else {
+            // Không giảm giá → hiển thị giá bình thường
+            priceSaleDisplay.innerText = price.toLocaleString('vi-VN') + " VNĐ";
+            priceDisplay.innerText = "";
+            priceDisplay.style.textDecoration = "none";
+        }
+        // const formattedPrice = price.toLocaleString('vi-VN') + " VNĐ";
+        // const roundedPrice = Math.round(finalPrice); 
+        // const formattedPriceSale = roundedPrice.toLocaleString('vi-VN');
+
+        // priceDisplay.innerText = formattedPrice;
+        // priceSaleDisplay.innerText = formattedPriceSale;
 
         // Cập nhật tồn kho
         const qty = parseInt(btn.dataset.quantity);
@@ -681,6 +715,8 @@ function addToCart(event) {
                 text: data.message || 'Đã thêm vào giỏ hàng!',
                 timer: 1500,
                 showConfirmButton: false
+            }).then(() => {
+                location.reload();
             });
             updateCartCount();
         } else {

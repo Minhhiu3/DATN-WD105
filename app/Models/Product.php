@@ -70,5 +70,10 @@ class Product extends Model
 {
     return $this->hasMany(ProductReview::class, 'product_id', 'id_product');
 }
+public function adviceProduct()
+{
+    return $this->hasOne(AdviceProduct::class, 'product_id');
+}
+
 
 }

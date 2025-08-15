@@ -19,7 +19,7 @@ class CartController extends Controller
             // Lấy giỏ hàng từ database cho user đã đăng nhập
             $cart = Cart::where('user_id', Auth::id())->first();
             if ($cart) {
-                $cartItems = CartItem::with(['variant.product', 'variant.size','variant.color'])
+                $cartItems = CartItem::with(['variant.product', 'variant.size','variant.color','variant.adviceProduct'])
                     ->where('cart_id', $cart->id_cart)
                     ->get();
             } else {

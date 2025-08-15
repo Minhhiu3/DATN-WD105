@@ -296,13 +296,17 @@ public function checkoutCart(Request $request)
         }
     }
 //  dd($selectedVariants, $cartItemz);
-                $userVouchers = UserVoucher::where('user_id', $user->id_user)
+            $userVouchers = UserVoucher::where('user_id', $user->id_user)
             ->where('used', '0')
             ->with('discount') // Quan hệ discountCode trong model UserVoucher
             ->get();
     // Truyền cartItems và selectedVariants sang view
 
-    return view('client.pages.checkout_cart', compact('cartItemz', 'selectedVariants','userVouchers'));
+return view('client.pages.checkout_cart', compact(
+    'cartItemz',
+    'selectedVariants',
+    'userVouchers'
+));
 }
 
 
