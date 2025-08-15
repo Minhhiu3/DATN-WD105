@@ -263,12 +263,22 @@ function updateQuantity(variantId, quantity, maxQuantity) {
             // Update cart totals
             updateCartTotals();
         } else {
-            alert(data.message || 'Có lỗi xảy ra khi cập nhật số lượng!');
+            // alert(data.message || 'Có lỗi xảy ra khi cập nhật số lượng!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: data.message || 'Có lỗi xảy ra khi cập nhật số lượng!'
+            });
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Có lỗi xảy ra khi cập nhật số lượng!');
+        // alert('Có lỗi xảy ra khi cập nhật số lượng!');
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Có lỗi xảy ra khi cập nhật số lượng!'
+        });
     })
     .finally(() => {
         input.disabled = false;
@@ -346,13 +356,23 @@ function removeFromCart(variantId) {
                 }
             } else {
                 row.style.opacity = '1';
-                alert(data.message || 'Có lỗi xảy ra khi xóa sản phẩm!');
+                // alert(data.message || 'Có lỗi xảy ra khi xóa sản phẩm!');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: data.message || 'Có lỗi xảy ra khi xóa sản phẩm!'
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
             row.style.opacity = '1';
-            alert('Có lỗi xảy ra khi xóa sản phẩm!');
+            // alert('Có lỗi xảy ra khi xóa sản phẩm!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Có lỗi xảy ra khi xóa sản phẩm!'
+            });
         });
     }
 }
@@ -371,12 +391,22 @@ function clearCart() {
             if (data.success) {
                 location.reload(); // Reload to show empty cart message
             } else {
-                alert(data.message || 'Có lỗi xảy ra khi xóa giỏ hàng!');
+                // alert(data.message || 'Có lỗi xảy ra khi xóa giỏ hàng!');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: data.message || 'Có lỗi xảy ra khi xóa giỏ hàng!'
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Có lỗi xảy ra khi xóa giỏ hàng!');
+            // alert('Có lỗi xảy ra khi xóa giỏ hàng!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Có lỗi xảy ra khi xóa giỏ hàng!'
+            });
         });
     }
 }
@@ -419,7 +449,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (checkboxes.length === 0) {
             e.preventDefault();
-            alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+            // alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Cảnh báo',
+                text: 'Vui lòng chọn ít nhất một sản phẩm để thanh toán!'
+            });
             return;
         }
 

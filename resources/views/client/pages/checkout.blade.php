@@ -547,7 +547,7 @@ document.getElementById('apply-coupon-form').addEventListener('submit', function
                 orderTotalElement.textContent = new Intl.NumberFormat('vi-VN').format(data.final_total) + ' VNĐ';
             }
 
-            // ✅ Hiển thị số tiền giảm
+            //  Hiển thị số tiền giảm
             const discountEl = document.getElementById('discount-amount');
             if (discountEl && data.discount !== undefined) {
                 discountEl.textContent = 'Bạn được giảm: ' + new Intl.NumberFormat('vi-VN').format(data.discount) + ' VNĐ';
@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let provincesData = []; // Lưu dữ liệu API để dùng sau
 
-    // ✅ Gọi API lấy danh sách tỉnh + xã/phường
+    //  Gọi API lấy danh sách tỉnh + xã/phường
     fetch("https://vietnamlabs.com/api/vietnamprovince")
         .then(res => res.json())
         .then(response => {
@@ -591,7 +591,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(err => console.error("Lỗi load tỉnh:", err));
 
-    // ✅ Khi chọn tỉnh -> load xã/phường từ wards
+    //  Khi chọn tỉnh -> load xã/phường từ wards
     provinceSelect.addEventListener("change", function() {
         const provinceName = this.value;
         wardSelect.innerHTML = '<option value="">-- Chọn Xã/Phường --</option>';

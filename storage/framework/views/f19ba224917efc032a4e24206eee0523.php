@@ -117,8 +117,11 @@
                     
                     
                     <ul class="list">
-                        <li><span>Danh mục</span>: <?php echo e($product->category->name_category ?? 'Chưa phân loại'); ?></li>
+                        <li><a href="<?php echo e(route('products', ['category' => $product->category->id_category])); ?>"><span>Danh mục</span>: <?php echo e($product->category->name_category ?? 'Chưa phân loại'); ?></a></li>
                     </ul>
+
+
+
 
 
 
@@ -456,7 +459,7 @@ sizeButtons.forEach(btn => btn.style.display = 'none');
         addToCartBtn.disabled = true;
     }
 
-    // 👉 Chọn màu
+    //  Chọn màu
     colorButtons.forEach(colorBtn => {
         colorBtn.addEventListener('click', () => {
 
@@ -506,7 +509,7 @@ sizeButtons.forEach(btn => {
 // ⚠️ Reset trước khi chọn size
 resetSelections();
 
-// ✅ Auto chọn size đầu tiên còn hàng
+//  Auto chọn size đầu tiên còn hàng
 const firstSize = Array.from(sizeButtons).find(btn => btn.dataset.colorId === colorId && !btn.disabled);
 if (firstSize) {
     console.log("First size found:", firstSize.dataset.variantId);
@@ -516,7 +519,7 @@ if (firstSize) {
         });
     });
 
-    // 👉 Chọn size
+    //  Chọn size
 sizeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         // Bỏ active khỏi tất cả nút size
@@ -581,24 +584,20 @@ sizeButtons.forEach(btn => {
         else if (val > maxQty) input.value = maxQty;
     });
 
-    // // 👉 Auto chọn màu đầu tiên
+    // //  Auto chọn màu đầu tiên
     // if (colorButtons.length > 0) {
     //     colorButtons[0].click();
     // }
 
-    // 👉 Mua ngay
-// 👉 Mua ngay
+    //  Mua ngay
 const buyNowForm = document.querySelector('form[action="<?php echo e(route('account.checkout.form')); ?>"]');
 if (buyNowForm) {
     buyNowForm.addEventListener('submit', function (e) {
-        const variantId = document.getElementById('add-cart-variant-id')?.value;
+        // Lấy variantId và quantity từ nút size đang chọn và input số lượng
+        const selectedSizeBtn = document.querySelector('.size-btn.btn-dark');
+        const variantId = selectedSizeBtn ? selectedSizeBtn.dataset.variantId : '';
         const quantity = document.getElementById('sst')?.value;
 
-        console.log('🔍 Submit Buy Now Form');
-        console.log('Variant ID:', variantId);
-        console.log('Quantity:', quantity);
-
-        // ✅ Validate giống addToCart
         if (!variantId) {
             e.preventDefault();
             Swal.fire({
@@ -619,7 +618,7 @@ if (buyNowForm) {
             return;
         }
 
-        // ✅ Gán dữ liệu vào input ẩn để submit
+        // Gán dữ liệu vào input ẩn để submit
         document.getElementById('selectedQty').value = quantity;
         document.getElementById('selectedVariant').value = variantId;
     });
@@ -628,7 +627,7 @@ if (buyNowForm) {
 
 });
 
-// 👉 Thêm vào giỏ hàng
+//  Thêm vào giỏ hàng
 function addToCart(event) {
     event.preventDefault();
     const variantId = document.getElementById('add-cart-variant-id')?.value;
@@ -662,7 +661,7 @@ function addToCart(event) {
     formData.append('quantity', quantity);
     formData.append('_token', '<?php echo e(csrf_token()); ?>');
 
-    // 👉 Log toàn bộ formData
+    //  Log toàn bộ formData
     for (let [key, value] of formData.entries()) {
         console.log(`📦 FormData: ${key} = ${value}`);
     }
@@ -680,13 +679,13 @@ function addToCart(event) {
         try {
             data = JSON.parse(text);
         } catch (err) {
-            console.error("❌ JSON parse error:", err);
+            console.error(" JSON parse error:", err);
             Swal.fire({ icon: 'error', title: 'Lỗi máy chủ', text: text });
             return;
         }
 
         if (!response.ok) {
-            console.warn("❌ Response not OK:", response.status, data);
+            console.warn(" Response not OK:", response.status, data);
             if (response.status === 422 && data.errors) {
                 const messages = Object.values(data.errors).flat().join(', ');
                 Swal.fire({ icon: 'error', title: 'Lỗi nhập liệu', text: messages });
@@ -724,7 +723,7 @@ function addToCart(event) {
         }
     })
     .catch(error => {
-        console.error('❌ Lỗi khi gửi yêu cầu:', error);
+        console.error(' Lỗi khi gửi yêu cầu:', error);
         Swal.fire({ icon: 'error', title: 'Lỗi không xác định', text: 'Vui lòng thử lại sau.' });
     })
     .finally(() => {
@@ -734,7 +733,7 @@ function addToCart(event) {
 }
 
 
-// 👉 Cập nhật số lượng giỏ hàng
+//  Cập nhật số lượng giỏ hàng
 function updateCartCount() {
     const cartCountEl = document.getElementById('cart-count');
     if (cartCountEl) {
