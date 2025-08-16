@@ -144,7 +144,7 @@
             <label for="logo" class="file-upload">
                 <i class="bi bi-cloud-upload"></i>
                 <span>Chọn logo thương hiệu</span>
-                <input type="file" name="logo" id="logo" class="d-none">
+                <input type="file" name="logo" id="logo" class="d-none" >
             </label>
             <img id="logo-preview" alt="Preview logo">
             @error('logo')

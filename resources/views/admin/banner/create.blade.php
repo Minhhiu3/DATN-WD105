@@ -123,13 +123,8 @@
 </style>
 
 <div class="card-clean">
-    <h2><i class="bi bi-image"></i> 🖼️ Tạo Banner</h2>
+    <h2><i class="bi bi-image"></i> Tạo Banner</h2>
 
-    @if (session('success'))
-        <div class="alert alert-success">
-            <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
-        </div>
-    @endif
 
     <form action="{{ route('admin.banner.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -137,15 +132,19 @@
         {{-- Tên banner --}}
         <div class="mb-3">
             <label for="name" class="form-label">Tên Banner</label>
-            <input type="text" name="name" id="name" class="form-control"
-                   value="{{ old('name') }}" placeholder="Nhập tên banner" required>
-            @error('name') <div class="text-danger">{{ $message }}</div> @enderror
+            <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
+                   value="{{ old('name') }}" placeholder="Nhập tên banner" >
+           @error('name')
+                <div class="text-danger">
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                </div>
+            @enderror
         </div>
 
         {{-- Liên kết sản phẩm --}}
-        <div class="mb-3" class="form-control">
+        <div class="mb-3" >
             <label for="product_id" class="form-label">Sản phẩm liên kết</label>
-            <select name="product_id" id="product_id" class="form-select">
+            <select name="product_id" id="product_id" class="form-select form-control @error('product_id') is-invalid @enderror"  style="height: auto" >
                 <option value="">-- Không liên kết sản phẩm --</option>
                 @foreach ($products as $product)
                     <option value="{{ $product->id_product }}" {{ old('product_id') == $product->id_product ? 'selected' : '' }}>
@@ -153,7 +152,11 @@
                     </option>
                 @endforeach
             </select>
-            @error('product_id') <div class="text-danger">{{ $message }}</div> @enderror
+            @error('product_id')
+                <div class="text-danger">
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                </div>
+            @enderror
         </div>
 
         {{-- Upload ảnh --}}
@@ -162,16 +165,20 @@
             <label for="image" class="file-upload">
                 <i class="bi bi-cloud-upload"></i>
                 <span> Chọn ảnh banner</span>
-                <input type="file" name="image" id="image" class="d-none" accept="image/*" required>
+                <input type="file" name="image" id="image" class="d-none" >
             </label>
             <img id="image-preview" alt="Preview">
-            @error('image') <div class="text-danger">{{ $message }}</div> @enderror
+            @error('image')
+                <div class="text-danger">
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                </div>
+            @enderror          
         </div>
 
         {{-- Buttons --}}
         <div class="d-flex justify-content-between">
             <button type="submit" class="btn-primary-custom">
-                <i class="bi bi-check-circle"></i> Tạo Banner
+                <i class="bi bi-check-circle"></i> Lưu
             </button>
             <a href="{{ route('admin.banner.index') }}" class="btn-secondary-custom">
                 <i class="bi bi-x-circle"></i> Hủy
