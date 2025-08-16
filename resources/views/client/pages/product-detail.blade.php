@@ -44,151 +44,143 @@
             </div>
 
             <!-- Cột phải: Thông tin sản phẩm -->
-            <div class="col-lg-6 " >
-                <div class="s_product_text" style="margin-left: 20px; margin-top: 20px;">
-                    <h3>{{ $product->name_product }}</h3>
-                    <div style="display: flex">
-                    <h2>
-                        <span id="dynamic-price">
-                            @if ($product->variants->count() > 0)
-                                @php
-                                   $sale = ($product->advice_product->value/100)*$product->variants->min('price');
-                                   $sale_price = $product->variants->min('price') - $sale
-                                @endphp
-                                {{ number_format(($sale_price), 0, ',', '.') }}
-                            @else
-                                <span class="text-danger">Đang cập nhật</span>
-                            @endif
-                        </span> <span>VNĐ</span>
-                    </h2>
-                    <h4 style="margin-left: 15px; margin-top: 3px;">
-                        <span id="dynamic-price" style="text-decoration: line-through;">
-                            @if ($product->variants->count() > 0)
-                                {{ number_format(($product->variants->min('price')), 0, ',', '.') }} VNĐ
-                            @else
-                                <span class="text-danger">Đang cập nhật</span>
-                            @endif
-                        </span>
-                    </h4>
-
-
-                </div>
-                    
-                    @php 
-                        $sale = $product->advice_product;
-                    $now = \Carbon\Carbon::now();
-                        $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
-                    $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
-                    @endphp
-
-                    @if (
-                        $sale &&
-                        $sale->status === "on" && $now->between($start, $end)
-                    )
-                    {{-- Ô vuông % giảm giá tông vàng-cam --}}
-                    <div style="
-                        position: absolute;
-                        top: 10%;
-                        left: 65%;
-                        background: linear-gradient(135deg, #ff7e00, #ffb400);
-                        color: white;
-                        padding: 5px 8px;
-                        border-radius: 5px;
-                        font-weight: bold;
-                        font-size: 14px;
-                        z-index: 10;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                    ">
-                        -{{$product->advice_product->value}}%
-                    </div>
-                    @endif
-                    <ul class="list">
-                        <li><span>Danh mục</span>: {{ $product->category->name_category ?? 'Chưa phân loại' }}</li>
-                    </ul>
-
-
-
-                    <p>{{ $product->description }}</p>
-
-                    <h6 id="dynamic-stock" class="text-muted">Số lượng: <span id="stock-quantity">{{$product->variants->sum('quantity')}}</span> sản phẩm</h6>
-
-                    @guest
-                        <a href="{{ route('login') }}" class="primary-btn">Đăng nhập để thêm vào giỏ</a>
-                    @else
-                        <form onsubmit="addToCart(event)" class="mt-3" id="add-to-cart-form">
-                            @csrf
-
-                           <!-- Màu sắc -->
-@foreach ($product->variants->groupBy('color_id') as $colorId => $variants)
-    @php
-        $color = $variants->first()->color ?? null;
-        $totalQty = $variants->sum('quantity');
-    @endphp
-    @if ($color && $totalQty > 0)
-        <button type="button"
-                class="btn btn-outline-dark color-btn mr-2 mb-2"
-                data-color-id="{{ $colorId }}"
-                data-image="{{ asset('storage/' . $color->image) }}"
-                data-quantity="{{ $totalQty }}">
-            {{ $color->name_color }}
-        </button>
-    @endif
-@endforeach
-
-
-<!-- Kích thước -->
-<div class="form-group mb-3">
-    <label>Kích thước:</label>
-    <div class="d-flex flex-wrap" id="size-options">
-        @foreach ($product->variants as $variant)
-            <button type="button"
-                    class="btn btn-outline-dark size-btn mr-2 mb-2 {{ $variant->quantity == 0 ? 'disabled' : '' }}"
-                    data-variant-id="{{ $variant->id_variant }}"
-                    data-color-id="{{ $variant->color_id }}"
-                    data-price="{{ $variant->price }}"
-                    data-quantity="{{ $variant->quantity }}"
-                    {{ $variant->quantity == 0 ? 'disabled' : '' }}>
-                {{ $variant->size->name ?? 'N/A' }}
-            </button>
-        @endforeach
-    </div>
-</div>
-
-
-                            <!-- Số lượng -->
-<div class="product_count mb-3">
-    <label for="sst">Số lượng:</label>
-    <div class="d-flex align-items-center" style="gap: 12px;">
-        <button class="qty-btn" type="button" id="decrease-btn">-</button>
-        <input type="text" name="quantity" id="sst" min="1" value="1" class="qty-input" readonly>
-        <button class="qty-btn" type="button" id="increase-btn">+</button>
-    </div>
-</div>
-
-
-
-                            <!-- Nút Thêm vào giỏ -->
-                            <div class="card_area d-flex align-items-center gap-3">
-                                <input type="hidden" name="variant_id" id="add-cart-variant-id" value="">
-                                <input type="hidden" name="quantity" id="add-cart-quantity">
-                                <button type="submit" class="primary-btn" id="add-to-cart-btn">Thêm vào giỏ hàng</button>
-                            </div>
-
-                            <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
-                        </form>
-<!-- <button class="primary-btn">abc abc </button> -->
-                        <!-- Nút Mua ngay -->
-                        <form action="{{ route('account.checkout.form') }}" method="GET" class="mt-3" id="buy-now-form">
-                            @csrf
-                            <input type="hidden" name="variant_id" id="selectedVariant">
-                            <input type="hidden" name="quantity" id="selectedQty" value="1">
-                            <div class="card_area d-flex align-items-center gap-3">
-                                <button type="submit" class="primary-btn">Mua ngay</button>
-                            </div>
-                        </form>
-                    @endguest
-                </div>
+            <!-- Cột phải: Thông tin sản phẩm -->
+<div class="col-lg-6">
+    <div class="s_product_text" style="margin-left: 20px; margin-top: 20px;">
+        <h3>{{ $product->name_product }}</h3>
+        
+        @if ($product->variants->sum('quantity') > 0)
+            <div style="display: flex">
+                <h2>
+                    <span id="dynamic-price">
+                        @php
+                            $minPrice = $product->variants->min('price');
+                            $sale = $product->advice_product ? ($product->advice_product->value / 100) * $minPrice : 0;
+                            $salePrice = $minPrice - $sale;
+                        @endphp
+                        {{ number_format($salePrice, 0, ',', '.') }}
+                    </span> <span>VNĐ</span>
+                </h2>
+                            @php 
+                $sale = $product->advice_product;
+                $now = \Carbon\Carbon::now();
+                $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+            @endphp
+@if($sale && $sale->status === "on" && $now->between($start, $end))
+                <h4 style="margin-left: 15px; margin-top: 3px;">
+                    <span id="dynamic-price" style="text-decoration: line-through;">
+                        {{ number_format($minPrice, 0, ',', '.') }} VNĐ
+                    </span>
+                </h4>
+@endif
             </div>
+
+
+
+            @if ($sale && $sale->status === "on" && $now->between($start, $end))
+                {{-- Ô vuông % giảm giá tông vàng-cam --}}
+                <div style="
+                    position: absolute;
+                    top: 10%;
+                    left: 65%;
+                    background: linear-gradient(135deg, #ff7e00, #ffb400);
+                    color: white;
+                    padding: 5px 8px;
+                    border-radius: 5px;
+                    font-weight: bold;
+                    font-size: 14px;
+                    z-index: 10;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                ">
+                    -{{ $product->advice_product->value }}%
+                </div>
+            @endif
+        @else
+            <h2 class="text-danger">Hết hàng!</h2>
+        @endif
+        <!--  -->
+        <ul class="list">
+            <li><span>Danh mục</span>: {{ $product->category->name_category ?? 'Chưa phân loại' }}</li>
+        </ul>
+
+        <p>{{ $product->description }}</p>
+
+        <h6 id="dynamic-stock" class="text-muted">Số lượng: <span id="stock-quantity">{{ $product->variants->sum('quantity') }}</span> sản phẩm</h6>
+
+        @guest
+            <a href="{{ route('login') }}" class="primary-btn">Đăng nhập để thêm vào giỏ</a>
+        @else
+            <form onsubmit="addToCart(event)" class="mt-3" id="add-to-cart-form">
+                @csrf
+
+                <!-- Màu sắc -->
+                @foreach ($product->variants->groupBy('color_id') as $colorId => $variants)
+                    @php
+                        $color = $variants->first()->color ?? null;
+                        $totalQty = $variants->sum('quantity');
+                    @endphp
+                    @if ($color && $totalQty > 0)
+                        <button type="button"
+                                class="btn btn-outline-dark color-btn mr-2 mb-2"
+                                data-color-id="{{ $colorId }}"
+                                data-image="{{ asset('storage/' . $color->image) }}"
+                                data-quantity="{{ $totalQty }}">
+                            {{ $color->name_color }}
+                        </button>
+                    @endif
+                @endforeach
+
+                <!-- Kích thước -->
+                <div class="form-group mb-3">
+                    <label>Kích thước:</label>
+                    <div class="d-flex flex-wrap" id="size-options">
+                        @foreach ($product->variants as $variant)
+                            <button type="button"
+                                    class="btn btn-outline-dark size-btn mr-2 mb-2 {{ $variant->quantity == 0 ? 'disabled' : '' }}"
+                                    data-variant-id="{{ $variant->id_variant }}"
+                                    data-color-id="{{ $variant->color_id }}"
+                                    data-price="{{ $variant->price }}"
+                                    data-quantity="{{ $variant->quantity }}"
+                                    {{ $variant->quantity == 0 ? 'disabled' : '' }}>
+                                {{ $variant->size->name ?? 'N/A' }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Số lượng -->
+                <div class="product_count mb-3">
+                    <label for="sst">Số lượng:</label>
+                    <div class="d-flex align-items-center" style="gap: 12px;">
+                        <button class="qty-btn" type="button" id="decrease-btn">-</button>
+                        <input type="text" name="quantity" id="sst" min="1" value="1" class="qty-input" readonly>
+                        <button class="qty-btn" type="button" id="increase-btn">+</button>
+                    </div>
+                </div>
+
+                <!-- Nút Thêm vào giỏ -->
+                <div class="card_area d-flex align-items-center gap-3">
+                    <input type="hidden" name="variant_id" id="add-cart-variant-id" value="">
+                    <input type="hidden" name="quantity" id="add-cart-quantity">
+                    <button type="submit" class="primary-btn" id="add-to-cart-btn">Thêm vào giỏ hàng</button>
+                </div>
+
+                <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
+            </form>
+
+            <!-- Nút Mua ngay -->
+            <form action="{{ route('account.checkout.form') }}" method="GET" class="mt-3" id="buy-now-form">
+                @csrf
+                <input type="hidden" name="variant_id" id="selectedVariant">
+                <input type="hidden" name="quantity" id="selectedQty" value="1">
+                <div class="card_area d-flex align-items-center gap-3">
+                    <button type="submit" class="primary-btn">Mua ngay</button>
+                </div>
+            </form>
+        @endguest
+    </div>
+</div>
         </div>
     </div>
 </div>
@@ -696,7 +688,7 @@ function addToCart(event) {
     })
     .finally(() => {
         btn.disabled = false;
-        btn.textContent = 'Add to Cart';
+        btn.textContent = 'THÊM VÀO GIỎ HÀNG';
     });
 }
 

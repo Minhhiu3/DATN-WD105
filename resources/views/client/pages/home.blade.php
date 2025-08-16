@@ -338,7 +338,7 @@ $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
                                         @endif
             <div class="price">
                 @if ($minPrice === null)
-                    <h6>Đang cập nhật</h6>
+                    <h6>Hết hàng!</h6>
                 @elseif ($minPrice == $maxPrice)
                     <h6>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</h6>
                 @else
@@ -347,18 +347,7 @@ $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
             </div>
                        <div class="prd-bottom">
 
-                                            <a href="" class="social-info">
-                                                <span class="ti-bag"></span>
-                                                <p class="hover-text">add to bag</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-heart"></span>
-                                                <p class="hover-text">Wishlist</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-sync"></span>
-                                                <p class="hover-text">compare</p>
-                                            </a>
+                                          
                                             <a href="{{ route('client.product.show', $product->id_product) }}"
                                                 class="social-info">
                                                 <span class="lnr lnr-move"></span>

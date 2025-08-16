@@ -156,6 +156,54 @@
 
 <!-- ===== CSS (Đã đổi tên class, không trùng) ===== -->
 <style>
+/* Select2 Styles */
+.select2-container .select2-selection--single {
+    height: 38px;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 5px;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 28px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+.select2-container--default .select2-results__option {
+    padding: 8px 12px;
+    font-size: 14px;
+}
+.select2-container--default .select2-results__option--highlighted {
+    background-color: #ff4d4f;
+    color: white;
+}
+/* Spinner styles */
+.spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ff4d4f;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.spinner.show {
+    display: block;
+}
+@keyframes spin {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
+}
+.select-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
 /* --- HỘP NGOÀI --- */
 .smv-box{
   display:flex;
@@ -447,18 +495,23 @@ function showCouponMessage(message, type = 'success') {
 </div> -->
 
                <!-- Địa chỉ -->
-  <div class="col-md-12 form-group">
+<div class="col-md-12 form-group">
     <label><b>Tỉnh/Thành</b></label>
-    <select id="province" name="province" class="form-control" required>
-        <option value="">-- Chọn Tỉnh/Thành phố --</option>
-    </select>
+    <div class="select-wrapper">
+        <select id="province" name="province" class="form-control select2" required>
+            <option value="">-- Chọn Tỉnh/Thành phố --</option>
+        </select>
+        <span class="spinner" id="province-spinner"></span>
+    </div>
 </div>
-
 <div class="col-md-12 form-group">
     <label><b>Xã/Phường</b></label>
-    <select id="ward" name="ward" class="form-control" required disabled>
-        <option value="">-- Chọn Xã/Phường --</option>
-    </select>
+    <div class="select-wrapper">
+        <select id="ward" name="ward" class="form-control select2" required disabled>
+            <option value="">-- Chọn Xã/Phường --</option>
+        </select>
+        <span class="spinner" id="ward-spinner"></span>
+    </div>
 </div>
 
                 <div class="form-group">
@@ -609,5 +662,77 @@ document.addEventListener('DOMContentLoaded', function() {
         wardSelect.disabled = false;
     });
 });
+
+// Thêm các thư viện cần thiết
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Khởi tạo Select2
+    $('#province').select2({
+        placeholder: "-- Chọn Tỉnh/Thành phố --",
+        allowClear: true,
+        width: '100%',
+        minimumResultsForSearch: 1,
+    });
+    $('#ward').select2({
+        placeholder: "-- Chọn Xã/Phường --",
+        allowClear: true,
+        width: '100%',
+        minimumResultsForSearch: 1,
+    });
+
+    let provincesData = [];
+    const provinceSpinner = document.getElementById('province-spinner');
+    const wardSpinner = document.getElementById('ward-spinner');
+
+    // Hiển thị/ẩn spinner
+    const showSpinner = (spinner) => spinner?.classList.add('show');
+    const hideSpinner = (spinner) => spinner?.classList.remove('show');
+
+    // Fetch danh sách tỉnh
+    showSpinner(provinceSpinner);
+    fetch("https://vietnamlabs.com/api/vietnamprovince")
+        .then(res => res.json())
+        .then(response => {
+            provincesData = response.data || [];
+            provincesData.forEach(p => {
+                const option = new Option(p.province, p.province, false, false);
+                $('#province').append(option);
+            });
+            $('#province').trigger('change');
+            hideSpinner(provinceSpinner);
+        })
+        .catch(err => {
+            console.error("Lỗi load tỉnh:", err);
+            hideSpinner(provinceSpinner);
+        });
+
+    // Khi chọn tỉnh -> load xã/phường
+    $('#province').on('change', function() {
+        const provinceName = this.value;
+        $('#ward').html('<option value="">-- Chọn Xã/Phường --</option>').trigger('change');
+        if (!provinceName) {
+            $('#ward').prop('disabled', true);
+            hideSpinner(wardSpinner);
+            return;
+        }
+        showSpinner(wardSpinner);
+        const selectedProvince = provincesData.find(p => p.province === provinceName);
+        if (selectedProvince && selectedProvince.wards) {
+            selectedProvince.wards.forEach(w => {
+                const option = new Option(w.name, w.name, false, false);
+                $('#ward').append(option);
+            });
+            $('#ward').trigger('change');
+            $('#ward').prop('disabled', false);
+            hideSpinner(wardSpinner);
+        } else {
+            hideSpinner(wardSpinner);
+        }
+    });
+});
+</script>
 </script>
 @endpush
