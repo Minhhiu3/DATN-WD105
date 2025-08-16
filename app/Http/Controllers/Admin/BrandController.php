@@ -75,7 +75,7 @@ class BrandController extends Controller
     public function update(Request $request, Brand $brand)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:brands,name,' . $brand->id_brand . ',id_brand',
+            'name' => 'required|string|max:255' . $brand->id_brand . ',id_brand',
             'logo' => 'image|mimes:jpeg,png,jpg|max:2048',
             'status' => 'required|in:visible,hidden'
         ], [
@@ -84,16 +84,9 @@ class BrandController extends Controller
             'name.string'   => 'Tên thương hiệu không hợp lệ.',
             'name.max'      => 'Tên thương hiệu không được vượt quá 255 ký tự.',
             // lỗi logo hình ảnh
-            'logo.image'   => 'Tệp tải lên phải là hình ảnh.',
             'logo.mimes'   => 'Logo chỉ chấp nhận định dạng: jpeg, png, jpg.',
             'logo.max'     => 'Kích thước logo không được vượt quá 2MB.',
         ]);
-         // Trường hợp nhập lại y chang size cũ
-        if ($request->name === $brand->name) {
-            return back()
-                ->withErrors(['name' => 'Bạn phải nhập tên thương hiệu khác với hiện tại.'])
-                ->withInput();
-        }
 
         // Trường hợp tên size đã tồn tại trong DB (trùng với size khác)
         $exists =$brand->where('name', $request->name)
@@ -120,7 +113,7 @@ class BrandController extends Controller
             'status' => $request->status
         ]);
 
-        return redirect()->route('admin.brands.index')->with('success', 'Brand updated successfully.');
+        return redirect()->route('admin.brands.index')->with('success', 'Cập nhật thương hiệu thành công.');
     }
 
     public function destroy(Brand $brand)
@@ -129,6 +122,6 @@ class BrandController extends Controller
             unlink(public_path('storage/' . $brand->logo));
         }
         $brand->delete();
-        return redirect()->route('admin.brands.index')->with('success', 'Brand deleted successfully.');
+        return redirect()->route('admin.brands.index')->with('success', 'Xóa thương hiệu thành công.');
     }
 }

@@ -79,13 +79,6 @@ public function store(Request $request)
             'name.integer'   => 'Tên size không hợp lệ.',
             'name.max'      => 'Tên size không được vượt quá 255 ký tự.',
         ]);
-        // Trường hợp nhập lại y chang size cũ
-        if ($request->name === $size->name) {
-            return back()
-                ->withErrors(['name' => 'Bạn phải nhập tên size khác với hiện tại.'])
-                ->withInput();
-        }
-
         // Trường hợp tên size đã tồn tại trong DB (trùng với size khác)
         $exists = Size::where('name', $request->name)
                     ->where('id_size', '!=', $size->id_size) // loại trừ size hiện tại
