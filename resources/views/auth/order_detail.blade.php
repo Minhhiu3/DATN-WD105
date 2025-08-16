@@ -30,7 +30,7 @@
             @endif
         </p>
         @if($order->status == 'canceled')
-         <p><strong> Lý do hủy:</strong><span class="btn btn-sm btn-danger text-white  mt-2"> {{$reason}}</span></p>
+         <p><strong> Lý do hủy:</strong><span class=""> {{$reason}}</span></p>
         @endif
         <p><strong>Trạng thái thanh toán:</strong>
             @if ($order->payment_status == 'unpaid')

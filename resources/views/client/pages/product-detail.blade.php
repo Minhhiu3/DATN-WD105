@@ -129,87 +129,83 @@
 
 
 
-                    <p>{{ $product->description }}</p>
+        <p>{{ $product->description }}</p>
 
-                    <h6 id="dynamic-stock" class="text-muted">Số lượng: <span id="stock-quantity">{{$product->variants->sum('quantity')}}</span> sản phẩm</h6>
+        <h6 id="dynamic-stock" class="text-muted">Số lượng: <span id="stock-quantity">{{ $product->variants->sum('quantity') }}</span> sản phẩm</h6>
 
-                    @guest
-                        <a href="{{ route('login') }}" class="primary-btn">Đăng nhập để thêm vào giỏ</a>
-                    @else
-                        <form onsubmit="addToCart(event)" class="mt-3" id="add-to-cart-form">
-                            @csrf
+        @guest
+            <a href="{{ route('login') }}" class="primary-btn">Đăng nhập để thêm vào giỏ</a>
+        @else
+            <form onsubmit="addToCart(event)" class="mt-3" id="add-to-cart-form">
+                @csrf
 
-                           <!-- Màu sắc -->
-@foreach ($product->variants->groupBy('color_id') as $colorId => $variants)
-    @php
-        $color = $variants->first()->color ?? null;
-        $totalQty = $variants->sum('quantity');
-    @endphp
-    @if ($color && $totalQty > 0)
-        <button type="button"
-                class="btn btn-outline-dark color-btn mr-2 mb-2"
-                data-color-id="{{ $colorId }}"
-                data-image="{{ asset('storage/' . $color->image) }}"
-                data-quantity="{{ $totalQty }}">
-            {{ $color->name_color }}
-        </button>
-    @endif
-@endforeach
+                <!-- Màu sắc -->
+                @foreach ($product->variants->groupBy('color_id') as $colorId => $variants)
+                    @php
+                        $color = $variants->first()->color ?? null;
+                        $totalQty = $variants->sum('quantity');
+                    @endphp
+                    @if ($color && $totalQty > 0)
+                        <button type="button"
+                                class="btn btn-outline-dark color-btn mr-2 mb-2"
+                                data-color-id="{{ $colorId }}"
+                                data-image="{{ asset('storage/' . $color->image) }}"
+                                data-quantity="{{ $totalQty }}">
+                            {{ $color->name_color }}
+                        </button>
+                    @endif
+                @endforeach
 
-
-<!-- Kích thước -->
-<div class="form-group mb-3">
-    <label>Kích thước:</label>
-    <div class="d-flex flex-wrap" id="size-options">
-        @foreach ($product->variants as $variant)
-            <button type="button"
-                    class="btn btn-outline-dark size-btn mr-2 mb-2 {{ $variant->quantity == 0 ? 'disabled' : '' }}"
-                    data-variant-id="{{ $variant->id_variant }}"
-                    data-color-id="{{ $variant->color_id }}"
-                    data-price="{{ $variant->price }}"
-                    data-quantity="{{ $variant->quantity }}"
-                    {{ $variant->quantity == 0 ? 'disabled' : '' }}>
-                {{ $variant->size->name ?? 'N/A' }}
-            </button>
-        @endforeach
-    </div>
-</div>
-
-
-                            <!-- Số lượng -->
-<div class="product_count mb-3">
-    <label for="sst">Số lượng:</label>
-    <div class="d-flex align-items-center" style="gap: 12px;">
-        <button class="qty-btn" type="button" id="decrease-btn">-</button>
-        <input type="text" name="quantity" id="sst" min="1" value="1" class="qty-input" readonly>
-        <button class="qty-btn" type="button" id="increase-btn">+</button>
-    </div>
-</div>
-
-
-
-                            <!-- Nút Thêm vào giỏ -->
-                            <div class="card_area d-flex align-items-center gap-3">
-                                <input type="hidden" name="variant_id" id="add-cart-variant-id" value="">
-                                <input type="hidden" name="quantity" id="add-cart-quantity">
-                                <button type="submit" class="primary-btn" id="add-to-cart-btn">Thêm vào giỏ hàng</button>
-                            </div>
-
-                            <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
-                        </form>
-<!-- <button class="primary-btn">abc abc </button> -->
-                        <!-- Nút Mua ngay -->
-                        <form action="{{ route('account.checkout.form') }}" method="GET" class="mt-3" id="buy-now-form">
-                            @csrf
-                            <input type="hidden" name="variant_id" id="selectedVariant">
-                            <input type="hidden" name="quantity" id="selectedQty" value="1">
-                            <div class="card_area d-flex align-items-center gap-3">
-                                <button type="submit" class="primary-btn">Mua ngay</button>
-                            </div>
-                        </form>
-                    @endguest
+                <!-- Kích thước -->
+                <div class="form-group mb-3">
+                    <label>Kích thước:</label>
+                    <div class="d-flex flex-wrap" id="size-options">
+                        @foreach ($product->variants as $variant)
+                            <button type="button"
+                                    class="btn btn-outline-dark size-btn mr-2 mb-2 {{ $variant->quantity == 0 ? 'disabled' : '' }}"
+                                    data-variant-id="{{ $variant->id_variant }}"
+                                    data-color-id="{{ $variant->color_id }}"
+                                    data-price="{{ $variant->price }}"
+                                    data-quantity="{{ $variant->quantity }}"
+                                    {{ $variant->quantity == 0 ? 'disabled' : '' }}>
+                                {{ $variant->size->name ?? 'N/A' }}
+                            </button>
+                        @endforeach
+                    </div>
                 </div>
-            </div>
+
+                <!-- Số lượng -->
+                <div class="product_count mb-3">
+                    <label for="sst">Số lượng:</label>
+                    <div class="d-flex align-items-center" style="gap: 12px;">
+                        <button class="qty-btn" type="button" id="decrease-btn">-</button>
+                        <input type="text" name="quantity" id="sst" min="1" value="1" class="qty-input" readonly>
+                        <button class="qty-btn" type="button" id="increase-btn">+</button>
+                    </div>
+                </div>
+
+                <!-- Nút Thêm vào giỏ -->
+                <div class="card_area d-flex align-items-center gap-3">
+                    <input type="hidden" name="variant_id" id="add-cart-variant-id" value="">
+                    <input type="hidden" name="quantity" id="add-cart-quantity">
+                    <button type="submit" class="primary-btn" id="add-to-cart-btn">Thêm vào giỏ hàng</button>
+                </div>
+
+                <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
+            </form>
+
+            <!-- Nút Mua ngay -->
+            <form action="{{ route('account.checkout.form') }}" method="GET" class="mt-3" id="buy-now-form">
+                @csrf
+                <input type="hidden" name="variant_id" id="selectedVariant">
+                <input type="hidden" name="quantity" id="selectedQty" value="1">
+                <div class="card_area d-flex align-items-center gap-3">
+                    <button type="submit" class="primary-btn">Mua ngay</button>
+                </div>
+            </form>
+        @endguest
+    </div>
+</div>
         </div>
     </div>
 </div>
@@ -739,7 +735,7 @@ function addToCart(event) {
     })
     .finally(() => {
         btn.disabled = false;
-        btn.textContent = 'Add to Cart';
+        btn.textContent = 'THÊM VÀO GIỎ HÀNG';
     });
 }
 

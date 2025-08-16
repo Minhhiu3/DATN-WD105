@@ -267,7 +267,7 @@
                                             @endswitch
                                         </span>
                                        @if ($currentStatus == 'canceled')
-                                            <p class="btn btn-sm btn-danger text-white"> Lý do hủy: <span >{{$reason}}</span></p>
+                                            <!-- <p class="btn btn-sm btn-danger text-white"> Lý do hủy: <span >{{$reason}}</span></p> -->
                                               @endif
                                     @else
                                         {{-- Dropdown thay đổi trạng thái --}}
