@@ -188,16 +188,20 @@ public function update(Request $request, $order_id)
         return response()->json(['success' => false, 'message' => 'Không được bỏ qua bước, hãy cập nhật tuần tự!']);
     }
 
+
     if ($newLevel < $currentLevel) {
         return response()->json(['success' => false, 'message' => 'Không thể quay về trạng thái trước!']);
     }
+    if ($order->status === 'delivered'){
+         return response()->json(['success' => false, 'message' => 'Admin Không thể cập nhật trạng thái đã nhận.']);
+    }
 
     $order->status = $request->status;
-    if ($request->status === 'received') {
-        $order->payment_status = 'paid';
-    } elseif ($request->status === 'canceled') {
-        $order->payment_status = 'canceled'; // Hoặc trạng thái phù hợp khác
-    }
+    // if ($request->status === 'received') {
+    //     $order->payment_status = 'paid';
+    // } elseif ($request->status === 'canceled') {
+    //     $order->payment_status = 'canceled'; // Hoặc trạng thái phù hợp khác
+    // }
     $order->save();
 
     return response()->json(['success' => true, 'message' => 'Trạng thái đã cập nhật']);

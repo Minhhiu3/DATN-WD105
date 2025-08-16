@@ -574,19 +574,33 @@ function showCouponMessage(message, type = 'success') {
                                     @endforeach
                                 @endif
                             </ul>
-
 @php
-$subTotal = (int) $cartItems->sum(function($item) {
-    $price = $item->variant->adviceProduct
-        ? $item->variant->price - ($item->variant->price * ($item->variant->adviceProduct->value / 100))
-        : $item->variant->price;
+$subTotal = (int) $cartItemz->sum(function($item) {
+    $price = $item->variant->price;
+    $sale = $item->variant->adviceProduct;
 
-    return (int) round($price * $item->quantity);
+    // Kiểm tra nếu có chương trình giảm giá và đang trong thời gian
+    if (
+        $sale &&
+        $sale->status === "on" &&
+        !empty($sale->start_date) &&
+        !empty($sale->end_date) &&
+        now()->between(
+            \Carbon\Carbon::parse($sale->start_date)->startOfDay(),
+            \Carbon\Carbon::parse($sale->end_date)->endOfDay()
+        )
+    ) {
+        $price -= ($price * ($sale->value / 100));
+    }
+
+    return round($price * $item->quantity);
 });
 
 $shippingFee = 30000;
-$grandTotal = (int) round($subTotal + $shippingFee);
+$grandTotal = round($subTotal + $shippingFee);
 @endphp
+
+
 
 
 
@@ -597,7 +611,7 @@ $grandTotal = (int) round($subTotal + $shippingFee);
                                             VNĐ</span></a></li>
                                 <li><a href="#">Tiền giảm giá <span id="discount-amount">{{ number_format(0, 0, ',', '.') }}
                                             VNĐ</span></a></li>
-                                <li><a href="#">Tổng thanh toán <span id="order-total">            {{ number_format($grandTotal, 0, ',', '.') }} VNĐ
+                                <li><a href="#">Tổng thanh toán <span id="order-total">{{ number_format($grandTotal, 0, ',', '.') }} VNĐ
 </span></a></li>
                             </ul>
                         </div>

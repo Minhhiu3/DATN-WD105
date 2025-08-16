@@ -77,10 +77,8 @@ class CheckoutController extends Controller
     ]);
 
     $user = Auth::user();
-
-    if ($request->payment_method === 'cod') {
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
             // Khóa dòng variant để tránh race condition
             $variant = Variant::where('id_variant', $request->variant_id)->lockForUpdate()->first();
 
@@ -112,7 +110,6 @@ class CheckoutController extends Controller
 
             // COD
             if ($request->payment_method === 'cod') {
-                DB::beginTransaction();
                 try {
                     $orderCode = $this->generateOrderCode();
 
@@ -136,9 +133,9 @@ class CheckoutController extends Controller
                     // dd($order);
                     // Gửi email thông báo đặt hàng thành công
                     // Mail::to('vmink2004@gmail.com')->send(new OrderPlacedMail($order));
-$emailSend = $request->email;
-Mail::to($emailSend)->send(new OrderPlacedMail($order));
-Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $emailSend);
+                    $emailSend = $request->email;
+                    Mail::to($emailSend)->send(new OrderPlacedMail($order));
+                    Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $emailSend);
                     // Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $order->email);
                     // Mail::to((string) $order->email)->send(new OrderPlacedMail($order));
 
@@ -156,14 +153,14 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                     ]);
 
                     $variant->decrement('quantity', $request->quantity);
-                    if($discount){
+                     if($discount){
                         $discountId = $discount['discountId'] ?? null;
-
+                        
                         $userVoucher = UserVoucher::where('user_id', $user->id_user)
                             ->where('discount_id', $discountId)
                             ->first();
             
-                        if ($userVoucher && $userVoucher->used == '0' ) {
+                        if ($userVoucher && $userVoucher->used == "0" ) {
                             UserVoucher::where('user_id', Auth::id())
                                 ->where('discount_id', $discountId)
                                 ->update([
@@ -182,9 +179,13 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                     }
                    
                     DB::commit();
+                    
+                    // dd($userVoucher);
                     // Xóa session mã giảm giá sau khi đặt hàng thành công
-                    session()->forget('discount');
+                     session()->forget('discount');
                     return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
+            
+                  
                 } catch (\Exception $e) {
                     DB::rollBack();
                     return redirect()->back()->withErrors('Lỗi xử lý đơn hàng: ' . $e->getMessage());
@@ -193,6 +194,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
 
             //VNPay
             if ($request->payment_method === 'vnpay') {
+
                 session([
                     'pending_order_buy_now' => [
                         'user_id'       => $user->id_user,
@@ -208,13 +210,38 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                         'grand_total'   => $grand_total,    // Tổng tiền đã giảm + phí ship
                         'discount_code' => $discountCode,
                          'product_name'  => $variant->product->name ?? '',
-                    'price'         => $variant->price ?? 0,
-                    'color_name'    => $variant->color->name_color ?? 'Không có màu',
-                    'size_name'     => $variant->size->name ?? 'Không có size',
-                    'image'         => $variant->color->image ?? 'khong-co-hinh-anh.jpg',
+                        'price'         => $variant->price ?? 0,
+                        'color_name'    => $variant->color->name_color ?? 'Không có màu',
+                        'size_name'     => $variant->size->name ?? 'Không có size',
+                        'image'         => $variant->color->image ?? 'khong-co-hinh-anh.jpg',
                     ]
                 ]);
+                if($discount){
+                    $discountId = $discount['discountId'] ?? null;
+                    
+                    $userVoucher = UserVoucher::where('user_id', $user->id_user)
+                        ->where('discount_id', $discountId)
+                        ->first();
+        
+                    if ($userVoucher && $userVoucher->used == "0" ) {
+                        UserVoucher::where('user_id', Auth::id())
+                            ->where('discount_id', $discountId)
+                            ->update([
+                                'used' => '1',
+                                'used_at' => now(),
+                            ]);
 
+                    }else{
+                        UserVoucher::create([
+                            'user_id'    => Auth::id(),
+                            'discount_id'=> $discountId,
+                            'used'       => 1,
+                            'used_at'    => now(),
+                        ]);
+                    }
+                }
+            
+                DB::commit();
                 Log::info('🔄 [Buy Now] Lưu session pending_order_buy_now:', session('pending_order_buy_now'));
                 // Xóa session mã giảm giá sau khi đặt hàng thành công
                 session()->forget('discount');
@@ -224,10 +251,10 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             DB::rollBack();
             return redirect()->back()->withErrors('Lỗi xử lý đơn hàng: ' . $e->getMessage());
         }
-    }
 
     //mua từ giỏ hàng
 }
+
 public function checkoutCart(Request $request)
 {
     $user = Auth::user();
@@ -308,13 +335,17 @@ public function checkoutCart(Request $request)
         }
     }
 //  dd($selectedVariants, $cartItemz);
-                $userVouchers = UserVoucher::where('user_id', $user->id_user)
+            $userVouchers = UserVoucher::where('user_id', $user->id_user)
             ->where('used', '0')
             ->with('discount') // Quan hệ discountCode trong model UserVoucher
             ->get();
     // Truyền cartItems và selectedVariants sang view
 
-    return view('client.pages.checkout_cart', compact('cartItemz', 'selectedVariants','userVouchers'));
+return view('client.pages.checkout_cart', compact(
+    'cartItemz',
+    'selectedVariants',
+    'userVouchers'
+));
 }
 
 
@@ -457,6 +488,30 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
 
             // Chỉ xóa các sản phẩm được chọn khỏi giỏ hàng
             CartItem::where('cart_id', $cart->id_cart)->whereIn('variant_id', $selectedVariants)->delete();
+            if($discount){
+                $discountId = $discount['discountId'] ?? null;
+
+                $userVoucher = UserVoucher::where('user_id', $user->id_user)
+                    ->where('discount_id', $discountId)
+                    ->first();
+
+                if ($userVoucher && $userVoucher->used == '0' ) {
+                    UserVoucher::where('user_id', Auth::id())
+                        ->where('discount_id', $discountId)
+                        ->update([
+                            'used' => '1',
+                            'used_at' => now(),
+                        ]);
+
+                }else{
+                    UserVoucher::create([
+                        'user_id'    => Auth::id(),
+                        'discount_id'=> $discountId,
+                        'used'       => 1,
+                        'used_at'    => now(),
+                    ]);
+                }
+            }
 
         DB::commit();
         // return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
@@ -521,18 +576,13 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
 
         ]
     ]);
-    
-    session()->forget('discount');
-    // Chuyển hướng tới VNPay để thanh toán
-    return redirect()->route('payment.vnpay');
-    }
-     if($discount){
+    if($discount){
                 $discountId = $discount['discountId'] ?? null;
 
                 $userVoucher = UserVoucher::where('user_id', $user->id_user)
                     ->where('discount_id', $discountId)
                     ->first();
-        
+
                 if ($userVoucher && $userVoucher->used == '0' ) {
                     UserVoucher::where('user_id', Auth::id())
                         ->where('discount_id', $discountId)
@@ -550,6 +600,13 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                     ]);
                 }
             }
+
+        DB::commit();
+    session()->forget('discount');
+    // Chuyển hướng tới VNPay để thanh toán
+    return redirect()->route('payment.vnpay');
+    }
+     
 }
 // áp mã giảm giá cho đơn hàng
 

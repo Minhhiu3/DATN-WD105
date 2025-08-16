@@ -42,7 +42,7 @@
                                         $size = $variant?->size ?? null;
                                         $quantity = $item->quantity ?? $item['quantity'] ?? 1;
                                         $price = $variant->price ?? 0;
-                                        $total = $price * $quantity;
+                                        // $total = $price * $quantity;
                                         $img = $color->image ?? 'default.jpg';
                                     ?>
 
@@ -68,7 +68,43 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td><h5 class="item-price"><?php echo e(number_format($price, 0, ',', '.')); ?> VNĐ</h5></td>
+                                            <td>
+                                               <?php 
+    $sale = $item->variant->product->adviceProduct; 
+    $price = $item->variant->price; // Giá gốc variant
+
+    $sale_price = $price; // Mặc định = giá gốc
+
+    if (
+        $sale &&
+        $sale->status === "on" &&
+        !empty($sale->start_date) &&
+        !empty($sale->end_date) &&
+        now()->between(
+            \Carbon\Carbon::parse($sale->start_date)->startOfDay(),
+            \Carbon\Carbon::parse($sale->end_date)->endOfDay()
+        )
+    ) {
+        $discountAmount = ($sale->value / 100) * $price;
+        $sale_price = $price - $discountAmount;
+    }
+    $sale_price_total=$sale_price * $quantity;
+?>
+
+
+<h5 class="item-price"><?php echo e(number_format($sale_price, 0, ',', '.')); ?> VNĐ</h5>
+
+
+<?php if($sale_price < $price): ?>
+    <h5 class="item-price" style="
+        text-decoration: line-through; 
+        color: #888; 
+        opacity: 0.7;
+    "><?php echo e(number_format($price, 0, ',', '.')); ?> VNĐ</h5>
+<?php endif; ?>
+
+
+                                            </td>
                                             <td>
                                                 <div class="product_count">
                                                     <input type="number" name="qty" value="<?php echo e($quantity); ?>" class="input-text qty"
@@ -80,7 +116,7 @@
                                                 </div>
                                                 <div class="quantity-error text-danger" style="display: none; font-size: 12px;"></div>
                                             </td>
-                                            <td><h5 class="item-total"><?php echo e(number_format($total, 0, ',', '.')); ?> VNĐ</h5></td>
+                                            <td><h5 class="item-total"><?php echo e(number_format($sale_price_total, 0, ',', '.')); ?> VNĐ</h5></td>
                                             <td>
                                                 <button class="btn btn-danger btn-sm" onclick="removeFromCart(<?php echo e($variant->id_variant); ?>)">
                                                     <i class="fa fa-trash"></i> Xóa

@@ -44,65 +44,90 @@
             </div>
 
             <!-- Cột phải: Thông tin sản phẩm -->
-            <!-- Cột phải: Thông tin sản phẩm -->
-<div class="col-lg-6">
-    <div class="s_product_text" style="margin-left: 20px; margin-top: 20px;">
-        <h3>{{ $product->name_product }}</h3>
-        
-        @if ($product->variants->sum('quantity') > 0)
-            <div style="display: flex">
-                <h2>
-                    <span id="dynamic-price">
-                        @php
-                            $minPrice = $product->variants->min('price');
-                            $sale = $product->advice_product ? ($product->advice_product->value / 100) * $minPrice : 0;
-                            $salePrice = $minPrice - $sale;
-                        @endphp
-                        {{ number_format($salePrice, 0, ',', '.') }}
-                    </span> <span>VNĐ</span>
-                </h2>
+            <div class="col-lg-6 " >
+                <div class="s_product_text" style="margin-left: 20px; margin-top: 20px;">
+                    <h3>{{ $product->name_product }}</h3>
+                    <div style="display: flex">
+                    <h2> 
+                        {{-- @php
+                            if($product->advice_product->status == "on"){
+                                $dynamic_price-sale
+                            }
+                        @endphp --}}
+                        <span id="dynamic-price-sale">
+                            @if ($product->variants->count() > 0)
+                                @php
+                                   $price = $product->variants->min('price');
+                                   if($product->advice_product->status == "on"){
+                                    $sale = ($product->advice_product->value/100)*$product->variants->min('price');
+                                    $sale_price =  $price - $sale;
+                                   }else {
+                                     $sale_price =  $price;
+                                   }
+                                   
+                                @endphp
+                                {{ number_format(($sale_price), 0, ',', '.') }}
+                            @else
+                                <span class="text-danger">Đang cập nhật</span>
+                            @endif
+                        </span> <span>VNĐ</span>
+                    </h2>
+                    @if ($product->advice_product->status == "off")
+                        <span id="dynamic-price"></span>
+                    @endif
+                    @if ($product->advice_product->status === "on")
+                        <h4 style="margin-left: 15px; margin-top: 3px;">
+                        <span id="dynamic-price" style="text-decoration: line-through;">
+                            @if ($product->variants->count() > 0)
+                                {{ number_format(($product->variants->min('price')), 0, ',', '.') }} VNĐ
+                            @else
+                                <span class="text-danger">Đang cập nhật</span>
+                            @endif
+                        </span>
+                    </h4>
                             @php 
-                $sale = $product->advice_product;
-                $now = \Carbon\Carbon::now();
-                $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
-                $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
-            @endphp
-@if($sale && $sale->status === "on" && $now->between($start, $end))
-                <h4 style="margin-left: 15px; margin-top: 3px;">
-                    <span id="dynamic-price" style="text-decoration: line-through;">
-                        {{ number_format($minPrice, 0, ',', '.') }} VNĐ
-                    </span>
-                </h4>
-@endif
-            </div>
+                                $sale = $product->advice_product;
+                            $now = \Carbon\Carbon::now();
+                                $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                            $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                            @endphp
+                            {{-- Ô vuông % giảm giá tông vàng-cam --}}
+                            <div style="
+                                display: inline-block;
+                                height: 35px;
+                                line-height: 35px; /* canh giữa dọc bằng chính chiều cao */
+                                background: linear-gradient(135deg, #ff7e00, #ffb400);
+                                color: #fff;
+                                border-radius: 8px;
+                                font-weight: 700;
+                                font-size: 14px;
+                                white-space: nowrap;
+                                box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+                                padding: 0 12px;   /* có thể để 0 nếu bạn thực sự không muốn padding */
+                                vertical-align: middle; 
+                                margin-left: 20px;
+                                ">
+
+                                -{{$product->advice_product->value}}%
+                            </div>
+                    
+                    @else
+                        
+                    @endif
+                   
 
 
-
-            @if ($sale && $sale->status === "on" && $now->between($start, $end))
-                {{-- Ô vuông % giảm giá tông vàng-cam --}}
-                <div style="
-                    position: absolute;
-                    top: 10%;
-                    left: 65%;
-                    background: linear-gradient(135deg, #ff7e00, #ffb400);
-                    color: white;
-                    padding: 5px 8px;
-                    border-radius: 5px;
-                    font-weight: bold;
-                    font-size: 14px;
-                    z-index: 10;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                ">
-                    -{{ $product->advice_product->value }}%
                 </div>
-            @endif
-        @else
-            <h2 class="text-danger">Hết hàng!</h2>
-        @endif
-        <!--  -->
-        <ul class="list">
-            <li><span>Danh mục</span>: {{ $product->category->name_category ?? 'Chưa phân loại' }}</li>
-        </ul>
+                    
+                    
+                    <ul class="list">
+                        <li><a href="{{ route('products', ['category' => $product->category->id_category]) }}"><span>Danh mục</span>: {{ $product->category->name_category ?? 'Chưa phân loại' }}</a></li>
+                    </ul>
+
+
+
+
+
 
         <p>{{ $product->description }}</p>
 
@@ -386,6 +411,7 @@ sizeButtons.forEach(btn => btn.style.display = 'none');
 
     const mainImage = document.getElementById('main-image');
     const priceDisplay = document.getElementById('dynamic-price');
+    const priceSaleDisplay = document.getElementById('dynamic-price-sale');
     const stockDisplay = document.getElementById('dynamic-stock');
     const input = document.getElementById('sst');
     const hiddenVariantInput = document.getElementById('variant_id');
@@ -507,11 +533,30 @@ sizeButtons.forEach(btn => {
         sizeButtons.forEach(b => b.classList.remove('active', 'btn-dark'));
         // Gắn active cho nút đang chọn
         btn.classList.add('active', 'btn-dark');
+        const adviceStatus= @json($product->advice_product->status ?? null);
+        const adviceValue= @json($product->advice_product->value ?? null);
 
         // Cập nhật giá
         const price = parseFloat(btn.dataset.price);
-        const formattedPrice = price.toLocaleString('vi-VN');
-        priceDisplay.innerText = formattedPrice;
+        
+           if (adviceValue && adviceValue > 0 && adviceStatus === "on") {
+            let finalPrice = price - (price * (adviceValue / 100));
+            finalPrice = Math.round(finalPrice);
+            priceSaleDisplay.innerText = finalPrice.toLocaleString('vi-VN');
+            priceDisplay.innerText = price.toLocaleString('vi-VN') + " VNĐ"; // gạch ngang
+            priceDisplay.style.textDecoration = "line-through";
+        } else {
+            // Không giảm giá → hiển thị giá bình thường
+            priceSaleDisplay.innerText = price.toLocaleString('vi-VN') + " VNĐ";
+            priceDisplay.innerText = "";
+            priceDisplay.style.textDecoration = "none";
+        }
+        // const formattedPrice = price.toLocaleString('vi-VN') + " VNĐ";
+        // const roundedPrice = Math.round(finalPrice); 
+        // const formattedPriceSale = roundedPrice.toLocaleString('vi-VN');
+
+        // priceDisplay.innerText = formattedPrice;
+        // priceSaleDisplay.innerText = formattedPriceSale;
 
         // Cập nhật tồn kho
         const qty = parseInt(btn.dataset.quantity);
@@ -676,6 +721,8 @@ function addToCart(event) {
                 text: data.message || 'Đã thêm vào giỏ hàng!',
                 timer: 1500,
                 showConfirmButton: false
+            }).then(() => {
+                location.reload();
             });
             updateCartCount();
         } else {
