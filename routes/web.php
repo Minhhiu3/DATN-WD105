@@ -221,6 +221,9 @@ Route::delete('/admin/variants/force-delete/{id}', [VariantController::class, 'f
         'destroy' => 'admin.colors.destroy',
     ]);
     // Discount Management Routes
+
+    Route::get('/check-code', [DiscountController::class, 'checkCode']);
+
     Route::resource('/discounts', DiscountController::class)->names([
         'index' => 'admin.discounts.index',
         'create' => 'admin.discounts.create',
