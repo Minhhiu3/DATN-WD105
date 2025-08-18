@@ -91,8 +91,21 @@ class CheckoutController extends Controller
                 DB::rollBack();
                 return redirect()->back()->withErrors('Số lượng sản phẩm không đủ trong kho.');
             }
+               $variant = Variant::find($request->variant_id);
+        $adviceProduct = AdviceProduct::where('product_id', $variant->product_id)
+            ->whereDate('start_date', '<=', Carbon::today())
+            ->whereDate('end_date', '>=', Carbon::today())
+            ->first();
+        if ($adviceProduct && $adviceProduct->status == "on" ) {
+            $pricevariantSale = $variant->price * ($adviceProduct->value/100);
+            $subtotal = ($variant->price - $pricevariantSale ) * $request->quantity;
 
-            $totalAmount = $variant->price * $request->quantity;
+        }else {
+            $subtotal = $variant->price * $request->quantity;
+
+        }
+
+            $totalAmount = $subtotal;
             $shippingFee = 30000;
 
             //  Lấy giảm giá từ session nếu có
@@ -414,8 +427,11 @@ return view('client.pages.checkout_cart', compact(
         DB::beginTransaction();
 
         try {
+
             $totalAmount = 0;
             $grand_total =0;
+            // $variant = Variant::find($request->variant_id);
+
              foreach ($cartItems as $item) {
                 $variant = $item->variant;
 
@@ -427,8 +443,20 @@ return view('client.pages.checkout_cart', compact(
                 if ($variant->quantity < $item->quantity) {
                     throw new \Exception("Sản phẩm {$item->variant->product->name_product}, màu:{$item->variant->color->name_color}, size:{$item->variant->size->name} không đủ hàng. Chỉ còn {$variant->quantity} sản phẩm");
                 }
+ $adviceProduct = AdviceProduct::where('product_id', $variant->product_id)
+            ->whereDate('start_date', '<=', Carbon::today())
+            ->whereDate('end_date', '>=', Carbon::today())
+            ->first();
+        if ($adviceProduct && $adviceProduct->status == "on" ) {
+            $valueSale = $adviceProduct->value;
+            $pricevariantSale = $variant->price * (1- ($valueSale/100));
+            $subtotal = $pricevariantSale * $item->quantity;
 
-                $totalAmount += $variant->price * $item->quantity;
+        }else {
+            $subtotal = $variant->price * $item->quantity;
+
+        }
+                $totalAmount +=  $subtotal;
             }
 
             $shippingFee = 30000;
@@ -540,8 +568,21 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             if ($variant->quantity < $item->quantity) {
                 return redirect()->route('cart')->withErrors("Sản phẩm {$variant->product->name_product},màu:{$variant->color->name_color},size:{$variant->size->name} không đủ hàng.");
             }
+              $adviceProduct = AdviceProduct::where('product_id', $variant->product_id)
+            ->whereDate('start_date', '<=', Carbon::today())
+            ->whereDate('end_date', '>=', Carbon::today())
+            ->first();
+              if ($adviceProduct && $adviceProduct->status == "on" ) {
+            $valueSale = $adviceProduct->value;
+            $pricevariantSale = $variant->price * (1- ($valueSale/100));
+            $subtotal = $pricevariantSale * $item->quantity;
 
-            $totalAmount += $variant->price * $item->quantity;
+        }else {
+            $subtotal = $variant->price * $item->quantity;
+
+        }
+
+            $totalAmount += $subtotal;
         }
 
             $shippingFee = 30000;

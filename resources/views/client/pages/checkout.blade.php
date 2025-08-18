@@ -47,7 +47,7 @@
     <p id="coupon-message" class="mt-2 p-2 rounded text-sm font-medium"></p>
 </div> --}}
 <div class="coupon-box">
-    <p id="coupon-message" 
+    <p id="coupon-message"
        class="coupon-msg items-center  gap-2 p-3 rounded-lg text-sm font-medium border shadow-sm transition-all duration-300">
     </p>
 </div>
@@ -134,7 +134,7 @@
                     </div>
                 </div>
             @else
-                
+
             @endif
 
         @endif
@@ -459,21 +459,21 @@ function showCouponMessage(message, type = 'success') {
                       <!-- Thông tin người dùng -->
                      <div class="form-group">
                     <label><b>Họ và tên người nhận hàng</b></label>
-                    <input 
-                    type="text" 
+                    <input
+                    type="text"
                     name="user_name"
-                    class="form-control" 
-                    value="{{ auth()->user()->name }}" 
+                    class="form-control"
+                    value="{{ auth()->user()->name }}"
                     required>
                 </div>
 
                 <div class="form-group">
                     <label><b>Số điện thoại</b></label>
-                    <input 
-                    type="text" 
-                    name="phone" 
-                    class="form-control" 
-                    value="{{ auth()->user()->phone_number }}" 
+                    <input
+                    type="text"
+                    name="phone"
+                    class="form-control"
+                    value="{{ auth()->user()->phone_number }}"
                     required>
                 </div>
 
@@ -527,7 +527,7 @@ function showCouponMessage(message, type = 'success') {
                         <li>
                             <b>{{ $variant->product->name_product }} (Size: {{ $variant->size->name }}, Color: {{$variant->color->name_color}})</b>
                             <span class="middle">x {{ $quantity }}</span>
-                            @php 
+                            @php
                                 if ($variant->adviceProduct) {
                                     $priceSale= $variant->price - ($variant->price*($variant->adviceProduct->value/100 ));
                                 }else {
