@@ -28,7 +28,12 @@ class CategoryController extends Controller
 public function store(Request $request)
     {
         $request->validate([
-            'name_category' => 'required|string|max:255',
+            'name_category' => 'required|string|max:255|unique:category,name_category',
+        ], [
+            'name_category.required' => 'Vui lòng nhập tên danh mục.',
+            'name_category.integer'   => 'Tên danh mục không hợp lệ.',
+            'name_category.max'      => 'Tên danh mục không được vượt quá 255 ký tự.',
+            'name_category.unique'   => 'Tên danh mục này đã tồn tại.',
         ]);
 
         Category::create($request->all());
@@ -50,8 +55,22 @@ public function store(Request $request)
     {
         $request->validate([
             'name_category' => 'required|string|max:255'
+        ], [
+            'name_category.required' => 'Vui lòng nhập tên danh mục.',
+            'name_category.integer'   => 'Tên danh mục không hợp lệ.',
+            'name_category.max'      => 'Tên danh mục không được vượt quá 255 ký tự.',
         ]);
+        // Trường hợp tên danh mục đã tồn tại trong DB (trùng với danh mục khác)
+        $exists = Category::where('name_category', $request->name_category)
+                    ->where('id_category', '!=', $category->id_category) // loại trừ size hiện tại
+                    ->exists();
 
+        if ($exists) {
+            return back()
+                ->withErrors(['name_category' => 'Tên danh mục này đã tồn tại trong hệ thống.'])
+                ->withInput();
+        }
+        
         $category->update($request->all());
 
         return redirect()->route('admin.categories.index')->with('success', 'Cập nhật danh mục mới thành công.');
