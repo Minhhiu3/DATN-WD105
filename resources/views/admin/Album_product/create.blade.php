@@ -88,7 +88,7 @@
         <input type="hidden" name="product_id" value="{{ $product->id_product }}">
 
         <div class="mb-3">
-            <label for="product_id" class="form-label">ID sản phẩm</label>
+            <label for="product_id" class="form-label">Tên sản phẩm</label>
             <input type="text" id="product_id" class="form-control" value="{{ $product->name_product }}" disabled>
         </div>
 
