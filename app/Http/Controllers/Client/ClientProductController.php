@@ -52,7 +52,7 @@ class ClientProductController extends Controller
     $canReview = false;
     $orderId = null;
       $alreadyReviewed = false;
-      $averageRating = $product->productReviews()->avg('rating');
+      $averageRating = $product->productReviews()->where('status', 'visible')->avg('rating');
 
 
     if ($user) {
