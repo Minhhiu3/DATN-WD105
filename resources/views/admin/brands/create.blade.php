@@ -125,18 +125,18 @@
 <div class="card-clean">
     <h2><i class="bi bi-building"></i> ➕ Thêm Thương Hiệu</h2>
 
-    <form action="{{ route('admin.brands.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.brands.store') }}" method="POST" enctype="multipart/form-data" id="brand-form">
         @csrf
         <div class="mb-3">
             <label for="name" class="form-label">Tên thương hiệu</label>
             <input type="text" name="name" id="name"
                    class="form-control @error('name') is-invalid @enderror"
                    value="{{ old('name') }}" placeholder="Nhập tên thương hiệu...">
-            @error('name')
-                <div class="text-danger">
+            <div class="error-message text-danger">
+                @error('name')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
-                </div>
-            @enderror
+                @enderror
+            </div>
         </div>
 
         <div class="mb-3">
@@ -147,11 +147,11 @@
                 <input type="file" name="logo" id="logo" class="d-none" >
             </label>
             <img id="logo-preview" alt="Preview logo">
-            @error('logo')
-                <div class="text-danger">
+            <div class="error-message text-danger">
+                @error('logo')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
-                </div>
-            @enderror
+                @enderror
+            </div>
         </div>
 
         <div class="mb-3">
@@ -160,6 +160,11 @@
                 <option value="visible" {{ old('status') == 'visible' ? 'selected' : '' }}>Hiển thị</option>
                 <option value="hidden" {{ old('status') == 'hidden' ? 'selected' : '' }}>Ẩn</option>
             </select>
+            <div class="error-message text-danger">
+                @error('status')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         <div class="d-flex justify-content-between">
@@ -174,21 +179,138 @@
 </div>
 
 <script>
-    const logoInput = document.getElementById('logo');
-    const logoPreview = document.getElementById('logo-preview');
+const logoInput = document.getElementById('logo');
+const logoPreview = document.getElementById('logo-preview');
 
-    logoInput.addEventListener('change', function(){
-        const file = this.files[0];
-        if (file){
-            const reader = new FileReader();
-            reader.onload = function(e){
-                logoPreview.src = e.target.result;
-                logoPreview.style.display = 'block';
-            }
-            reader.readAsDataURL(file);
-        } else {
-            logoPreview.style.display = 'none';
+logoInput.addEventListener('change', function(){
+    const file = this.files[0];
+    if (file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            logoPreview.src = e.target.result;
+            logoPreview.style.display = 'block';
         }
+        reader.readAsDataURL(file);
+    } else {
+        logoPreview.style.display = 'none';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('brand-form');
+
+    const rules = {
+        name: { required: true, string: true, max: 255 },
+        logo: { required: true, image: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 },
+        status: { required: true },
+    };
+
+    const messages = {
+        name: {
+            required: 'Vui lòng nhập tên thương hiệu.',
+            string: 'Tên thương hiệu không hợp lệ.',
+            max: 'Tên sản thương hiệu được vượt quá 255 ký tự.'
+        },
+        status: { required: 'Vui lòng chọn trạng thái.' },
+        logo: {
+            required: 'Bạn cần tải lên hình ảnh thương hiệu.',
+            mimes: 'File chỉ chấp nhận định dạng: jpeg, png, jpg.',
+            maxSize: 'Kích thước ảnh không được vượt quá 2MB.'
+        }
+    };
+
+    function getGroup(input){
+        return input.closest('.mb-3, .mb-4') || input.parentNode;
+    }
+
+    function showError(input, message) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        input.classList.add('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.add('border-danger');
+    }
+
+    function clearError(input) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = '';
+        input.classList.remove('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.remove('border-danger');
+    }
+
+    function validateField(input) {
+        const name = input.name.replace('[]', ''); // album[]
+        const rule = rules[name];
+        if (!rule) return true;
+
+        const isFile = input.type === 'file';
+        const value = isFile ? '' : (input.value || '').trim();
+
+        // required
+        if (rule.required) {
+            if (isFile) {
+                if (input.files.length === 0) {
+                    showError(input, messages[name].required);
+                    return false;
+                }
+            } else if (!value) {
+                showError(input, messages[name].required);
+                return false;
+            }
+        }
+
+        // string
+        if (rule.string && !isFile && value && typeof value !== 'string') {
+            showError(input, messages[name].string);
+            return false;
+        }
+
+        // numeric/min/max
+        if (rule.numeric && value && isNaN(value)) {
+            showError(input, messages[name].numeric); return false;
+        }
+        if (rule.min && value && Number(value) < rule.min) {
+            showError(input, messages[name].min); return false;
+        }
+        if (rule.max && value && Number(value) > rule.max) {
+            showError(input, messages[name].max); return false;
+        }
+
+        // file check (image types & size)
+        if (isFile && input.files.length > 0) {
+            for (const file of input.files) {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (rule.mimes && !rule.mimes.includes(ext)) {
+                    showError(input, messages[name].mimes); return false;
+                }
+                if (rule.maxSize && file.size > rule.maxSize * 1024) {
+                    showError(input, messages[name].maxSize); return false;
+                }
+            }
+        }
+
+        clearError(input);
+        return true;
+    }
+
+    // Bắt sự kiện
+    const inputs = form.querySelectorAll('input, select');
+
+    inputs.forEach(input => {
+        const h = () => validateField(input);
+        input.addEventListener('input', h);
+        input.addEventListener('blur', h);
+        if (input.type === 'file') input.addEventListener('change', h);
     });
+
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        inputs.forEach(input => { if (!validateField(input)) isValid = false; });
+        if (!isValid) e.preventDefault();
+    });
+});
 </script>
 @endsection

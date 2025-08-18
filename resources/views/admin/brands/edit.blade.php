@@ -138,7 +138,7 @@
 <div class="card-clean">
     <h2><i class="bi bi-pencil-square"></i> ✏️ Cập nhật Thương hiệu</h2>
 
-    <form action="{{ route('admin.brands.update', $brand->id_brand) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.brands.update', $brand->id_brand) }}" method="POST" enctype="multipart/form-data" id="brand-form">
         @csrf
         @method('PUT')
 
@@ -148,35 +148,39 @@
                 class="form-control @error('name') is-invalid @enderror" 
                 value="{{ old('name', $brand->name) }}" 
                 placeholder="Nhập tên thương hiệu" >
-                        @error('name')
-                <div class="text-danger">
+            <div class="error-message text-danger">
+                @error('name')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
-                </div>
-            @enderror
-        </div>
+                @enderror
+            </div>
 
         <div class="mb-3">
             <label class="form-label">Logo thương hiệu</label>
             <label for="logo" class="file-upload">
                 <i class="bi bi-cloud-upload"></i>
                 <span>📂 Chọn logo mới (nếu muốn thay đổi)</span>
-                <input type="file" name="logo" id="logo" class="d-none" accept="image/*">
+                <input type="file" name="logo" id="logo" class="d-none @error('logo') is-invalid @enderror" accept="image/*">
             </label>
             <div style="margin-top: 10px;">
                 <img id="image-preview" src="{{ asset('storage/'.$brand->logo) }}" alt="Preview" style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             </div>
-            @error('logo')
-                <div class="text-danger">
+            <div class="error-message text-danger">
+                @error('logo')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
-                </div>
-            @enderror
+                @enderror
+            </div>
         </div>
         <div class="mb-3">
             <label for="status" class="form-label">Trạng thái</label>
-            <select name="status" id="status" class="form-select">
+            <select name="status" id="status" class="form-select @error('status') is-invalid @enderror">
                 <option value="visible" {{ old('status') == 'visible' ? 'selected' : '' }}>Hiển thị</option>
                 <option value="hidden" {{ old('status') == 'hidden' ? 'selected' : '' }}>Ẩn</option>
             </select>
+            <div class="error-message text-danger">
+                @error('status')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         <div class="d-flex justify-content-between">
@@ -190,19 +194,140 @@
     </form>
 </div>
 
-<script>
-    const logoInput = document.getElementById('logo');
-    const imagePreview = document.getElementById('image-preview');
 
-    logoInput.addEventListener('change', function(){
-        const file = this.files[0];
-        if (file){
-            const reader = new FileReader();
-            reader.onload = function(e){
-                imagePreview.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
+<script>
+const logoInput = document.getElementById('logo');
+const logoPreview = document.getElementById('logo-preview');
+
+logoInput.addEventListener('change', function(){
+    const file = this.files[0];
+    if (file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            logoPreview.src = e.target.result;
+            logoPreview.style.display = 'block';
         }
+        reader.readAsDataURL(file);
+    } else {
+        logoPreview.style.display = 'none';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('brand-form');
+
+    const rules = {
+        name: { required: true, string: true, max: 255 },
+        logo: { image: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 },
+        status: { required: true },
+    };
+
+    const messages = {
+        name: {
+            required: 'Vui lòng nhập tên thương hiệu.',
+            string: 'Tên thương hiệu không hợp lệ.',
+            max: 'Tên sản thương hiệu được vượt quá 255 ký tự.'
+        },
+        logo: {
+            mimes: 'File chỉ chấp nhận định dạng: jpeg, png, jpg.',
+            maxSize: 'Kích thước ảnh không được vượt quá 2MB.'
+        },
+        status: { required: 'Vui lòng chọn trạng thái.' },
+
+    };
+
+    function getGroup(input){
+        return input.closest('.mb-3, .mb-4') || input.parentNode;
+    }
+
+    function showError(input, message) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        input.classList.add('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.add('border-danger');
+    }
+
+    function clearError(input) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = '';
+        input.classList.remove('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.remove('border-danger');
+    }
+
+    function validateField(input) {
+        const name = input.name.replace('[]', ''); // album[]
+        const rule = rules[name];
+        if (!rule) return true;
+
+        const isFile = input.type === 'file';
+        const value = isFile ? '' : (input.value || '').trim();
+
+        // required
+        if (rule.required) {
+            if (isFile) {
+                if (input.files.length === 0) {
+                    showError(input, messages[name].required);
+                    return false;
+                }
+            } else if (!value) {
+                showError(input, messages[name].required);
+                return false;
+            }
+        }
+
+        // string
+        if (rule.string && !isFile && value && typeof value !== 'string') {
+            showError(input, messages[name].string);
+            return false;
+        }
+
+        // numeric/min/max
+        if (rule.numeric && value && isNaN(value)) {
+            showError(input, messages[name].numeric); return false;
+        }
+        if (rule.min && value && Number(value) < rule.min) {
+            showError(input, messages[name].min); return false;
+        }
+        if (rule.max && value && Number(value) > rule.max) {
+            showError(input, messages[name].max); return false;
+        }
+
+        // file check (image types & size)
+        if (isFile && input.files.length > 0) {
+            for (const file of input.files) {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (rule.mimes && !rule.mimes.includes(ext)) {
+                    showError(input, messages[name].mimes); return false;
+                }
+                if (rule.maxSize && file.size > rule.maxSize * 1024) {
+                    showError(input, messages[name].maxSize); return false;
+                }
+            }
+        }
+
+        clearError(input);
+        return true;
+    }
+
+    // Bắt sự kiện
+    const inputs = form.querySelectorAll('input, select');
+
+    inputs.forEach(input => {
+        const h = () => validateField(input);
+        input.addEventListener('input', h);
+        input.addEventListener('blur', h);
+        if (input.type === 'file') input.addEventListener('change', h);
     });
+
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        inputs.forEach(input => { if (!validateField(input)) isValid = false; });
+        if (!isValid) e.preventDefault();
+    });
+});
 </script>
 @endsection
