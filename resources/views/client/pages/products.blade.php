@@ -97,7 +97,7 @@
     $minPrice = $product->variants->min('price');
     $maxPrice = $product->variants->max('price');
 @endphp
- @php 
+ @php
     $sale = $product->advice_product;
 $now = \Carbon\Carbon::now();
     $start = \Carbon\Carbon::parse($sale->start_date ?? '' )->startOfDay();
@@ -151,7 +151,7 @@ $end = \Carbon\Carbon::parse($sale->end_date ?? '')->endOfDay();
                                             <a href="{{ route('client.product.show', $product->id_product) }}"
                                                 class="social-info">
                                                 <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">view more</p>
+                                                <p class="hover-text">Xem chi tiết</p>
                                             </a>
                                         </div>
                                     </figcaption>
