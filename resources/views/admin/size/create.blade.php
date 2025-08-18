@@ -120,29 +120,19 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('admin.sizes.store') }}" method="POST">
+    <form action="{{ route('admin.sizes.store') }}" method="POST" id="size-form">
         @csrf
         <div class="mb-3">
             <label for="name" class="form-label">Tên size</label>
-            <input type="text" name="name" id="name" class="form-control"
+            <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
                    value="{{ old('name') }}" placeholder="Nhập tên size mới" >
                        <!-- Hiển thị lỗi từng trường -->
 
-            @error('name')
-                <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        let input = document.getElementById("name");
-                        input.classList.add("shake", "is-invalid");
-                        setTimeout(() => input.classList.remove("shake"), 400);
-                    });
-                </script>
-                <div class="text-danger mt-1" style="font-size:0.9rem;">
-                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
-                </div>
-            @enderror
-
-
-            
+                <div class="error-message text-danger">
+                    @error('name')
+                        <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                    @enderror
+                </div>           
         </div>
         <div class="d-flex justify-content-between mt-4">
             <button type="submit" class="btn-primary-custom">
@@ -154,4 +144,106 @@
         </div>
     </form>
 </div>
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('size-form');
+
+    const rules = {
+        name: { required: true, integer: true, max: 255,min:1 },
+    };
+
+    const messages = {
+        name: {
+            required: 'Vui lòng nhập size sản phẩm.',
+            integer: 'Tên size không hợp lệ.',
+            max: 'Tên size không được vượt quá 255 ký tự.',
+            min: 'Tên size không được nhập giá trị âm.'
+        },
+    };
+
+    function getGroup(input){
+        return input.closest('.mb-3, .mb-4') || input.parentNode;
+    }
+
+    function showError(input, message) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        input.classList.add('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.add('border-danger');
+    }
+
+    function clearError(input) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = '';
+        input.classList.remove('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.remove('border-danger');
+    }
+
+    function validateField(input) {
+        const name = input.name.replace('[]', ''); // album[]
+        const rule = rules[name];
+        if (!rule) return true;
+
+        const isFile = input.type === 'file';
+        const value = isFile ? '' : (input.value || '').trim();
+
+        // required
+        if (rule.required) {
+            if (isFile) {
+                if (input.files.length === 0) {
+                    showError(input, messages[name].required);
+                    return false;
+                }
+            } else if (!value) {
+                showError(input, messages[name].required);
+                return false;
+            }
+        }
+        //integerss
+    // integer
+    if (rule.integer) {
+        let num = Number(value);
+        if (!Number.isInteger(num)) {
+            showError(input, messages[name].integer);
+            return false;
+        }
+        // min
+        if (rule.min !== undefined && num < rule.min) {
+            showError(input, messages[name].min);
+            return false;
+        }
+        // max
+        if (rule.max !== undefined && num > rule.max) {
+            showError(input, messages[name].max);
+            return false;
+        }
+    }
+
+        clearError(input);
+        return true;
+    }
+
+    // Bắt sự kiện
+    const inputs = form.querySelectorAll('input');
+
+    inputs.forEach(input => {
+        const h = () => validateField(input);
+        input.addEventListener('input', h);
+        input.addEventListener('blur', h);
+        if (input.type === 'file') input.addEventListener('change', h);
+    });
+
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        inputs.forEach(input => { if (!validateField(input)) isValid = false; });
+        if (!isValid) e.preventDefault();
+    });
+});
+</script>
+
 @endsection
