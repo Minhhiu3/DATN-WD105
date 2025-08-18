@@ -112,14 +112,6 @@
 <div class="card-clean">
     <h3><i class="bi bi-plus-circle"></i> Thêm Size Sản phẩm</h3>
 
-    <!-- Flash messages -->
-    @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
     <form action="{{ route('admin.sizes.store') }}" method="POST" id="size-form">
         @csrf
         <div class="mb-3">
