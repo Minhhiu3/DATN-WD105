@@ -132,7 +132,7 @@
 <div class="card-clean">
     <h2><i class="bi bi-bag-plus"></i> ➕ Thêm Sản phẩm</h2>
 
-    @if ($errors->any())
+    {{-- @if ($errors->any())
         <div class="alert alert-danger">
             <ul class="mb-0">
                 @foreach ($errors->all() as $error)
@@ -140,25 +140,35 @@
                 @endforeach
             </ul>
         </div>
-    @endif
+    @endif --}}
 
-    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="product-form">
         @csrf
 
         {{-- Thông tin sản phẩm --}}
         <div class="mb-3">
             <label for="name_product" class="form-label">Tên Sản Phẩm</label>
-            <input type="text" name="name_product" id="name_product" class="form-control" value="{{ old('name_product') }}" placeholder="Nhập tên sản phẩm" required>
+            <input type="text" name="name_product" id="name_product" class="form-control @error('name_product') is-invalid @enderror" value="{{ old('name_product') }}" placeholder="Nhập tên sản phẩm" >
+            <div class="error-message text-danger">
+                @error('name_product')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         <div class="mb-3">
             <label for="price" class="form-label">Giá</label>
-            <input type="number" name="price" id="price" class="form-control" value="{{ old('price') }}" placeholder="Nhập giá" min="0" required>
+            <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" placeholder="Nhập giá" min="0" >
+            <div class="error-message text-danger">
+                @error('price')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         <div class="mb-3">
             <label for="category_id" class="form-label">Danh Mục</label>
-            <select name="category_id" id="category_id" class="form-select" required>
+            <select name="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror" >
                 <option value="">-- Chọn Danh Mục --</option>
                 @foreach ($categories as $category)
                     <option value="{{ $category->id_category }}" {{ old('category_id') == $category->id_category ? 'selected' : '' }}>
@@ -166,10 +176,15 @@
                     </option>
                 @endforeach
             </select>
+            <div class="error-message text-danger">
+                @error('category_id')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
         <div class="mb-3">
-            <label for="brand_id" class="form-label">Thương Hiệu</label>
-            <select name="brand_id" id="brand_id" class="form-select" required>
+            <label for="brand_id" class="form-label ">Thương Hiệu</label>
+            <select name="brand_id" id="brand_id" class="form-select @error('brand_id') is-invalid @enderror" >
                 <option value="">-- Chọn Thương Hiệu --</option>
                 @foreach ($brands as $brand)
                     <option value="{{ $brand->id_brand }}" {{ old('brand_id') == $brand->id_brand ? 'selected' : '' }}>
@@ -177,10 +192,20 @@
                     </option>
                 @endforeach
             </select>
+            <div class="error-message text-danger">
+                @error('brand_id')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Mô Tả</label>
-            <textarea name="description" id="description" cols="30" rows="5" class="form-control" placeholder="Mô tả chi tiết sản phẩm..."></textarea>
+            <textarea name="description" id="description" cols="30" rows="5" class="form-control @error('description') is-invalid @enderror" placeholder="Mô tả chi tiết sản phẩm..."></textarea>
+            <div class="error-message text-danger">
+                @error('description')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         {{-- Ảnh sản phẩm --}}
@@ -189,10 +214,15 @@
             <label for="image" class="file-upload">
                 <i class="bi bi-cloud-upload"></i>
                 <span>  Chọn ảnh sản phẩm</span>
-                <input type="file" name="image" id="image" class="d-none" accept="image/*" required>
+                <input type="file" name="image" id="image" class="d-none @error('image') is-invalid @enderror"  >
             </label>
             <div style="margin-top: 10px;">
                 <img id="image-preview" alt="Preview" style="max-width: 200px; display: none; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            </div>
+            <div class="error-message text-danger">
+                @error('image')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
             </div>
         </div>
 
@@ -202,9 +232,14 @@
             <label for="album" class="file-upload">
                 <i class="bi bi-images"></i>
                 <span>  Chọn nhiều ảnh cho album</span>
-                <input type="file" name="album[]" id="album" class="d-none" accept="image/*" multiple>
+                <input type="file" name="album[]" id="album" class="d-none @error('album.*') is-invalid @enderror" accept="image/*" multiple>
             </label>
             <div class="album-preview" id="album-preview"></div>
+            <div class="error-message text-danger">
+                @error('album.*')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         {{-- Thông tin bảng advice_product --}}
@@ -212,30 +247,50 @@
         <h5 class="text-primary">📢 Thêm Advice Product</h5>
 
         <div class="mb-3">
-            <label for="value" class="form-label">Value</label>
-            <input type="number" name="value" id="value" class="form-control"
+            <label for="value" class="form-label ">Value</label>
+            <input type="number" name="value" id="value" class="form-control @error('value') is-invalid @enderror"
                    value="{{ old('value') }}"
                    placeholder="Nhập phần trăm giảm giá..."
-                   min="1" max="99" required>
+                   min="1" max="99" >
+            <div class="error-message text-danger">
+                @error('value')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="start_date" class="form-label">Ngày bắt đầu</label>
-                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ old('start_date') }}">
+                <input type="date" name="start_date" id="start_date" class="form-control @error('start_date') is-invalid @enderror" value="{{ old('start_date') }}">
+                <div class="error-message text-danger">
+                    @error('start_date')
+                        <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                    @enderror
+                </div>
             </div>
             <div class="col-md-6 mb-3">
                 <label for="end_date" class="form-label">Ngày kết thúc</label>
-                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ old('end_date') }}">
+                <input type="date" name="end_date" id="end_date" class="form-control @error('end_date') is-invalid @enderror" value="{{ old('end_date') }}">
+                <div class="error-message text-danger">
+                    @error('end_date')
+                        <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                    @enderror
+                </div>
             </div>
         </div>
 
         <div class="mb-3">
-            <label for="status" class="form-label">Trạng thái</label>
-            <select name="status" id="status" class="form-select" required>
+            <label for="status" class="form-label ">Trạng thái</label>
+            <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" >
                 <option value="on" {{ old('status') == 'on' ? 'selected' : '' }}>On</option>
                 <option value="off" {{ old('status') == 'off' ? 'selected' : '' }}>Off</option>
             </select>
+            <div class="error-message text-danger">
+                @error('status')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         {{-- Nút Submit --}}
@@ -251,39 +306,216 @@
 </div>
 
 <script>
-    const imageInput = document.getElementById('image');
-    const imagePreview = document.getElementById('image-preview');
-    const albumInput = document.getElementById('album');
-    const albumPreview = document.getElementById('album-preview');
+const imageInput = document.getElementById('image');
+const imagePreview = document.getElementById('image-preview');
+const albumInput = document.getElementById('album');
+const albumPreview = document.getElementById('album-preview');
 
-    // Preview ảnh chính
-    imageInput.addEventListener('change', function(){
-        const file = this.files[0];
-        if (file){
-            const reader = new FileReader();
-            reader.onload = function(e){
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
-            }
-            reader.readAsDataURL(file);
-        } else {
-            imagePreview.style.display = 'none';
+// Preview ảnh chính
+imageInput.addEventListener('change', function(){
+    const file = this.files[0];
+    if (file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = 'block';
         }
+        reader.readAsDataURL(file);
+    } else {
+        imagePreview.style.display = 'none';
+    }
+});
+
+// Preview album ảnh
+albumInput.addEventListener('change', function(){
+    albumPreview.innerHTML = "";
+    Array.from(this.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e){
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.maxHeight = '100px';
+            albumPreview.appendChild(img);
+        }
+        reader.readAsDataURL(file);
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('product-form');
+
+    const rules = {
+        name_product: { required: true, string: true, max: 255 },
+        price: { required: true, numeric: true, min: 1000 },
+        category_id: { required: true },
+        brand_id: { required: true },
+        description: { required: true, string: true },
+        image: { required: true, image: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 },
+        album: { required: true,image: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 }, // album[]
+        value: { required: true, integer: true, min: 1, max: 99 },
+        start_date: { required: true, date: true },
+        end_date: { required: true, date: true, afterOrEqual: 'start_date' },
+        status: { required: true, in: ['on','off'] }
+    };
+
+    const messages = {
+        name_product: {
+            required: 'Vui lòng nhập tên sản phẩm.',
+            string: 'Tên sản phẩm không hợp lệ.',
+            max: 'Tên sản phẩm không được vượt quá 255 ký tự.'
+        },
+        price: {
+            required: 'Vui lòng nhập giá sản phẩm.',
+            numeric: 'Giá phải là số.',
+            min: 'Giá sản phẩm không được nhỏ hơn 1000.'
+        },
+        category_id: { required: 'Vui lòng chọn danh mục.' },
+        brand_id: { required: 'Vui lòng chọn thương hiệu.' },
+        description: {
+            required: 'Vui lòng mô tả sản phẩm.',
+            string: 'Mô tả sản phẩm không hợp lệ.'
+        },
+        image: {
+            required: 'Bạn cần tải lên hình ảnh chính sản phẩm.',
+            mimes: 'File chỉ chấp nhận định dạng: jpeg, png, jpg.',
+            maxSize: 'Kích thước ảnh không được vượt quá 2MB.'
+        },
+        album: {
+            required: 'Bạn cần tải lên hình ảnh album sản phẩm.',
+            mimes: 'Ảnh trong album chỉ chấp nhận jpeg, jpg, png.',
+            maxSize: 'Ảnh trong album không được vượt quá 2MB.'
+        },
+        value: {
+            required: 'Bạn phải nhập phần trăm giảm giá',
+            integer: 'Bạn phải nhập phần trăm giảm giá',
+            min: 'Giá trị khuyến mãi ít nhất là 1%',
+            max: 'Giá trị khuyến mãi tối đa là 99%'
+        },
+        start_date: {
+            required: 'Vui lòng chọn ngày bắt đầu.',
+            date: 'Giá trị phải chọn theo kiểu thời gian.'
+        },
+        end_date: {
+            required: 'Vui lòng chọn ngày kết thúc.',
+            date: 'Giá trị phải chọn theo kiểu thời gian.',
+            afterOrEqual: 'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu'
+        },
+        status: { in: 'Trạng thái chỉ được chọn On hoặc Off' }
+    };
+
+    function getGroup(input){
+        return input.closest('.mb-3, .mb-4') || input.parentNode;
+    }
+
+    function showError(input, message) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        input.classList.add('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.add('border-danger');
+    }
+
+    function clearError(input) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = '';
+        input.classList.remove('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.remove('border-danger');
+    }
+
+    function validateField(input) {
+        const name = input.name.replace('[]', ''); // album[]
+        const rule = rules[name];
+        if (!rule) return true;
+
+        const isFile = input.type === 'file';
+        const value = isFile ? '' : (input.value || '').trim();
+
+        // required
+        if (rule.required) {
+            if (isFile) {
+                if (input.files.length === 0) {
+                    showError(input, messages[name].required);
+                    return false;
+                }
+            } else if (!value) {
+                showError(input, messages[name].required);
+                return false;
+            }
+        }
+
+        // string
+        if (rule.string && !isFile && value && typeof value !== 'string') {
+            showError(input, messages[name].string);
+            return false;
+        }
+
+        // numeric/min/max
+        if (rule.numeric && value && isNaN(value)) {
+            showError(input, messages[name].numeric); return false;
+        }
+        if (rule.min && value && Number(value) < rule.min) {
+            showError(input, messages[name].min); return false;
+        }
+        if (rule.max && value && Number(value) > rule.max) {
+            showError(input, messages[name].max); return false;
+        }
+
+        // in
+        if (rule.in && value && !rule.in.includes(value)) {
+            showError(input, messages[name].in); return false;
+        }
+
+        // date
+        if (rule.date && value && isNaN(Date.parse(value))) {
+            showError(input, messages[name].date); return false;
+        }
+
+        // after or equal
+        if (rule.afterOrEqual && value) {
+            const start = document.querySelector(`[name="${rule.afterOrEqual}"]`).value;
+            if (start && new Date(value) < new Date(start)) {
+                showError(input, messages[name].afterOrEqual); return false;
+            }
+        }
+
+        // file check (image types & size)
+        if (isFile && input.files.length > 0) {
+            for (const file of input.files) {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (rule.mimes && !rule.mimes.includes(ext)) {
+                    showError(input, messages[name].mimes); return false;
+                }
+                if (rule.maxSize && file.size > rule.maxSize * 1024) {
+                    showError(input, messages[name].maxSize); return false;
+                }
+            }
+        }
+
+        clearError(input);
+        return true;
+    }
+
+    // Bắt sự kiện
+    const inputs = form.querySelectorAll('input, select, textarea');
+
+    inputs.forEach(input => {
+        const h = () => validateField(input);
+        input.addEventListener('input', h);
+        input.addEventListener('blur', h);
+        if (input.type === 'file') input.addEventListener('change', h);
     });
 
-    // Preview album ảnh
-    albumInput.addEventListener('change', function(){
-        albumPreview.innerHTML = "";
-        Array.from(this.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e){
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.maxHeight = '100px';
-                albumPreview.appendChild(img);
-            }
-            reader.readAsDataURL(file);
-        });
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        inputs.forEach(input => { if (!validateField(input)) isValid = false; });
+        if (!isValid) e.preventDefault();
     });
+});
 </script>
+
+
+
 @endsection

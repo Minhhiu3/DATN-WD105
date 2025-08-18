@@ -1,9 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Thêm Sản phẩm mới')
-@php
-    $product_id = $_GET['id']; // Lấy giá trị từ query string
-@endphp
+
 
 @section('content')
 <style>
@@ -85,29 +83,34 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.album-products.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.album-products.store') }}" method="POST" enctype="multipart/form-data" id="album-product-form">
         @csrf
-        <input type="hidden" name="product_id" value="{{ $product_id }}">
+        <input type="hidden" name="product_id" value="{{ $product->id_product }}">
 
         <div class="mb-3">
             <label for="product_id" class="form-label">ID sản phẩm</label>
-            <input type="text" id="product_id" class="form-control" value="{{ $product_id }}" disabled>
+            <input type="text" id="product_id" class="form-control" value="{{ $product->name_product }}" disabled>
         </div>
 
         <div class="mb-3">
             <label for="album" class="form-label">Chọn ảnh album</label>
             <label for="album" class="file-upload">
                 📂 Chọn nhiều ảnh
-                <input type="file" name="album[]" id="album" class="d-none" accept="image/*" multiple>
+                <input type="file" name="album[]" id="album" class="d-none @error('album.*') is-invalid @enderror" accept="image/*" multiple>
             </label>
             <div id="album-preview" class="album-preview"></div>
+            <div class="error-message text-danger">
+                @error('album.*')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         <div class="d-flex justify-content-between">
             <button type="submit" class="btn-primary-custom">
                 <i class="bi bi-check-circle"></i> Thêm
             </button>
-            <a href="{{ route('admin.album-products.show', $product_id) }}" class="btn-secondary-custom">
+            <a href="{{ route('admin.album-products.show', $product->id_product) }}" class="btn-secondary-custom">
                 <i class="bi bi-x-circle"></i> Hủy
             </a>
         </div>
@@ -115,18 +118,115 @@
 </div>
 
 <script>
-    document.getElementById('album').addEventListener('change', function(){
-        const preview = document.getElementById('album-preview');
-        preview.innerHTML = "";
-        [...this.files].forEach(file => {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                preview.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
+
+const albumInput = document.getElementById('album');
+const albumPreview = document.getElementById('album-preview');
+
+
+// Preview album ảnh
+albumInput.addEventListener('change', function(){
+    albumPreview.innerHTML = "";
+    Array.from(this.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e){
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.maxHeight = '100px';
+            albumPreview.appendChild(img);
+        }
+        reader.readAsDataURL(file);
     });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('album-product-form');
+
+    const rules = {
+        album: { required: true,image: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 }, // album[]
+    };
+
+    const messages = {
+        album: {
+            required: 'Bạn cần tải lên hình ảnh album sản phẩm.',
+            mimes: 'Ảnh trong album chỉ chấp nhận jpeg, jpg, png.',
+            maxSize: 'Ảnh trong album không được vượt quá 2MB.'
+        }
+    };
+
+    function getGroup(input){
+        return input.closest('.mb-3, .mb-4') || input.parentNode;
+    }
+
+    function showError(input, message) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        input.classList.add('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.add('border-danger');
+    }
+
+    function clearError(input) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = '';
+        input.classList.remove('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.remove('border-danger');
+    }
+
+    function validateField(input) {
+        const name = input.name.replace('[]', ''); // album[]
+        const rule = rules[name];
+        if (!rule) return true;
+
+        const isFile = input.type === 'file';
+        const value = isFile ? '' : (input.value || '').trim();
+
+        // required
+        if (rule.required) {
+            if (isFile) {
+                if (input.files.length === 0) {
+                    showError(input, messages[name].required);
+                    return false;
+                }
+            } else if (!value) {
+                showError(input, messages[name].required);
+                return false;
+            }
+        }
+        // kiểm tra kích thức và kiểu file
+        if (isFile && input.files.length > 0) {
+            for (const file of input.files) {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (rule.mimes && !rule.mimes.includes(ext)) {
+                    showError(input, messages[name].mimes); return false;
+                }
+                if (rule.maxSize && file.size > rule.maxSize * 1024) {
+                    showError(input, messages[name].maxSize); return false;
+                }
+            }
+        }
+
+        clearError(input);
+        return true;
+    }
+
+    // Bắt sự kiện
+    const inputs = form.querySelectorAll('input');
+
+    inputs.forEach(input => {
+        const h = () => validateField(input);
+        input.addEventListener('input', h);
+        input.addEventListener('blur', h);
+        if (input.type === 'file') input.addEventListener('change', h);
+    });
+
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        inputs.forEach(input => { if (!validateField(input)) isValid = false; });
+        if (!isValid) e.preventDefault();
+    });
+});
 </script>
 @endsection

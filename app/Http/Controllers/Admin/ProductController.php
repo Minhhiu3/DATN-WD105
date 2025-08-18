@@ -65,36 +65,74 @@ class ProductController extends Controller
      */
 public function store(Request $request)
 {
-    // ✅ 1. Validate dữ liệu
+    // 1. Validate dữ liệu
     $request->validate([
-        'name_product'   => 'required|string|max:255',
-        'price'          => 'required|numeric|min:0',
+        'name_product'   => 'required|string|max:255|unique:products,name_product',
+        'price'          => 'required|numeric|min:1000',
         'category_id'    => 'required|exists:category,id_category', // Sửa đúng bảng categories
         'brand_id'    => 'required|exists:brands,id_brand', 
-        'description'    => 'nullable|string',
+        'description'    => 'required|string',
         'image'          => 'required|image|mimes:jpeg,jpg,png|max:2048',
-        'album.*'        => 'nullable|image|mimes:jpeg,jpg,png|max:2048', // validate từng ảnh album
+        'album.*'        => 'required|image|mimes:jpeg,jpg,png|max:2048', // validate từng ảnh album
 
-        // ✅ Validate dữ liệu advice_product
-        // 'value'          => 'required|integer|min:1|max:99', // chỉ cho phép từ 1 đến 99 (%)
-        // 'start_date'     => 'required|date',
-        // 'end_date'       => 'required|date|after_or_equal:start_date',
-                'start_date.required' => 'Vui lòng chọn ngày bắt đầu.',
-        'end_date.required'   => 'Vui lòng chọn ngày kết thúc.',
-        'end_date.after_or_equal' => 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu',
-        'value.required' => 'Vui lòng nhập phần trăm giảm giá.',
-        'value.integer'  => 'Phần trăm giảm giá phải là số nguyên.',
-        'value.min'      => 'Phần trăm giảm giá phải lớn hơn 0%.',
-        'value.max'      => 'Phần trăm giảm giá phải nhỏ hơn 100%.',
-                'status'         => 'required|in:on,off', // Enum chỉ chấp nhận on/off
+        // Validate dữ liệu advice_product
+        'value'          => 'required|integer|min:1|max:99', // chỉ cho phép từ 1 đến 99 (%)
+        'start_date'     => 'required|date',
+        'end_date'       => 'required|date|after_or_equal:start_date',
+        'status'         => 'required|in:on,off', // Enum chỉ chấp nhận on/off
     ], [
+        // Báo lỗi tên sản phẩm
+        'name_product.required' => 'Vui lòng nhập tên sản phẩm.',
+        'name_product.string' => 'Tên sản phẩm không hợp lệ.',
+        'name_product.max' => 'Tên sản phẩm không được vượt quá 255 ký tự.',
+        'name_product.unique'   => 'Tên sản phẩm này đã tồn tại.',
+        // Báo lỗi giá sản phẩm
+        'price.required' => 'Vui lòng nhập giá sản phẩm.',
+        'price.numeric'  => 'Giá phải là số.',
+        'price.min'  => 'Giá sản phẩm không được nhỏ hơn 1000.',
+        // Báo lỗi danh mục sản phẩm
+        'category_id.required' => 'Vui lòng chọn danh mục.',
+        'category_id.exists' => 'Danh mục không tồn tại.',
+        // Báo lỗi thương hiệu sản phẩm
+        'brand_id.required' => 'Vui lòng chọn thương hiệu.',
+        'brand_id.exists' => 'Thương hiệu không tồn tại.',
+        // Báo lỗi ảnh sản phẩm
+        'image.required' => 'Bạn cần tải lên hình ảnh chính sản phẩm.',
+        'image.image'    => 'File phải là hình ảnh (jpeg, jpg, png).',
+        'image.mimes'   => 'File chỉ chấp nhận định dạng: jpeg, png, jpg.',
+        'image.max'     => 'Kích thước ảnh không được vượt quá 2MB.',
+        // Báo lỗi mô tả sản phẩm
+        'description.required' => 'Vui lòng nhập mô tả sản phẩm.',
+        'description.string' => 'Mô tả sản phẩm không hợp lệ.',
 
+        // Bảng Album sản phẩm
+        // Báo lỗi album ảnh sản phẩm
+        'album.*.required' => 'Bạn cần tải lên hình ảnh album.',
+        'album.*.image' => 'Mỗi ảnh trong album phải là hình ảnh (jpeg, jpg, png).',
+        'album.*.mimes' => 'Ảnh trong album chỉ chấp nhận jpeg, jpg, png.',
+        'album.*.max'   => 'Ảnh trong album không được vượt quá 2MB.',
+
+        // Bảng sale sản phẩm
+        // báo lối giá trị giảm
+        'value.required' => 'Bạn phải nhập phần trăm giảm giá',
+        'value.integer' => 'Bạn phải nhập phần trăm giảm giá',
+        'value.min'      => 'Giá trị khuyến mãi ít nhất là 1%',
+        'value.max'      => 'Giá trị khuyến mãi tối đa là 99%',
+        // Báo lỗi ngày bắt đầu
+        'start_date.required' => 'Vui lòng chọn ngày bắt đầu.',
+        'start_date.date' => 'Giá trị phải chọn theo kiểu thời gian.',
+        // Báo lõi ngày kết thúc
+        'end_date.required' => 'Vui lòng ngày kết thúc.',
+        'end_date.date' => 'Giá trị phải chọn theo kiểu thời gian.',
+        'end_date.after_or_equal' => 'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu',
+        // Báo Lỗi trạng thái
+        'status.in' => 'Trạng thái chỉ được chọn On hoặc Off',
     ]);
 
-    // ✅ 2. Chuẩn bị dữ liệu
+    // 2. Chuẩn bị dữ liệu
     $data = $request->only(['name_product', 'price', 'category_id', 'brand_id', 'description']);
 
-    // ✅ 3. Upload ảnh chính
+    //  3. Upload ảnh chính
     if ($request->hasFile('image')) {
         $path = $request->file('image')->store('public/products');
         $data['image'] = str_replace('public/', '', $path);
@@ -102,11 +140,11 @@ public function store(Request $request)
         return back()->with('error', 'Không tìm thấy file ảnh chính.');
     }
 
-    // ✅ 4. Tạo sản phẩm
+    // 4. Tạo sản phẩm
     $product = Product::create($data);
     $product->refresh(); // ép Laravel reload từ DB để có id_product
 
-    // ✅ 5. Lưu album ảnh (nếu có)
+    // 5. Lưu album ảnh (nếu có)
     if ($request->hasFile('album')) {
         foreach ($request->file('album') as $albumImage) {
             $albumPath  = $albumImage->store('public/products/album');
@@ -119,7 +157,7 @@ public function store(Request $request)
         }
     }
 
-    // ✅ 6. Tạo dữ liệu advice_product liên kết
+    // 6. Tạo dữ liệu advice_product liên kết
     AdviceProduct::create([
         'product_id' => $product->id_product,
         'value'      => $request->input('value'),
@@ -128,7 +166,7 @@ public function store(Request $request)
         'status'     => $request->input('status'),
     ]);
 
-    // ✅ 7. Chuyển hướng về danh sách
+    // 7. Chuyển hướng về danh sách
     return redirect()->route('admin.products.index')->with('success', 'Thêm sản phẩm và dữ liệu khuyến mãi thành công.');
 }
 
@@ -146,11 +184,11 @@ public function show(Product $product)
     // Lấy tất cả ảnh album của sản phẩm
     $album_products = AlbumProduct::where('product_id', $product->id_product)->get();
 
-    // ✅ Tổng số sản phẩm còn trong kho
+    // Tổng số sản phẩm còn trong kho
     $total_in_stock = Variant::where('product_id', $product->id_product)
                              ->sum('quantity');
 
-    // ✅ Tổng số sản phẩm đã bán
+    // Tổng số sản phẩm đã bán
     $total_sold = DB::table('order_items')
         ->join('orders', 'order_items.order_id', '=', 'orders.id_order')
         ->join('variant', 'order_items.variant_id', '=', 'variant.id_variant')
@@ -189,8 +227,40 @@ public function update(Request $request, Product $product)
         'brand_id'    => 'required|exists:brands,id_brand', 
         'description' => 'nullable|string',
         'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+    ], [
+        // Báo lỗi tên sản phẩm
+        'name_product.string' => 'Tên sản phẩm không hợp lệ.',
+        'name_product.max' => 'Tên sản phẩm không được vượt quá 255 ký tự.',
+        'name_product.unique'   => 'Tên sản phẩm này đã tồn tại.',
+        // Báo lỗi giá sản phẩm
+        'price.required' => 'Vui lòng nhập giá sản phẩm.',
+        'price.numeric'  => 'Giá phải là số.',
+        'price.min'  => 'Giá sản phẩm không được nhỏ hơn 1000.',
+        // Báo lỗi danh mục sản phẩm
+        'category_id.required' => 'Vui lòng chọn danh mục.',
+        'category_id.exists' => 'Danh mục không tồn tại.',
+        // Báo lỗi thương hiệu sản phẩm
+        'brand_id.required' => 'Vui lòng chọn thương hiệu.',
+        'brand_id.exists' => 'Thương hiệu không tồn tại.',
+        // Báo lỗi ảnh sản phẩm
+        'image.required' => 'Bạn cần tải lên hình ảnh chính sản phẩm.',
+        'image.image'    => 'File phải là hình ảnh (jpeg, jpg, png).',
+        'image.mimes'   => 'File chỉ chấp nhận định dạng: jpeg, png, jpg.',
+        'image.max'     => 'Kích thước ảnh không được vượt quá 2MB.',
+        // Báo lỗi mô tả sản phẩm
+        'description.required' => 'Vui lòng nhập mô tả sản phẩm.',
+        'description.string' => 'Mô tả sản phẩm không hợp lệ.',
     ]);
+        // Trường hợp tên sản phẩm đã tồn tại trong DB (trùng với size khác)
+        $exists = Product::where('name_product', $request->name_product)
+                    ->where('id_product', '!=', $product->id_product) // loại trừ size hiện tại
+                    ->exists();
 
+        if ($exists) {
+            return back()
+                ->withErrors(['name_product' => 'Tên sản phẩm này đã tồn tại trong hệ thống.'])
+                ->withInput();
+        }
     $data = $request->only(['name_product', 'price', 'category_id', 'description'  ]);
 
     // Nếu có ảnh mới

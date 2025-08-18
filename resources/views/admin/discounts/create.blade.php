@@ -299,18 +299,6 @@ typeInput.addEventListener('change', function () {
         errorDiv.textContent = '';
     }
 
-        async function checkCodeUnique(code) {
-        try {
-            const fieldName = input.name;
-            const value = input.value.trim();
-            const response = await fetch(`/check-code?code=${encodeURIComponent(code)}`);
-            const result = await response.json();
-            return result.isUnique;
-        } catch (error) {
-            console.error('Error checking code uniqueness:', error);
-            return false;
-        }
-    }
 
     // Hàm kiểm tra validation
     function validateField(input) {
