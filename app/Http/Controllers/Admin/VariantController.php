@@ -359,7 +359,6 @@ public function forceDeleteColor($color_id)
         $variant = Variant::findOrFail($id);
         $variant->quantity = $request->quantity;
         $variant->save();
-
         return response()->json(['success' => true]);
     }
 

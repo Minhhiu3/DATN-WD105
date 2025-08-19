@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\AlbumProduct;
 use App\Models\AdviceProduct;
 use App\Models\Brand;
+use App\Models\Color;
 use App\Models\Variant;
 use Illuminate\Support\Facades\DB;
 
@@ -300,6 +301,11 @@ public function update(Request $request, Product $product)
             if ($variant->image && file_exists(public_path('uploads/' . $variant->image))) {
                 unlink(public_path('uploads/' . $variant->image));
             }
+         // Xóa màu liên quan (nếu có)
+        $color = Color::where('id_color', $variant->color_id)->first();
+        if ($color) {
+            $color->delete(); // xoá mềm màu
+        }
             $variant->delete(); // xóa mềm biến thể
         }
 
@@ -355,6 +361,20 @@ public function update(Request $request, Product $product)
     public function restore($id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
+        $variants = Variant::withTrashed()
+            ->where('product_id', $product->id_product)
+            ->get();
+
+        foreach ($variants as $variant) {
+            // Lấy màu liên quan
+            $color = Color::withTrashed()->find($variant->color_id);
+
+            // Nếu màu tồn tại và đã bị xóa mềm thì xóa cứng luôn
+            if ($color && $color->trashed()) {
+                $color->restore();
+            }
+        }
+
         $product->variants()->onlyTrashed()->restore(); // Khôi phục biến thể
         $product->albumProducts()->onlyTrashed()->restore(); // Khôi phục ảnh album
         $product->advice_Product()->onlyTrashed()->restore(); // Khôi phục khuyến mãi
@@ -369,6 +389,22 @@ public function update(Request $request, Product $product)
     public function forceDelete($id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
+
+        // Lấy đúng id_product làm khóa chính
+        // Lấy các biến thể kể cả bị xóa mềm
+        $variants = Variant::withTrashed()
+            ->where('product_id', $product->id_product)
+            ->get();
+
+        foreach ($variants as $variant) {
+            // Lấy màu liên quan
+            $color = Color::withTrashed()->find($variant->color_id);
+
+            // Nếu màu tồn tại và đã bị xóa mềm thì xóa cứng luôn
+            if ($color && $color->trashed()) {
+                $color->forceDelete();
+            }
+        }
         $product->variants()->onlyTrashed()->forceDelete(); // Xóa cứng biến thể
         $product->albumProducts()->onlyTrashed()->forceDelete(); // Xóa cứng ảnh album
         $product->advice_Product()->onlyTrashed()->forceDelete(); // Xóa cứng khuyến mãi
