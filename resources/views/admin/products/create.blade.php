@@ -158,7 +158,7 @@
 
         <div class="mb-3">
             <label for="price" class="form-label">Giá</label>
-            <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" placeholder="Nhập giá" min="0" >
+            <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" placeholder="Nhập giá" min="0" step="1000" >
             <div class="error-message text-danger">
                 @error('price')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}

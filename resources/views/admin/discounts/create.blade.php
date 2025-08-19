@@ -137,7 +137,7 @@
         {{-- Giá trị --}}
         <div class="mb-3">
             <label for="value" class="form-label">Giá Trị</label>
-            <input type="number" step="" name="value" id="value" class="form-control @error('value') is-invalid @enderror" 
+            <input type="number" name="value" id="value" class="form-control @error('value') is-invalid @enderror" 
                    value="{{ old('value') }}" placeholder="Nhập giá trị" >
               <div class="error-message text-danger">
                 @error('value')
@@ -149,8 +149,8 @@
         {{-- Giá trị đơn tối thiểu --}}
         <div class="mb-3">
             <label for="min_order_value" class="form-label">Giá Trị Đơn Tối Thiểu</label>
-            <input type="number" step=""  name="min_order_value" id="min_order_value" class="form-control @error('min_order_value') is-invalid @enderror" 
-                   value="{{ old('min_order_value') }}" placeholder="Nhập giá trị đơn tối thiểu" >
+            <input type="number"   name="min_order_value" id="min_order_value" class="form-control @error('min_order_value') is-invalid @enderror" 
+                   value="{{ old('min_order_value') }}" placeholder="Nhập giá trị đơn tối thiểu" min="0" step="1000" >
             <div class="error-message text-danger">
                 @error('min_order_value')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}

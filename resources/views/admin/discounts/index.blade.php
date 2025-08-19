@@ -172,7 +172,7 @@
                             </td>
                             <td>
                                 @if ($discount->type == 0)
-                                    {{ $discount->value }} %
+                                    {{(int) $discount->value }} %
                                 @elseif ($discount->type == 1)
                                     {{ number_format($discount->value, 0, ',', '.') }} VNĐ
                                 @endif

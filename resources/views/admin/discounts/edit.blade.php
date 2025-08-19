@@ -112,8 +112,8 @@
 
         <div class="mb-3">
             <label for="value" class="form-label">Giá trị</label>
-            <input type="number" step="0.01" name="value" id="value" class="form-control @error('value') is-invalid @enderror"
-                value="{{ old('value', $discount->value) }}" placeholder="Nhập giá trị" >
+            <input type="number"  name="value" id="value" class="form-control @error('value') is-invalid @enderror"
+                value="{{ old('value', (int) $discount->value) }}" placeholder="Nhập giá trị" >
             <div class="error-message text-danger">
                 @error('value')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
@@ -123,8 +123,8 @@
 
         <div class="mb-3">
             <label for="min_order_value" class="form-label">Giá trị đơn tối thiểu</label>
-            <input type="number" step="0.01" name="min_order_value" id="min_order_value" class="form-control @error('min_order_value') is-invalid @enderror"
-                value="{{ old('min_order_value', $discount->min_order_value) }}" placeholder="Nhập giá trị đơn tối thiểu" >
+            <input type="number"  name="min_order_value" id="min_order_value" class="form-control @error('min_order_value') is-invalid @enderror"
+                value="{{ old('min_order_value', (int) $discount->min_order_value) }}" placeholder="Nhập giá trị đơn tối thiểu" min="0" step="1000">
             <div class="error-message text-danger">
                 @error('min_order_value')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
@@ -201,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
         code: {
             required: 'Vui lòng nhập mã giảm giá.',
             max: 'Mã giảm giá không được vượt quá 50 ký tự.',
-            // unique: 'Mã giảm giá đã tồn tại trong hệ thống.'
             
         },
         type: {
@@ -213,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
             required: 'Vui lòng nhập giá trị giảm.',
             numeric: 'Giá trị giảm phải là số.',
             min: 'Giá trị giảm không được nhỏ hơn 0.',
-            max: 'Khi chọn loại phần trăm, giá trị không được vượt quá 100%.'
+            max: 'Khi chọn loại phần trăm, giá trị không được vượt quá 99%.'
         },
         min_order_value: {
             required: 'Vui lòng nhập giá trị đơn tối thiểu.',
@@ -239,9 +238,9 @@ typeInput.addEventListener('change', function () {
         if (typeInput.value === '0') {
             // Giảm % → max = 100
             rules.value.min = 1;
-            rules.value.max = 100;
+            rules.value.max = 99;
             messages.value.min = 'Giá trị giảm không được nhỏ hơn 1.';
-            messages.value.max = 'Khi chọn loại phần trăm, giá trị không được vượt quá 100%.';
+            messages.value.max = 'Khi chọn loại phần trăm, giá trị không được vượt quá 99%.';
             
         } else if (typeInput.value === '1') {
             // Giảm cố định → max không giới hạn
