@@ -18,16 +18,22 @@
         <!-- ql danh muc -->
         <li class="nav-item">
             <a href="{{ url('/admin/categories') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                <i class="fa-solid fa-layer-group"></i>
+                <i class="fa-solid fa-list"></i>                
                 <p>Quản lý danh mục</p>
             </a>
         </li>
-
+        <!-- ql thương hiệu -->
+        <li class="nav-item">
+            <a href="{{ url('/admin/brands') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                <i class="fa-solid fa-building"></i>
+                <p>Quản lý Thương Hiệu</p>
+            </a>
+        </li>
         <!-- ql size -->
         <li class="nav-item">
             <a href="{{ url('/admin/sizes') }}"
                 class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                <i class="fa-solid fa-layer-group"></i>
+                <i class="fa-solid  bi-arrows-expand"></i>
                 <p>Quản lý size</p>
             </a>
         </li>
@@ -43,8 +49,8 @@
         <!-- ql banner -->
         <li class="nav-item">
             <a href="{{ url('/admin/banner') }}"
-                class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                <i class="fa-solid fa-layer-group"></i>
+                class="nav-link {{ request()->is(patterns: 'users*') ? 'active' : '' }}">
+                <i class="fa-solid fa-image"></i>
                 <p>Quản lý banner</p>
             </a>
         </li>
@@ -72,12 +78,7 @@
         </li>
 
 
-        <li class="nav-item">
-            <a href="{{ url('/settings') }}" class="nav-link {{ request()->is('settings') ? 'active' : '' }}">
-                <i class="nav-icon fas fa-cog"></i>
-                <p>Settings</p>
-            </a>
-        </li>
+
     </ul>
 </nav>
 <!-- /.sidebar-menu -->

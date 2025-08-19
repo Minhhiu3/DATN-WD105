@@ -129,33 +129,40 @@ class AccountController extends Controller
             return view('auth.orders', compact('orders'));
 
 }
-public function cancelOrder($id)
+public function cancelOrder(Request $request, $id)
 {
-    $order = Order::with('orderItems') // eager load orderItems
+    $request->validate([
+        'cancel_reason' => 'required|string|max:255'
+    ]);
+
+    $order = Order::with('orderItems')
         ->where('id_order', $id)
         ->where('user_id', Auth::id())
         ->firstOrFail();
 
-    if ($order->status != '0') {
+    // Chỉ cho phép hủy khi trạng thái là pending hoặc processing
+    if ($order->status != 'pending' && $order->status != 'processing') {
         return redirect()->back()->with('error', 'Đơn hàng không thể hủy!');
     }
 
-
+    // Hoàn trả số lượng sản phẩm về kho
     foreach ($order->orderItems as $item) {
-        $product = $item-> variant;
-
+        $product = $item->variant;
         if ($product) {
             $product->quantity += $item->quantity;
             $product->save();
         }
     }
 
-
-    $order->status = 'đã hủy';
+    // Cập nhật trạng thái và lý do hủy
+    $order->status = 'canceled';
+    $order->cancel_reason = $request->cancel_reason;
     $order->save();
 
-    return redirect()->back()->with('success', 'Đơn hàng đã được hủy');
+    return redirect()->back()->with('success', 'Đơn hàng đã được hủy. Lý do: '.$request->cancel_reason);
 }
+
+
 
 public function orderDetail($id)
 {

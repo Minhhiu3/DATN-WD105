@@ -6,9 +6,9 @@
 			<div class="container">
 				<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 					<div class="col-first">
-						<h1>Register</h1>
+						<h1>Đăng ký</h1>
 						<nav class="d-flex align-items-center">
-							<a href="{{ route('home') }}">Home<span class="lnr lnr-arrow-right"></span></a>
+							<a href="{{ route('home') }}">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
 							<a href="{{ route('register') }}">Register</a>
 						</nav>
 					</div>
@@ -25,16 +25,16 @@
 						<div class="login_box_img">
 							<img class="img-fluid" src="{{ asset('assets/img/login.jpg') }}" alt="">
 							<div class="hover">
-								<h4>Already have an account?</h4>
-								<p>There are advances being made in science and technology everyday, and a good example of this is the</p>
-								<a class="primary-btn" href="{{ route('login') }}">Login</a>
-							</div>
+    <h4>Đã có tài khoản?</h4>
+    <p>Đăng nhập để khám phá những mẫu giày mới nhất và các ưu đãi dành riêng cho bạn.</p>
+    <a class="primary-btn" href="{{ route('login') }}">Đăng nhập</a>
+</div>
 						</div>
 					</div>
 					<div class="col-lg-6">
 						<div class="login_form_inner">
-							<h3>Create Account</h3>
-							
+							<h3>Tạo tài khoản</h3>
+
 							@if(session('success'))
 								<div class="alert alert-success alert-dismissible fade show" role="alert">
 									{{ session('success') }}
@@ -52,53 +52,53 @@
 							<form class="row login_form" action="{{ route('register') }}" method="POST" id="contactForm" novalidate="novalidate">
 								@csrf
 								<div class="col-md-6 form-group">
-									<input type="text" class="form-control @error('name') is-invalid @enderror" 
-										   id="name" name="name" value="{{ old('name') }}" 
+									<input type="text" class="form-control @error('name') is-invalid @enderror"
+										   id="name" name="name" value="{{ old('name') }}"
 										   placeholder="Full Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Full Name'" required>
 									@error('name')
 										<div class="invalid-feedback">{{ $message }}</div>
 									@enderror
 								</div>
 								<div class="col-md-6 form-group">
-									<input type="text" class="form-control @error('account_name') is-invalid @enderror" 
-										   id="account_name" name="account_name" value="{{ old('account_name') }}" 
+									<input type="text" class="form-control @error('account_name') is-invalid @enderror"
+										   id="account_name" name="account_name" value="{{ old('account_name') }}"
 										   placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'" required>
 									@error('account_name')
 										<div class="invalid-feedback">{{ $message }}</div>
 									@enderror
 								</div>
 								<div class="col-md-6 form-group">
-									<input type="email" class="form-control @error('email') is-invalid @enderror" 
-										   id="email" name="email" value="{{ old('email') }}" 
+									<input type="email" class="form-control @error('email') is-invalid @enderror"
+										   id="email" name="email" value="{{ old('email') }}"
 										   placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'" required>
 									@error('email')
 										<div class="invalid-feedback">{{ $message }}</div>
 									@enderror
 								</div>
 								<div class="col-md-6 form-group">
-									<input type="text" class="form-control @error('phone_number') is-invalid @enderror" 
-										   id="phone_number" name="phone_number" value="{{ old('phone_number') }}" 
+									<input type="text" class="form-control @error('phone_number') is-invalid @enderror"
+										   id="phone_number" name="phone_number" value="{{ old('phone_number') }}"
 										   placeholder="Phone Number" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Phone Number'">
 									@error('phone_number')
 										<div class="invalid-feedback">{{ $message }}</div>
 									@enderror
 								</div>
 								<div class="col-md-6 form-group">
-									<input type="password" class="form-control @error('password') is-invalid @enderror" 
-										   id="password" name="password" 
+									<input type="password" class="form-control @error('password') is-invalid @enderror"
+										   id="password" name="password"
 										   placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" required>
 									@error('password')
 										<div class="invalid-feedback">{{ $message }}</div>
 									@enderror
 								</div>
 								<div class="col-md-6 form-group">
-									<input type="password" class="form-control" 
-										   id="password_confirmation" name="password_confirmation" 
+									<input type="password" class="form-control"
+										   id="password_confirmation" name="password_confirmation"
 										   placeholder="Confirm Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Confirm Password'" required>
 								</div>
 								<div class="col-md-12 form-group">
-									<button type="submit" value="submit" class="primary-btn">Create Account</button>
-									<a href="{{ route('login') }}">Already have an account? Login</a>
+									<button type="submit" value="submit" class="primary-btn">Tạo tài khoản</button>
+									<a href="{{ route('login') }}">Đã có tài khoản? Đăng nhập ngay</a>
 								</div>
 							</form>
 						</div>
@@ -109,10 +109,10 @@
 		<!--================End Register Box Area =================-->
 
 		<!-- start footer Area -->
-		
 
 
-		
+
+
 
 	</html>
 @endsection

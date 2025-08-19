@@ -17,68 +17,80 @@
                     <ul class="nav navbar-nav menu_nav ml-auto">
                         <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
                         <li class="nav-item "><a class="nav-link" href="{{ route('products') }}">Cửa hàng</a></li>
-                        {{-- <li class="nav-item submenu dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                                aria-haspopup="true" aria-expanded="false">Cửa hàng</a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="{{ route('products') }}">Sản phẩm</a>
-                                </li>
-                                <li class="nav-item"><a class="nav-link" href="{{ route('checkout') }}">Thanh toán</a>
-                                </li>
-                                <li class="nav-item"><a class="nav-link" href="{{ route('cart') }}">Giỏ hàng</a></li>
-                                <li class="nav-item"><a class="nav-link" href="confirmation.html">Xác nhận đơn hàng</a>
-                                </li>
-                            </ul>
-                        </li> --}}
-                        {{-- <li class="nav-item submenu dropdown">
-                            <a href="{{ route('blogs') }}" class="nav-link dropdown-toggle" data-toggle="dropdown"
-                                role="button" aria-haspopup="true" aria-expanded="false">Tin tức</a> --}}
-                        {{-- <ul class="dropdown-menu"> --}}
+                        <li class="nav-item "><a class="nav-link" href="{{ route('discounts') }}">Khuyến Mãi</a></li>
+
                         <li class="nav-item"><a class="nav-link" href="{{ route('blogs') }}">Tin tức</a></li>
-                        {{-- <li class="nav-item"><a class="nav-link" href="{{ route('blog-detail') }}">Chi tiết bài
-                                        viết</a></li> --}}
-                        {{-- </ul> --}}
-                        {{-- </li> --}}
-                        {{-- <li class="nav-item submenu dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                                aria-haspopup="true" aria-expanded="false">Trang</a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
-                                <li class="nav-item"><a class="nav-link" href="tracking.html">Theo dõi đơn hàng</a></li>
 
-                            </ul>
-                        </li> --}}
-                            <li class="nav-item"><a class="nav-link" href="contact.html">Liên hệ</a></li>
-                          <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
-
+                        <li class="nav-item"><a class="nav-link" href="{{ route('contact') }}">Liên hệ</a></li>
+                        @guest
+                            <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng nhập</a></li>
+                        @endguest
+                        @auth
+                            <li class="nav-item">
+                                <span class="nav-link">
+                                    <!-- <a href="{{ route('account.profile') }}"> <i class="fa fa-user"></i> {{ Auth::user()->name }} </a> -->
+                                    <a href="{{ route('account.profile') }}" style="color: black;">
+                                        <i class="fa fa-user"></i> {{ Auth::user()->name }}
+                                    </a>
+                                </span>
+                            </li>
+                        @endauth
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="nav-item position-relative">
-    <a href="{{ route('cart') }}" class="cart" id="cart-icon">
-        <span class="ti-bag"></span>
-        <span id="cart-count" class="badge" style="display:none;position:absolute;top:0;right:0;">0</span>
-    </a>
-    <div id="mini-cart" style="display:none;position:absolute;right:0;top:40px;z-index:1000;background:#fff;border:1px solid #eee;width:300px;padding:15px;">
-        <div id="mini-cart-items"></div>
-        <div id="mini-cart-total" class="mt-2"></div>
-    </div>
-</li>
+                            <a href="{{ route('cart') }}" class="cart" id="cart-icon">
+                                <span class="ti-bag"></span>
+                                <span id="cart-count" class="badge"
+                                    style="display:none;position:absolute;top:0;right:0;">0</span>
+                            </a>
+
+                            <!-- mini cảt -->
+                            <div id="mini-cart"
+                                style="display:none;position:absolute;right:0;top:40px;z-index:1000;background:#fff;border:1px solid #eee;width:300px;padding:15px;">
+                                @if ($cartItems->count() > 0)
+                                    @php $total = 0; @endphp
+                                    @foreach ($cartItems as $item)
+                                        @php
+                                            $variant = $item->variant ?? $item['variant'];
+                                            $product = $variant->product ?? null;
+                                            $size = $variant->size ?? null;
+                                            $quantity = $item->quantity ?? $item['quantity'];
+                                            $price = $variant->price ?? 0;
+                                            $itemTotal = $price * $quantity;
+                                            $total += $itemTotal;
+                                        @endphp
+                                        <div
+                                            class="d-flex justify-content-between align-items-start mb-2 border-bottom pb-2">
+                                            <div>
+                                                <strong>{{ $product->name_product ?? 'Sản phẩm' }}</strong><br>
+                                                <small>SL: {{ $quantity }} - Size:
+                                                    {{ $size->name ?? 'N/A' }}</small>
+                                            </div>
+                                            <div class="text-right">
+                                                <small>{{ number_format($price, 0, ',', '.') }}₫</small>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    <div class="mt-2 font-weight-bold text-right">
+                                        Tổng: {{ number_format($total, 0, ',', '.') }}₫
+                                    </div>
+                                    <div class="text-right mt-2">
+                                        <a href="{{ route('cart') }}" class="btn btn-sm btn-primary">Xem giỏ hàng</a>
+                                    </div>
+                                @else
+                                    <p class="text-center mb-0">Giỏ hàng trống</p>
+                                @endif
+                            </div>
+
+
+                        </li>
                         <li class="nav-item">
                             <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
                         </li>
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
-                        @auth
-                            <li class="nav-item">
-                                <span class="nav-link">
-                                    <!-- <a href="{{ route('account.profile') }}"> <i class="fa fa-user"></i> {{ Auth::user()->name }} </a> -->
-                                     <a href="{{ route('account.profile') }}" style="color: black;">
-                                        <i class="fa fa-user"></i> {{ Auth::user()->name }}
-                                    </a>
-                                </span>
-                            </li>
-                        @endauth
+
                     </ul>
                 </div>
             </div>
@@ -86,8 +98,8 @@
     </div>
     <div class="search_input" id="search_input_box">
         <div class="container">
-            <form class="d-flex justify-content-between">
-                <input type="text" class="form-control" id="search_input" placeholder="Tìm kiếm tại đây">
+            <form class="d-flex justify-content-between" action="{{ route('products') }}" method="GET">
+                <input type="text" name="keyword" value="{{request('keyword')}}" class="form-control" id="search_input" placeholder="Tìm kiếm tại đây">
                 <button type="submit" class="btn"></button>
                 <span class="lnr lnr-cross" id="close_search" title="Đóng tìm kiếm"></span>
             </form>
@@ -95,6 +107,51 @@
     </div>
 </header>
 <!-- End Header Area -->
+
+<script>
+    // Cập nhật số lượng giỏ hàng từ server
+    function updateCartCountFromServer() {
+        fetch('{{ route('cart.count') }}')
+            .then(response => response.json())
+            .then(data => {
+                const cartCountEl = document.getElementById('cart-count');
+                if (cartCountEl) {
+                    if (data.count > 0) {
+                        cartCountEl.style.display = 'inline-block';
+                        cartCountEl.innerText = data.count;
+                    } else {
+                        cartCountEl.style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error updating cart count:', error);
+            });
+    }
+
+    // Cập nhật khi trang load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartCountFromServer();
+    });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchBox = document.getElementById('search_input_box');
+    const searchIcon = document.querySelector('.lnr-magnifier');
+    const closeIcon = document.getElementById('close_search');
+
+    // Khi click icon search -> mở
+    searchIcon.addEventListener('click', function () {
+        searchBox.classList.add('active');
+    });
+
+    // Khi click icon đóng -> ẩn
+    closeIcon.addEventListener('click', function () {
+        searchBox.classList.remove('active');
+    });
+});
+</script>
+
 
 
 

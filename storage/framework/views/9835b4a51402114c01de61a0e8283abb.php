@@ -1,65 +1,81 @@
 <!DOCTYPE html>
-<html lang="zxx" class="no-js">
-
+<html lang="vi" class="no-js">
 <head>
-    <!-- Mobile Specific Meta -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Favicon-->
-    <link rel="shortcut icon" href="<?php echo e(asset('assets/img/fav.png')); ?>">
-    <!-- Author Meta -->
-    <meta name="author" content="CodePixar">
-    <!-- Meta Description -->
-    <meta name="description" content="">
-    <!-- Meta Keyword -->
-    <meta name="keywords" content="">
-    <!-- meta character set -->
     <meta charset="UTF-8">
-    <!-- Site Title -->
-    <title><?php echo $__env->yieldContent('title'); ?></title>
-    <!--
-		CSS
-		============================================= -->
-    <link rel="stylesheet" href="<?php echo e(asset('assets/css/linearicons.css')); ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $__env->yieldContent('title', 'Trang web'); ?></title>
 
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="<?php echo e(asset('assets/img/fav.png')); ?>">
+
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/linearicons.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/font-awesome.min.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/themify-icons.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/bootstrap.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/owl.carousel.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/nice-select.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/nouislider.min.css')); ?>">
-    <link rel="stylesheet" href="<?php echo e(asset('assets/css/ion.rangeSlider.css')); ?>" />
-    <link rel="stylesheet" href="<?php echo e(asset('assets/css/ion.rangeSlider.skinFlat.css')); ?>" />
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/ion.rangeSlider.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/ion.rangeSlider.skinFlat.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/magnific-popup.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/main.css')); ?>">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-    <!-- scrip -->
+    <!-- Google Font: Roboto -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+    <style>
+        #mini-cart {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: none;
+        }
+
+        .nav-item.position-relative:hover #mini-cart,
+        .nav-item.position-relative:focus-within #mini-cart {
+            display: block !important;
+        }
+        body {
+    font-family: 'Roboto', sans-serif;
+}
+
+        /* Bỏ viền cho tất cả các nút Bootstrap */
+    .btn {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Tuỳ chỉnh lại hover nếu cần */
+    .btn:hover,
+    .btn:focus {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+
+    </style>
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
-<style>
-
-     #mini-cart {
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        display: none;
-    }
-    .nav-item.position-relative:hover #mini-cart,
-    .nav-item.position-relative:focus-within #mini-cart {
-        display: block !important;
-    }
-</style>
 
 <body>
-
-
+    
     <?php echo $__env->make('client.partials.header_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-    <main>
 
+    
+    <main>
         <?php echo $__env->yieldContent('content'); ?>
- 
     </main>
+
+    
     <?php echo $__env->make('client.partials.footer_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    <?php if(session('success')): ?>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        <?php if(session('success')): ?>
         window.addEventListener('DOMContentLoaded', function () {
             Swal.fire({
                 title: 'Thành công!',
@@ -68,15 +84,22 @@
                 confirmButtonText: 'OK'
             });
         });
-    <?php endif; ?>
-</script>
-
-
-
-    <script src="<?php echo e(asset('assets/js/vendor/jquery-2.2.4.min.js')); ?>"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
-        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous">
+        <?php endif; ?>
+        <?php if(session('error')): ?>
+        window.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Thất bại!',
+                    html: <?php echo json_encode(nl2br(session('error'))); ?>,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+        <?php endif; ?>
     </script>
+
+    <!-- JS Libraries -->
+    <script src="<?php echo e(asset('assets/js/vendor/jquery-2.2.4.min.js')); ?>"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="<?php echo e(asset('assets/js/vendor/bootstrap.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/jquery.ajaxchimp.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/jquery.nice-select.min.js')); ?>"></script>
@@ -85,121 +108,16 @@
     <script src="<?php echo e(asset('assets/js/countdown.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/jquery.magnific-popup.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/owl.carousel.min.js')); ?>"></script>
-    <!--gmaps Js-->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE">
-    </script>
+
+    <!-- Google Maps -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
     <script src="<?php echo e(asset('assets/js/gmaps.min.js')); ?>"></script>
+
+    <!-- Main JS -->
     <script src="<?php echo e(asset('assets/js/main.js')); ?>"></script>
-    <!-- add to cart scrip -->
-<script>
 
-function addToCart(product) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-    const index = cart.findIndex(
-        item => item.id === product.id && item.size === product.size
-    );
-
-    if (index !== -1) {
-        cart[index].quantity += product.quantity;
-    } else {
-        cart.push(product);
-    }
-
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
-    console.log('Sản phẩm đã được thêm vào giỏ hàng:', product);
-}
-
-function updateCartCount() {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    let totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const cartCountEl = document.getElementById('cart-count');
-
-    if (cartCountEl) {
-        if (totalQuantity > 0) {
-            cartCountEl.style.display = 'inline-block';
-            cartCountEl.innerText = totalQuantity;
-        } else {
-            cartCountEl.style.display = 'none';
-        }
-    }
-
-    renderMiniCart(cart);
-}
-
-function renderMiniCart(cart) {
-    const container = document.getElementById('mini-cart-items');
-    const totalEl = document.getElementById('mini-cart-total');
-
-    if (!container || !totalEl) return;
-
-    container.innerHTML = '';
-    let total = 0;
-
-    if (cart.length === 0) {
-        container.innerHTML = '<p class="text-center">Giỏ hàng trống</p>';
-        totalEl.innerText = '';
-        return;
-    }
-
-    cart.forEach((item, index) => {
-        total += item.price * item.quantity;
-        const el = document.createElement('div');
-        el.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
-        el.innerHTML = `
-            <div>
-                <strong>${item.name}</strong><br>
-                <small>SL: ${item.quantity} - Size: ${item.size}</small>
-            </div>
-            <div class="text-right">
-                <small>${item.price.toLocaleString()}₫</small><br>
-                <button class="btn btn-sm btn-danger btn-delete-item" data-index="${index}">&times;</button>
-            </div>
-        `;
-        container.appendChild(el);
-    });
-
-    totalEl.innerText = `Tổng: ${total.toLocaleString()}₫`;
-
-    document.querySelectorAll('.btn-delete-item').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const index = this.getAttribute('data-index');
-            removeFromCart(index);
-        });
-    });
-}
-
-function removeFromCart(index) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.splice(index, 1);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
-}
-
-// Tự động hiển thị giỏ hàng từ localStorage khi load lại trang
-document.addEventListener('DOMContentLoaded', () => {
-    updateCartCount();
-    document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const product = {
-                id: this.getAttribute('data-id'),
-                name: this.getAttribute('data-name'),
-                price: parseInt(this.getAttribute('data-price')),
-                size: this.getAttribute('data-size'),
-                quantity: 1
-            };
-            addToCart(product);
-        });
-    });
-});
-</script>
-
-
-
-
+    
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
-
 </html>
 <?php /**PATH C:\laragon\www\DATN-WD105\resources\views/layouts/client_home.blade.php ENDPATH**/ ?>

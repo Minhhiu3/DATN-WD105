@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Admin\AlbumProductController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\OrderController;
@@ -17,12 +19,37 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Admin\ProductReviewController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\AdviceProductController;
+use App\Http\Controllers\Admin\ColorController;
+use App\Http\Controllers\Client\OrderController as ClientOrderController;
+use App\Http\Controllers\Client\ProductReviewController as ClientProductReviewController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Client\ClientDiscountController;
+
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ClientProductController::class, 'index'])->name('products');
 Route::get('/product-detail/{id}', [ClientProductController::class, 'show'])->name('client.product.show');
 Route::get('/products/filter', [ClientProductController::class, 'filterByPrice'])->name('products.filterByPrice');
+Route::get('/discounts', [ClientDiscountController::class, 'index'])->name('discounts');
+    // lưu voucher vao tài khoản 
+    Route::post('/save-voucher-user', [ClientDiscountController::class, 'saveVoucherUser'])->name('save.voucherUser')->middleware('auth');
+Route::get('/contact', function () {
+    return view('client.pages.contact');
+})->name('contact');
+
+
+// Cart Routes
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::put('/cart/update', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::delete('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
+Route::get('/cart/details', [CartController::class, 'getCartDetails'])->name('cart.details');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -45,10 +72,28 @@ Route::prefix('account')->middleware('auth')->group(function () {
     Route::put('/update-password', [AccountController::class, 'updatePassword'])->name('account.update-password');
     Route::get('/orders', [AccountController::class, 'orders'])->name('account.orders');
     Route::get('/settings', [AccountController::class, 'settings'])->name('account.settings');
- Route::get('/checkout-form', [CheckoutController::class, 'showCheckoutForm'])->name('account.checkout.form');
+    Route::get('/checkout-form', [CheckoutController::class, 'showCheckoutForm'])->name('account.checkout.form');
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('account.placeOrder');
-Route::put('/account/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
-Route::get('/account/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
+    Route::put('/orders/{id}/cancel', [AccountController::class, 'cancelOrder'])->name('account.cancelOrder');
+    Route::get('/orders/{id}', [AccountController::class, 'orderDetail'])->name('account.orderDetail');
+    Route::get('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
+    Route::post('/checkout-cart', [CheckoutController::class, 'checkoutCart'])->name('account.checkout.cart');
+    Route::post('/place-order-cart', [CheckoutController::class, 'placeOrderFromCart'])->name('account.placeOrder.cart');
+    Route::post('/vnpay_payment', [PaymentController::class, 'vnpay_payment'])->name('account.vnpay.payment'); // VNPAY payment route
+    Route::get('/payment/vnpay', [PaymentController::class, 'vnpay_payment'])->name('payment.vnpay');
+    Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
+    // routes/web.php
+    Route::get('/get-provinces', [LocationController::class, 'getProvinces'])->name('get.provinces');
+    // Route::get('/get-districts/{province_id}', [LocationController::class, 'getDistricts'])->name('get.districts');
+    Route::get('/get-wards/{district_id}', [LocationController::class, 'getWards'])->name('get.wards');
+    Route::get('/payment/vnpay-buy-now', [PaymentController::class, 'paymentVnpayBuyNow'])->name('payment.vnpay.buy_now');
+    Route::get('/vnpay-return-buy-now', [PaymentController::class, 'vnpayReturnBuyNow'])->name('vnpay.return.buy_now');
+    //xac nhan nhan hang
+    Route::put('/orders/{id}/confirm-receive', [ClientOrderController::class, 'confirmReceive'])
+    ->name('account.confirmReceive');
+    Route::post('/apply-coupon', [CheckoutController::class, 'apply'])->name('apply.coupon');
+    Route::post('/apply-coupon-cart', [CheckoutController::class, 'applyCouponCart'])->name('apply.couponCart');
+    Route::post('/reviews', [ClientProductReviewController::class, 'store'])->name('product.reviews.store');
 });
 
 
@@ -78,9 +123,27 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.categories.update',
         'destroy' => 'admin.categories.destroy',
     ]);
+    // route bảng brands
+    // Brand Management Routes
+    Route::resource('/brands', BrandController::class)->names([
+        'index' => 'admin.brands.index',
+        'create' => 'admin.brands.create',
+        'store' => 'admin.brands.store',
+        'show' => 'admin.brands.show',
+        'edit' => 'admin.brands.edit',
+        'update' => 'admin.brands.update',
+        'destroy' => 'admin.brands.destroy',
+    ]);
 
+    Route::patch('/products/{id}/toggle-visibility', [ProductController::class, 'toggleVisibility'])
+        ->name('admin.products.toggle-visibility');
+
+        // Thùng rác sản phẩm
+    Route::get('products/trash', [ProductController::class, 'trash'])->name('admin.products.trash');
+    Route::post('products/restore/{id}', [ProductController::class, 'restore'])->name('admin.products.restore');
+    Route::delete('products/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('admin.products.forceDelete');
     // Product Management Routes
-    Route::resource('/products', ProductController::class)->names([
+    Route::resource('products', ProductController::class)->names([
         'index' => 'admin.products.index',
         'create' => 'admin.products.create',
         'store' => 'admin.products.store',
@@ -90,6 +153,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.products.destroy',
     ]);
 
+    
     // Size Management Routes
     Route::resource('/sizes', SizeController::class)->names([
         'index' => 'admin.sizes.index',
@@ -102,7 +166,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     ]);
 
     // Banner Management Routes
-    Route::resource('/banner', BannerController::class)->names([
+    Route::resource('banner', BannerController::class)->names([
         'index' => 'admin.banner.index',
         'create' => 'admin.banner.create',
         'store' => 'admin.banner.store',
@@ -111,6 +175,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.banner.update',
         'destroy' => 'admin.banner.destroy',
     ]);
+
+Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
     // Album Product Management Routes
     Route::resource('/album-products', AlbumProductController::class)->names([
@@ -125,7 +191,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/album-products/{product_id}/show-album', [AlbumProductController::class, 'showAblum'])
         ->name('admin.album-products.show-album');
 
+
+
     // Variant Management Routes
+    Route::get('/variants/create-item', [VariantController::class, 'create_item'])->name('admin.variants.create_item');
+    Route::post('/variants/store-item', [VariantController::class, 'storeItem'])->name('admin.variants.store_item');
     Route::resource('/variants', VariantController::class)->names([
         'index' => 'admin.variants.index',
         'create' => 'admin.variants.create',
@@ -135,8 +205,25 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.variants.update',
         'destroy' => 'admin.variants.destroy',
     ]);
+    // Route cho thùng rác biến thể
+Route::get('/admin/variants/trash', [VariantController::class, 'trash'])->name('admin.variants.trash');
+Route::post('/admin/variants/restore/{id}', [VariantController::class, 'restore'])->name('admin.variants.restore');
+Route::delete('/admin/variants/force-delete/{id}', [VariantController::class, 'forceDelete'])->name('admin.variants.forceDelete');
 
+    // Size Management Routes
+    Route::resource('/colors', ColorController::class)->names([
+        'index' => 'admin.colors.index',
+        'create' => 'admin.colors.create',
+        'store' => 'admin.colors.store',
+        'show' => 'admin.colors.show',
+        'edit' => 'admin.colors.edit',
+        'update' => 'admin.colors.update',
+        'destroy' => 'admin.colors.destroy',
+    ]);
     // Discount Management Routes
+
+    Route::get('/check-code', [DiscountController::class, 'checkCode']);
+
     Route::resource('/discounts', DiscountController::class)->names([
         'index' => 'admin.discounts.index',
         'create' => 'admin.discounts.create',
@@ -164,6 +251,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     // AJAX: cập nhật trạng thái
     Route::post('orders/update-status', [OrderController::class, 'updateStatus'])
          ->name('admin.orders.updateStatus');
+           Route::post('orders/update-payment-status', [OrderController::class, 'updatePaymentStatus'])
+         ->name('admin.orders.updatePaymentStatus');
 
     // AJAX: hủy đơn hàng
     Route::post('orders/cancel', [OrderController::class, 'cancel'])
@@ -177,7 +266,65 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/reviews/update-status', [ProductReviewController::class, 'updateStatus'])->name('admin.reviews.updateStatus');
     Route::delete('/reviews/{id_review}', [ProductReviewController::class, 'destroy'])->name('admin.reviews.destroy');
 
+     //xem chi tiét sale của sản phẩm
+    Route::get('/sale/{id_product}', [AdviceProductController::class, 'index'])->name('admin.sale.index');
+    Route::post('/sale/update/{id_product}', [AdviceProductController::class, 'update'])->name('admin.sale.update');
+    Route::post('sales/{id}/toggle-status', [AdviceProductController::class, 'toggleStatus'])->name('admin.sale.toggleStatus');
+    // sua so luong bieen the
+    Route::post('/variant/update-quantity/{id}', [VariantController::class, 'updateQuantity'])->name('admin.updateQuantity');
+
+
 });
+
+//call api ben thu 3
+// Route lấy danh sách tỉnh
+Route::get('/api/vl/provinces', function () {
+    $response = Http::get('https://vietnamlabs.com/api/vietnamprovince');
+
+    if ($response->successful()) {
+        $data = $response->json();
+
+        return response()->json([
+            'success' => true,
+            'data' => $data['data']['data'] ?? []
+        ]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Không thể lấy tỉnh/thành'], 500);
+});
+
+// Route lấy quận/huyện theo mã tỉnh
+Route::get('/api/vl/districts/{provinceCode}', function ($provinceCode) {
+    $response = Http::get("https://vietnamlabs.com/api/vietnamprovince/district/$provinceCode");
+
+    if ($response->successful()) {
+        $data = $response->json();
+        return response()->json([
+            'success' => true,
+            'data' => $data['data'] ?? []
+        ]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Không thể lấy quận/huyện'], 500);
+});
+
+// Route lấy phường/xã theo mã quận/huyện
+Route::get('/api/vl/wards/{districtCode}', function ($districtCode) {
+    $response = Http::get("https://vietnamlabs.com/api/vietnamprovince/commune/$districtCode");
+
+    if ($response->successful()) {
+        $data = $response->json();
+        return response()->json([
+            'success' => true,
+            'data' => $data['data'] ?? []
+        ]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Không thể lấy phường/xã'], 500);
+});
+
+
+
 
 // Client Routes
 Route::get('/blogs', function () {
@@ -187,12 +334,6 @@ Route::get('/blogs', function () {
 Route::get('/blog-detail', function () {
     return view('client.pages.blog-detail');
 })->name('blog-detail');
-
-Route::get('/cart', function () {
-    return view('client.pages.cart');
-})->name('cart');
-
-Route::get('/checkout', function () {
-    return view('client.pages.checkout');
-})->name('checkout');
-
+// Route::get('/checkout', function () {
+//     return view('client.pages.checkout');
+// })->name('checkout');

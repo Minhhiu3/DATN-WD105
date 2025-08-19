@@ -23,4 +23,8 @@ class Size extends Model
     // {
     //     return $this->hasMany(::class, 'id_size', 'id_size');
     // }
+    public function variants()
+    {
+        return $this->hasMany(Variant::class, 'size_id', 'id_size');
+    }
 }

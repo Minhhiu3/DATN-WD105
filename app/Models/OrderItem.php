@@ -16,8 +16,13 @@ class OrderItem extends Model
         'order_id',
         'variant_id',
         'quantity',
-        'payment_method',
-        'total_amount',
+        'product_name',
+        'price',
+        'color_name',
+        'size_name',
+        'image',
+        // 'payment_method',
+
 
     ];
 
@@ -30,7 +35,7 @@ class OrderItem extends Model
 
     public function variant()
     {
-        return $this->belongsTo(Variant::class, 'variant_id', 'id_variant');
+        return $this->belongsTo(Variant::class, 'variant_id', 'id_variant')->withTrashed();
     }
         public function size()
     {

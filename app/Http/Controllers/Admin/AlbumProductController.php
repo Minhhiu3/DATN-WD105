@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AlbumProduct;
+use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 
 class AlbumProductController extends Controller
@@ -16,33 +17,49 @@ class AlbumProductController extends Controller
     }
 
     public function create()
-    {
-        return view('admin.Album_product.create');
+    {   
+        $product_id = $_GET['id']; // Lấy giá trị từ query string
+        $product = Product::find($product_id);
+        return view('admin.Album_product.create', compact('product'));
     }
 
-    public function store(Request $request)
-    {
-        // Validate
-        $data = $request->validate([
-            'product_id' => 'required|integer|exists:products,id_product',
-            'image' => 'required|image|mimes:jpeg,png|max:2048'
-        ]);
+public function store(Request $request)
+{
+    //  Validate dữ liệu
+    $validated = $request->validate([
+        'product_id' => 'required|integer|exists:products,id_product',
+        'album' => 'required',
+        'album.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048', // validate từng file trong mảng
+    ], [
+        // Báo lỗi album ảnh sản phẩm
+        'album.*.required' => 'Bạn cần tải lên hình ảnh album.',
+        'album.*.image' => 'Mỗi ảnh trong album phải là hình ảnh (jpeg, jpg, png).',
+        'album.*.mimes' => 'Ảnh trong album chỉ chấp nhận jpeg, jpg, png.',
+        'album.*.max'   => 'Ảnh trong album không được vượt quá 2MB.',
+    ]);
+    
+    //  Xử lý upload nhiều ảnh
+    if ($request->hasFile('album')) {
+        foreach ($request->file('album') as $file) {
+            $filename = time().'_'.$file->getClientOriginalName(); // tránh trùng tên file
+            $path = $file->storeAs('images', $filename, 'public'); // lưu file vào storage/app/public/images
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('public/images');
-            $data['image'] = str_replace('public/', '', $path);
-        } else {
-            return back()->with('error', 'Không tìm thấy file ảnh');
+            // Lưu từng ảnh vào DB
+            AlbumProduct::create([
+                'product_id' => $validated['product_id'],
+                'image' => $path,
+            ]);
         }
-
-        // Save to database
-        AlbumProduct::create($data);
-
-        // Fix typo in route name (Ablum -> Album)
-        return redirect()->route('admin.album-products.show', $request->product_id)
-            ->with('success', 'Upload ảnh thành công!');
+    } else {
+        return back()->with('error', 'Không tìm thấy file ảnh.');
     }
+
+    //  Điều hướng kèm thông báo
+    return redirect()
+        ->route('admin.album-products.show', $request->product_id)
+        ->with('success', 'Upload ảnh thành công!');
+}
+
 
     public function show($id)
     {

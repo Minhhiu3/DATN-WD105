@@ -3,6 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Cart;
+use App\Models\CartItem;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +24,24 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+         Paginator::useBootstrapFive();
+
+        View::composer('*', function ($view) {
+        $cartItems = collect();
+
+        if (Auth::check()) {
+            $cart = Cart::where('user_id', Auth::id())->first();
+            if ($cart) {
+                $cartItems = CartItem::with(['variant.product', 'variant.size'])
+                    ->where('cart_id', $cart->id_cart)
+                    ->get();
+            }
+        } else {
+            // Nếu dùng session lưu cart cho guest:
+            $cartItems = session('cart', collect());
+        }
+
+        $view->with('cartItems', $cartItems);
+    });
     }
 }
