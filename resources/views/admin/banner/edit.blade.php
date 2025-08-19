@@ -131,7 +131,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.banner.update', $banner->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.banner.update', $banner->id) }}" method="POST" enctype="multipart/form-data" id="banner-form">
         @csrf
         @method('PUT')
 
@@ -140,11 +140,11 @@
             <label for="name" class="form-label">Tên Banner</label>
             <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
                    value="{{ old('name', $banner->name) }}" placeholder="Nhập tên banner" >
-            @error('name')
-                <div class="text-danger">
+            <div class="error-message text-danger">
+                @error('name')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
-                </div>
-            @enderror
+                @enderror
+            </div>
         </div>
 
         {{-- Liên kết sản phẩm --}}
@@ -159,11 +159,11 @@
                     </option>
                 @endforeach
             </select>
-            @error('product_id')
-                <div class="text-danger">
+            <div class="error-message text-danger">
+                @error('product_id')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
-                </div>
-            @enderror
+                @enderror
+            </div>
         </div>
 
         {{-- Upload ảnh --}}
@@ -172,17 +172,17 @@
             <label for="image" class="file-upload">
                 <i class="bi bi-cloud-upload"></i>
                 <span> Chọn ảnh banner</span>
-                <input type="file" name="image" id="image" class="d-none" >
+                <input type="file" name="image" id="image" class="d-none  @error('image') is-invalid @enderror" >
             </label>
             <img id="image-preview" 
                  src="{{ $banner->image ? asset('storage/' . $banner->image) : '' }}" 
                  alt="Preview"
                  style="{{ $banner->image ? '' : 'display:none;' }}">
-            @error('image')
-                <div class="text-danger">
+           <div class="error-message text-danger">
+                @error('image')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
-                </div>
-            @enderror        
+                @enderror
+            </div>     
         </div>
 
         {{-- Buttons --}}
@@ -196,7 +196,6 @@
         </div>
     </form>
 </div>
-
 <script>
     const imageInput = document.getElementById('image');
     const imagePreview = document.getElementById('image-preview');
@@ -214,5 +213,121 @@
             imagePreview.style.display = 'none';
         }
     });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('banner-form');
+
+    const rules = {
+        name: { required: true, string: true, max: 255 },
+        product_id: { required: true },
+        image: { image: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 },
+    };
+
+    const messages = {
+        name: {
+            required: 'Vui lòng nhập tên banner.',
+            string: 'Tên banner không hợp lệ.',
+            max: 'Tên sản phẩm không được vượt quá 255 ký tự.'
+        },
+        product_id: { required: 'Vui lòng chọn banner.' },
+        image: {
+            mimes: 'File chỉ chấp nhận định dạng: jpeg, png, jpg.',
+            maxSize: 'Kích thước ảnh không được vượt quá 2MB.'
+        }
+    };
+
+    function getGroup(input){
+        return input.closest('.mb-3, .mb-4') || input.parentNode;
+    }
+
+    function showError(input, message) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        input.classList.add('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.add('border-danger');
+    }
+
+    function clearError(input) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = '';
+        input.classList.remove('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.remove('border-danger');
+    }
+
+    function validateField(input) {
+        const name = input.name.replace('[]', ''); // album[]
+        const rule = rules[name];
+        if (!rule) return true;
+
+        const isFile = input.type === 'file';
+        const value = isFile ? '' : (input.value || '').trim();
+
+        // required
+        if (rule.required) {
+            if (isFile) {
+                if (input.files.length === 0) {
+                    showError(input, messages[name].required);
+                    return false;
+                }
+            } else if (!value) {
+                showError(input, messages[name].required);
+                return false;
+            }
+        }
+
+        // string
+        if (rule.string && !isFile && value && typeof value !== 'string') {
+            showError(input, messages[name].string);
+            return false;
+        }
+
+        // numeric/min/max
+        if (rule.numeric && value && isNaN(value)) {
+            showError(input, messages[name].numeric); return false;
+        }
+        if (rule.min && value && Number(value) < rule.min) {
+            showError(input, messages[name].min); return false;
+        }
+        if (rule.max && value && Number(value) > rule.max) {
+            showError(input, messages[name].max); return false;
+        }
+        // file check (image types & size)
+        if (isFile && input.files.length > 0) {
+            for (const file of input.files) {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (rule.mimes && !rule.mimes.includes(ext)) {
+                    showError(input, messages[name].mimes); return false;
+                }
+                if (rule.maxSize && file.size > rule.maxSize * 1024) {
+                    showError(input, messages[name].maxSize); return false;
+                }
+            }
+        }
+
+        clearError(input);
+        return true;
+    }
+
+    // Bắt sự kiện
+    const inputs = form.querySelectorAll('input, select');
+
+    inputs.forEach(input => {
+        const h = () => validateField(input);
+        input.addEventListener('input', h);
+        input.addEventListener('blur', h);
+        if (input.type === 'file') input.addEventListener('change', h);
+    });
+
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        inputs.forEach(input => { if (!validateField(input)) isValid = false; });
+        if (!isValid) e.preventDefault();
+    });
+});
 </script>
+
 @endsection
