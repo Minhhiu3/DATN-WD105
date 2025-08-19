@@ -204,37 +204,154 @@ public function destroy($id_variant)
         /**
      * Hiển thị danh sách biến thể trong thùng rác.
      */
-    public function trash()
-    {
-        $groupedVariants = Variant::onlyTrashed()
-            ->with(['product', 'color', 'size'])
-            ->get()
-            ->groupBy('color_id');
+public function trash($product_id)
+{
+    // Lấy tất cả variant đã xóa mềm thuộc product
+    $variants = Variant::onlyTrashed()
+        ->where('product_id', $product_id)
+        ->with(['product', 'color', 'size'])
+        ->get();
 
-        return view('admin.variants.trash', compact('groupedVariants'));
-    }
+    // Group theo color_id (cả cha và con đều vào nhóm này)
+    $groupedVariants = $variants->groupBy('color_id');
+
+    return view('admin.variants.trash', compact('groupedVariants', 'product_id'));
+}
+
+
 
     /**
      * Khôi phục biến thể từ thùng rác.
      */
-    public function restore($id)
-    {
-        $variant = Variant::onlyTrashed()->findOrFail($id);
-        $variant->restore();
+/**
+ * Khôi phục biến thể từ thùng rác.
+ */
+public function restore($id)
+{
+    // Lấy variant kể cả khi đã xóa mềm
+    $variant = Variant::withTrashed()->find($id);
 
-        return redirect()->route('admin.variants.trash')->with('success', 'Biến thể đã được khôi phục!');
+    // Nếu không tìm thấy
+    if (!$variant) {
+        return redirect()->back()->with('error', 'Variant không tồn tại.');
     }
 
-    /**
-     * Xóa vĩnh viễn biến thể từ thùng rác.
-     */
-    public function forceDelete($id)
-    {
-        $variant = Variant::onlyTrashed()->findOrFail($id);
-        $variant->forceDelete();
-
-        return redirect()->route('admin.variants.trash')->with('success', 'Biến thể đã được xóa vĩnh viễn!');
+    // Nếu chưa bị xóa mềm
+    if (!$variant->trashed()) {
+        return redirect()->back()->with('error', 'Variant chưa bị xóa.');
     }
+
+    // Restore bản ghi
+    $variant->restore();
+
+    // Redirect về trang trash của product kèm thông báo
+    return redirect()->route('admin.variants.trash', $variant->product_id)
+        ->with('success', 'Biến thể đã được khôi phục!');
+}
+
+
+/**
+ * Xóa vĩnh viễn biến thể từ thùng rác.
+ */
+public function forceDelete($id)
+{
+    // Lấy variant kể cả khi đã xóa mềm
+    $variant = Variant::withTrashed()->find($id);
+
+    // Nếu không tìm thấy
+    if (!$variant) {
+        return redirect()->back()->with('error', 'Variant không tồn tại.');
+    }
+
+    // Nếu chưa bị xóa mềm
+    if (!$variant->trashed()) {
+        return redirect()->back()->with('error', 'Variant chưa bị xóa.');
+    }
+
+    // Xóa vĩnh viễn bản ghi
+    $variant->forceDelete();
+
+    // Redirect về trang trash của product kèm thông báo
+    return redirect()->route('admin.variants.trash', $variant->product_id)
+        ->with('success', 'Biến thể đã được xóa vĩnh viễn!');
+}
+
+public function restoreColor($color_id)
+{
+    // Lấy tất cả các variant đã xóa mềm với color_id tương ứng
+    $variants = Variant::withTrashed()->where('color_id', $color_id)->get();
+
+    // Nếu không tìm thấy
+    if ($variants->isEmpty()) {
+        return redirect()->back()->with('error', 'Không tìm thấy biến thể nào.');
+    }
+
+    // Khôi phục tất cả các biến thể đã xóa mềm
+    $restoredVariantsCount = 0;
+    foreach ($variants as $variant) {
+        if ($variant->trashed()) {
+            $variant->restore();
+            $restoredVariantsCount++;
+        }
+    }
+
+    // Khôi phục luôn color nếu có soft delete
+    $color = Color::withTrashed()->find($color_id);
+    if ($color && $color->trashed()) {
+        $color->restore();
+    }
+
+    // Kiểm tra xem có biến thể nào đã được khôi phục không
+    if ($restoredVariantsCount === 0) {
+        return redirect()->back()->with('error', 'Không có biến thể nào bị xóa.');
+    }
+
+    // Redirect về trang trash của product kèm thông báo
+    return redirect()->route('admin.variants.trash', $variants->first()->product_id)
+        ->with('success', "Đã khôi phục $restoredVariantsCount biến thể và màu sắc!");
+}
+
+
+
+
+/**
+ * Xóa vĩnh viễn biến thể từ thùng rác.
+ */
+public function forceDeleteColor($color_id)
+{
+    // Lấy tất cả các variant đã xóa mềm với color_id tương ứng
+    $variants = Variant::withTrashed()->where('color_id', $color_id)->get();
+
+    // Nếu không tìm thấy
+    if ($variants->isEmpty()) {
+        return redirect()->back()->with('error', 'Không tìm thấy biến thể nào.');
+    }
+
+    // Khôi phục tất cả các biến thể đã xóa mềm
+    $restoredVariantsCount = 0;
+    foreach ($variants as $variant) {
+        if ($variant->trashed()) {
+            $variant->forceDelete();
+            $restoredVariantsCount++;
+        }
+    }
+
+    // Khôi phục luôn color nếu có soft delete
+    $color = Color::withTrashed()->find($color_id);
+    if ($color && $color->trashed()) {
+        $color->forceDelete();
+    }
+
+    // Kiểm tra xem có biến thể nào đã được khôi phục không
+    if ($restoredVariantsCount === 0) {
+        return redirect()->back()->with('error', 'Không có biến thể nào bị xóa.');
+    }
+
+    // Redirect về trang trash của product kèm thông báo
+    return redirect()->route('admin.variants.trash', $variants->first()->product_id)
+        ->with('success', "Đã xóa vĩnh viễn biến thể và màu sắc!");
+}
+
 
     // ajax sửa số lượng
     public function updateQuantity(Request $request, $id)

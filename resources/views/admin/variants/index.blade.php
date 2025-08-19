@@ -186,7 +186,7 @@
             <a href="{{ route('admin.variants.create', ['product_id' => $id]) }}" class="btn btn-add-modern">
                 <i class="fas fa-plus-circle"></i> Thêm mới
             </a>
-            <a href="{{ route('admin.variants.trash') }}" class="btn btn-add-modern">
+            <a href="{{ route('admin.variants.trash',['product_id' => $id]) }}" class="btn btn-add-modern">
                 <i class="bi bi-trash3-fill"></i> Thùng Rác
             </a>
         </div>

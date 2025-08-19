@@ -192,7 +192,13 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
         ->name('admin.album-products.show-album');
 
 
-
+    // Route cho thùng rác biến thể con
+    Route::get('/variants/trash/{product_id}', [VariantController::class, 'trash'])->name('admin.variants.trash');
+    Route::post('/variants/restore/{id}', [VariantController::class, 'restore'])->name('admin.variants.restore');
+    Route::delete('/variants/force-delete/{id}', [VariantController::class, 'forceDelete'])->name('admin.variants.forceDelete');
+    // Route cho thùng rác biến thể chinh
+    Route::post('/variants/restore-color/{color_id}', [VariantController::class, 'restoreColor'])->name('admin.variants.restore-color');
+    Route::delete('/variants/force-delete-color/{color_id}', [VariantController::class, 'forceDeleteColor'])->name('admin.variants.forceDelete-color');
     // Variant Management Routes
     Route::get('/variants/create-item', [VariantController::class, 'create_item'])->name('admin.variants.create_item');
     Route::post('/variants/store-item', [VariantController::class, 'storeItem'])->name('admin.variants.store_item');
@@ -205,10 +211,7 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
         'update' => 'admin.variants.update',
         'destroy' => 'admin.variants.destroy',
     ]);
-    // Route cho thùng rác biến thể
-Route::get('/admin/variants/trash', [VariantController::class, 'trash'])->name('admin.variants.trash');
-Route::post('/admin/variants/restore/{id}', [VariantController::class, 'restore'])->name('admin.variants.restore');
-Route::delete('/admin/variants/force-delete/{id}', [VariantController::class, 'forceDelete'])->name('admin.variants.forceDelete');
+   
 
     // Size Management Routes
     Route::resource('/colors', ColorController::class)->names([
