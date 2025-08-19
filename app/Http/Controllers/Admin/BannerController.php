@@ -24,10 +24,25 @@ class BannerController extends Controller
 
     public function store(Request $request)
     {
+        try {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:banners,name',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'product_id' => 'nullable|exists:products,id_product',
+            'product_id' => 'required|exists:products,id_product',
+        ], [
+            // lỗi tên banner
+            'name.required' => 'Vui lòng nhập tên banner.',
+            'name.string'   => 'Tên banner không hợp lệ.',
+            'name.max'      => 'Tên banner không được vượt quá 255 ký tự.',
+            'name.unique'   => 'Tên banner này đã tồn tại.',
+            // lỗi hình ảnh
+            'image.required'   => 'Vui lòng tải ảnh lên.',
+            'image.image'   => 'Tệp tải lên phải là hình ảnh.',
+            'image.mimes'   => 'Logo chỉ chấp nhận định dạng: jpeg, png, jpg.',
+            'image.max'     => 'Kích thước ảnh không được vượt quá 2MB.',
+            // lỗi liên kết sản phẩm
+            'product_id.required' => 'Vui lòng chọn sản phẩm liên kết.',
+            'product_id.exists'   => 'Sản phẩm được chọn không tồn tại trong hệ thống.',
         ]);
         $banner = new Banner();
         $banner->name = $request->name;
@@ -39,6 +54,16 @@ class BannerController extends Controller
 
         $banner->save();
         return redirect()->route('admin.banner.index')->with('success', 'Tạo mới banner thành công.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                            ->withErrors($e->errors()) // gửi lỗi về view
+                            ->withInput()
+                            ->with('error', 'Vui lòng kiểm tra các lỗi bên dưới.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Đã xảy ra lỗi hệ thống, vui lòng thử lại.');
+        }
     }
 
     public function edit(Banner $banner)
@@ -52,8 +77,21 @@ class BannerController extends Controller
         
         $request->validate([
             'name' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'product_id' => 'nullable|exists:products,id_product',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'product_id' => 'required|exists:products,id_product',
+        ], [
+            // lỗi tên banner
+            'name.required' => 'Vui lòng nhập tên banner.',
+            'name.string'   => 'Tên banner không hợp lệ.',
+            'name.max'      => 'Tên banner không được vượt quá 255 ký tự.',
+            // lỗi hình ảnh
+            'image.required'   => 'Vui lòng tải ảnh lên.',
+            'image.image'   => 'Tệp tải lên phải là hình ảnh.',
+            'image.mimes'   => 'Logo chỉ chấp nhận định dạng: jpeg, png, jpg.',
+            'image.max'     => 'Kích thước ảnh không được vượt quá 2MB.',
+            // lỗi liên kết sản phẩm
+            'product_id.required' => 'Vui lòng chọn sản phẩm liên kết.',
+            'product_id.exists'   => 'Sản phẩm được chọn không tồn tại trong hệ thống.',
         ]);
 
         $banner->name = $request->name;
@@ -65,9 +103,19 @@ class BannerController extends Controller
             }
             $banner->image = $request->file('image')->store('banners', 'public');
         }
+        // Trường hợp tên banner đã tồn tại trong DB (trùng với banner khác)
+        $exists =$banner->where('name', $request->name)
+                    ->where('id', '!=', $banner->id) // loại trừ banner hiện tại
+                    ->exists();
 
+        if ($exists) {
+            return back()
+                ->withErrors(['name' => 'Tên banner này đã tồn tại trong hệ thống.'])
+                ->withInput();
+        }
         $banner->save();
         return redirect()->route('admin.banner.index')->with('success', 'Chỉnh sửa banner thành công.');
+        
     }
 
     public function destroy(Banner $banner)

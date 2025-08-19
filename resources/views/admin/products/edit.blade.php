@@ -124,7 +124,7 @@
 <div class="card-clean">
     <h2><i class="bi bi-pencil-square"></i> ✏️ Cập nhật Sản phẩm</h2>
 
-    @if ($errors->any())
+    {{-- @if ($errors->any())
         <div class="alert alert-danger">
             <ul class="mb-0">
                 @foreach ($errors->all() as $error)
@@ -132,30 +132,40 @@
                 @endforeach
             </ul>
         </div>
-    @endif
+    @endif --}}
 
-    <form action="{{ route('admin.products.update', $product->id_product) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.products.update', $product->id_product) }}" method="POST" enctype="multipart/form-data" id="product-form">
         @csrf
         @method('PUT')
 
         <div class="mb-3">
             <label for="name_product" class="form-label">Tên Sản Phẩm</label>
-            <input type="text" name="name_product" id="name_product" class="form-control" value="{{ old('name_product', $product->name_product) }}" placeholder="Nhập tên sản phẩm" required>
+            <input type="text" name="name_product" id="name_product" class="form-control @error('name_product') is-invalid @enderror" value="{{ old('name_product', $product->name_product) }}" placeholder="Nhập tên sản phẩm" >
+            <div class="error-message text-danger">
+                @error('name_product')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         <div class="mb-3">
             <label for="price" class="form-label">Giá</label>
             <input type="text" name="price" id="price" 
-                class="form-control" 
+                class="form-control @error('price') is-invalid @enderror" 
                 value="{{ old('price', $product->price) }}" 
                 placeholder="Nhập giá" 
-                required>
+                >
+            <div class="error-message text-danger">
+                @error('price')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
 
         <div class="mb-3">
             <label for="category_id" class="form-label">Danh Mục</label>
-            <select name="category_id" id="category_id" class="form-select" required>
+            <select name="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror" >
                 <option value="">-- Chọn Danh Mục --</option>
                 @foreach ($categories as $category)
                     <option value="{{ $category->id_category }}" {{ old('category_id', $product->category_id) == $category->id_category ? 'selected' : '' }}>
@@ -163,10 +173,36 @@
                     </option>
                 @endforeach
             </select>
+            <div class="error-message text-danger">
+                @error('category_id')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
+        </div>
+                <div class="mb-3">
+            <label for="brand_id" class="form-label">Thương Hiệu</label>
+            <select name="brand_id" id="brand_id" class="form-select @error('brand_id') is-invalid @enderror" >
+                <option value="">-- Chọn Thương Hiệu --</option>
+                @foreach ($brands as $brand)
+                    <option value="{{ $brand->id_brand }}" {{ old('brand_id', $product->brand_id) == $brand->id_brand ? 'selected' : '' }}>
+                        {{ $brand->name }}
+                    </option>
+                @endforeach
+            </select>
+            <div class="error-message text-danger">
+                @error('brand_id')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Mô Tả</label>
-            <textarea name="description" id="description" cols="30" rows="5" class="form-control" placeholder="Mô tả chi tiết sản phẩm...">{{$product->description?? 'N/A'}}</textarea>
+            <textarea name="description" id="description" cols="30" rows="5" class="form-control @error('description') is-invalid @enderror" placeholder="Mô tả chi tiết sản phẩm...">{{$product->description?? 'N/A'}}</textarea>
+            <div class="error-message text-danger">
+                @error('description')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
 
         <div class="mb-4">
@@ -174,10 +210,15 @@
             <label for="image" class="file-upload">
                 <i class="bi bi-cloud-upload"></i>
                 <span>📂 Chọn ảnh mới (nếu muốn thay đổi)</span>
-                <input type="file" name="image" id="image" class="d-none" accept="image/*">
+                <input type="file" name="image" id="image" class="d-none @error('image') is-invalid @enderror" accept="image/*">
             </label>
             <div style="margin-top: 10px;">
                 <img id="image-preview" src="{{ asset('storage/'.$product->image) }}" alt="Preview" style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            </div>
+            <div class="error-message text-danger">
+                @error('image')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
             </div>
         </div>
 
@@ -192,20 +233,173 @@
     </form>
 </div>
 
-<script>
-    const imageInput = document.getElementById('image');
-    const imagePreview = document.getElementById('image-preview');
 
-    // Preview ảnh mới khi chọn
-    imageInput.addEventListener('change', function(){
-        const file = this.files[0];
-        if (file){
-            const reader = new FileReader();
-            reader.onload = function(e){
-                imagePreview.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
+<script>
+const imageInput = document.getElementById('image');
+
+// Preview ảnh chính
+imageInput.addEventListener('change', function(){
+    const file = this.files[0];
+    if (file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = 'block';
         }
+        reader.readAsDataURL(file);
+    } else {
+        imagePreview.style.display = 'none';
+    }
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('product-form');
+
+    const rules = {
+        name_product: { required: true, string: true, max: 255 },
+        price: { required: true, numeric: true, min: 1000 },
+        category_id: { required: true },
+        brand_id: { required: true },
+        description: { required: true, string: true },
+        image: { image: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 },
+    };
+
+    const messages = {
+        name_product: {
+            required: 'Vui lòng nhập tên sản phẩm.',
+            string: 'Tên sản phẩm không hợp lệ.',
+            max: 'Tên sản phẩm không được vượt quá 255 ký tự.'
+        },
+        price: {
+            required: 'Vui lòng nhập giá sản phẩm.',
+            numeric: 'Giá phải là số.',
+            min: 'Giá sản phẩm không được nhỏ hơn 1000.'
+        },
+        category_id: { required: 'Vui lòng chọn danh mục.' },
+        brand_id: { required: 'Vui lòng chọn thương hiệu.' },
+        description: {
+            required: 'Vui lòng mô tả sản phẩm.',
+            string: 'Mô tả sản phẩm không hợp lệ.'
+        },
+        image: {
+            mimes: 'File chỉ chấp nhận định dạng: jpeg, png, jpg.',
+            maxSize: 'Kích thước ảnh không được vượt quá 2MB.'
+        }
+    };
+
+    function getGroup(input){
+        return input.closest('.mb-3, .mb-4') || input.parentNode;
+    }
+
+    function showError(input, message) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        input.classList.add('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.add('border-danger');
+    }
+
+    function clearError(input) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = '';
+        input.classList.remove('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.remove('border-danger');
+    }
+
+    function validateField(input) {
+        const name = input.name.replace('[]', ''); // album[]
+        const rule = rules[name];
+        if (!rule) return true;
+
+        const isFile = input.type === 'file';
+        const value = isFile ? '' : (input.value || '').trim();
+
+        // required
+        if (rule.required) {
+            if (isFile) {
+                if (input.files.length === 0) {
+                    showError(input, messages[name].required);
+                    return false;
+                }
+            } else if (!value) {
+                showError(input, messages[name].required);
+                return false;
+            }
+        }
+
+        // string
+        if (rule.string && !isFile && value && typeof value !== 'string') {
+            showError(input, messages[name].string);
+            return false;
+        }
+
+        // numeric/min/max
+        if (rule.numeric && value && isNaN(value)) {
+            showError(input, messages[name].numeric); return false;
+        }
+        if (rule.min && value && Number(value) < rule.min) {
+            showError(input, messages[name].min); return false;
+        }
+        if (rule.max && value && Number(value) > rule.max) {
+            showError(input, messages[name].max); return false;
+        }
+
+        // in
+        if (rule.in && value && !rule.in.includes(value)) {
+            showError(input, messages[name].in); return false;
+        }
+
+        // date
+        if (rule.date && value && isNaN(Date.parse(value))) {
+            showError(input, messages[name].date); return false;
+        }
+
+        // after or equal
+        if (rule.afterOrEqual && value) {
+            const start = document.querySelector(`[name="${rule.afterOrEqual}"]`).value;
+            if (start && new Date(value) < new Date(start)) {
+                showError(input, messages[name].afterOrEqual); return false;
+            }
+        }
+
+        // file check (image types & size)
+        if (isFile && input.files.length > 0) {
+            for (const file of input.files) {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (rule.mimes && !rule.mimes.includes(ext)) {
+                    showError(input, messages[name].mimes); return false;
+                }
+                if (rule.maxSize && file.size > rule.maxSize * 1024) {
+                    showError(input, messages[name].maxSize); return false;
+                }
+            }
+        }
+
+        clearError(input);
+        return true;
+    }
+
+    // Bắt sự kiện
+    const inputs = form.querySelectorAll('input, select, textarea');
+
+    inputs.forEach(input => {
+        const h = () => validateField(input);
+        input.addEventListener('input', h);
+        input.addEventListener('blur', h);
+        if (input.type === 'file') input.addEventListener('change', h);
     });
+
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        inputs.forEach(input => { if (!validateField(input)) isValid = false; });
+        if (!isValid) e.preventDefault();
+    });
+});
 </script>
+
 @endsection

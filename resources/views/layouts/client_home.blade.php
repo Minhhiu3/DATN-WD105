@@ -20,9 +20,12 @@
     <link rel="stylesheet" href="{{ asset('assets/css/ion.rangeSlider.skinFlat.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/magnific-popup.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
-    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Google Font: Roboto -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
         #mini-cart {
@@ -67,7 +70,8 @@
 
     {{-- Footer --}}
     @include('client.partials.footer_home')
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     {{-- Thông báo thành công nếu có --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -77,6 +81,16 @@
                 title: 'Thành công!',
                 text: "{{ session('success') }}",
                 icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        });
+        @endif
+        @if(session('error'))
+        window.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Thất bại!',
+                    html: {!! json_encode(nl2br(session('error'))) !!},
+                icon: 'error',
                 confirmButtonText: 'OK'
             });
         });

@@ -149,7 +149,6 @@
                         <th>Mã</th>
                         <th>Loại</th>
                         <th>Giá trị</th>
-                        <th>Giảm tối đa</th>
                         <th>Đơn tối thiểu</th>
                         <th>Ngày bắt đầu</th>
                         <th>Ngày kết thúc</th>
@@ -178,7 +177,6 @@
                                     {{ number_format($discount->value, 0, ',', '.') }} VNĐ
                                 @endif
                             </td>
-                            <td>{{ number_format($discount->max_discount, 0, ',', '.') }} VNĐ</td>
                             <td>{{ number_format($discount->min_order_value, 0, ',', '.') }} VNĐ</td>
                             <td>{{ $discount->start_date }}</td>
                             <td>{{ $discount->end_date }}</td>

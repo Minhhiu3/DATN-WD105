@@ -17,6 +17,7 @@
                     <ul class="nav navbar-nav menu_nav ml-auto">
                         <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
                         <li class="nav-item "><a class="nav-link" href="{{ route('products') }}">Cửa hàng</a></li>
+                        <li class="nav-item "><a class="nav-link" href="{{ route('discounts') }}">Khuyến Mãi</a></li>
 
                         <li class="nav-item"><a class="nav-link" href="{{ route('blogs') }}">Tin tức</a></li>
 

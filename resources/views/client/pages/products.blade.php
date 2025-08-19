@@ -64,19 +64,19 @@
             <div class="col-xl-9 col-lg-8 col-md-7">
                 <!-- Start Filter Bar -->
                 <div class="filter-bar d-flex flex-wrap align-items-center">
-                    <div class="sorting">
-                        <select>
+                    {{-- <div class="sorting">
+                        <select> --}}
                             {{-- <option value="1">Default sorting</option>
                             <option value="1">Default sorting</option>
                             <option value="1">Default sorting</option> --}}
-                        </select>
-                    </div>
+                        {{-- </select>
+                    </div> --}}
                     <div class="sorting mr-auto">
-                        <select>
+                        {{-- <select> --}}
                             {{-- <option value="1">Show 12</option>
                             <option value="1">Show 12</option>
                             <option value="1">Show 12</option> --}}
-                        </select>
+                        {{-- </select> --}}
                     </div>
 
                 </div>
@@ -97,10 +97,37 @@
     $minPrice = $product->variants->min('price');
     $maxPrice = $product->variants->max('price');
 @endphp
+ @php
+    $sale = $product->advice_product;
+$now = \Carbon\Carbon::now();
+    $start = \Carbon\Carbon::parse($sale->start_date ?? '' )->startOfDay();
+$end = \Carbon\Carbon::parse($sale->end_date ?? '')->endOfDay();
+@endphp
 
+@if (
+    $sale &&
+    $sale->status === "on" && $now->between($start, $end)
+)
+                                        {{-- Ô vuông % giảm giá tông vàng-cam --}}
+                                        <div style="
+                                            position: absolute;
+                                            top: 40px;
+                                            left: 30px;
+                                            background: linear-gradient(135deg, #ff7e00, #ffb400);
+                                            color: white;
+                                            padding: 5px 8px;
+                                            border-radius: 5px;
+                                            font-weight: bold;
+                                            font-size: 14px;
+                                            z-index: 10;
+                                            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                                        ">
+                                            -{{$product->advice_product->value}}%
+                                        </div>
+                                        @endif
 <div class="price">
     @if ($minPrice === null)
-        <h6>Đang cập nhật</h6>
+        <h6>Hết hàng!</h6>
     @elseif ($minPrice == $maxPrice)
         <h6>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</h6>
     @else
@@ -109,7 +136,7 @@
 </div>
                                         <div class="prd-bottom">
 
-                                            <a href="" class="social-info">
+                                            <!-- <a href="" class="social-info">
                                                 <span class="ti-bag"></span>
                                                 <p class="hover-text">add to bag</p>
                                             </a>
@@ -118,15 +145,14 @@
                                                 <p class="hover-text">Wishlist</p>
                                             </a>
                                             <a href="" class="social-info">
-                                                <span class="ti-shopping-cart"></span>
-                                                <p class="hover-text" type="submit">Add to cart</p>
-                                            </a>
+                                                <span class="lnr lnr-sync"></span>
+                                                <p class="hover-text">compare</p>
+                                            </a> -->
                                             <a href="{{ route('client.product.show', $product->id_product) }}"
                                                 class="social-info">
                                                 <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">view more</p>
+                                                <p class="hover-text">Xem chi tiết</p>
                                             </a>
-
                                         </div>
                                     </figcaption>
                                 </figure>

@@ -28,6 +28,7 @@ class Product extends Model
         'price',
         'description',
         'category_id',
+        'brand_id',
         'image',
     ];
 
@@ -45,6 +46,10 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, 'category_id', 'id_category');
     }
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class, 'brand_id', 'id_brand');
+    }
     public function albumProducts(): HasMany
     {
         return $this->hasMany(AlbumProduct::class, 'product_id', 'id_product');
@@ -61,5 +66,14 @@ class Product extends Model
     {
         return $this->hasOne(AdviceProduct::class, 'product_id', 'id_product');
     }
+    public function productReviews()
+{
+    return $this->hasMany(ProductReview::class, 'product_id', 'id_product');
+}
+public function adviceProduct()
+{
+    return $this->hasOne(AdviceProduct::class, 'product_id');
+}
+
 
 }
