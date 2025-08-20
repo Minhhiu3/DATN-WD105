@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DiscountCode;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class DiscountController extends Controller
 {
@@ -25,8 +26,10 @@ class DiscountController extends Controller
     $rules = [
         'code' => 'required|string|max:50|unique:discount_codes,code',
         'type' => 'required|in:0,1',
-        'value' => 'required|numeric|min:0',
+        'value' => 'required|numeric|min:1',
         'min_order_value' => 'required|numeric|min:1000',
+        'max_order_value' => 'required|numeric|min:1000',
+        'quantity' => 'required|numeric|min:1',
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date',
         'is_active' => 'sometimes|boolean',
@@ -57,8 +60,15 @@ class DiscountController extends Controller
         // Giá trị đơn tối thiểu
         'min_order_value.required' => 'Vui lòng nhập giá trị đơn tối thiểu.',
         'min_order_value.numeric' => 'Giá trị đơn tối thiểu phải là số.',
-        'min_order_value.min'     => 'Giá trị đơn tối thiểu không được nhỏ hơn 0.',
-
+        'min_order_value.min'     => 'Giá trị đơn tối thiểu không được nhỏ hơn 1000.',
+        // Giá trị đơn tối thiểu
+        'max_order_value.required' => 'Vui lòng nhập giá trị đơn tối đa.',
+        'max_order_value.numeric' => 'Giá trị đơn tối đa phải là số.',
+        'max_order_value.min'     => 'Giá trị đơn tối đa không được nhỏ hơn 1000.',
+        // Số lượng
+        'quantity.required' => 'Vui lòng nhập số lượng.',
+        'quantity.numeric'  => 'Số lượng phải là số.',
+        'quantity.min'      => 'Số lượng không được nhỏ hơn 1.',
         // Ngày bắt đầu
         'start_date.required' => 'Vui lòng chọn ngày bắt đầu.',
         'start_date.date'     => 'Ngày bắt đầu không hợp lệ.',
@@ -95,8 +105,10 @@ class DiscountController extends Controller
        $request->validate([
             'code' => 'required|string|max:255',
             'type' => 'required|string',
-            'value' => 'required|numeric',
+            'value' => ['required','numeric' ,Rule::when($request->input('type') == '0', ['max:100'])],
             'min_order_value' => 'nullable|numeric',
+            'max_order_value' => 'required|numeric|min:1000',
+            'quantity' => 'required|numeric|min:1',
             'user_specific' => 'boolean',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -123,7 +135,17 @@ class DiscountController extends Controller
                 'min_order_value.required' => 'Vui lòng nhập giá trị đơn tối thiểu.',
                 'min_order_value.numeric' => 'Giá trị đơn tối thiểu phải là số.',
                 'min_order_value.min'     => 'Giá trị đơn tối thiểu không được nhỏ hơn 0.',
-
+               
+                // Giá trị đơn tối thiểu
+                'max_order_value.required' => 'Vui lòng nhập giá trị đơn tối đa.',
+                'max_order_value.numeric' => 'Giá trị đơn tối đa phải là số.',
+                'max_order_value.min'     => 'Giá trị đơn tối đa không được nhỏ hơn 1000.',
+                
+                // Số lượng
+                'quantity.required' => 'Vui lòng nhập số lượng.',
+                'quantity.numeric'  => 'Số lượng phải là số.',
+                'quantity.min'      => 'Số lượng không được nhỏ hơn 1.',
+                
                 // Ngày bắt đầu
                 'start_date.required' => 'Vui lòng chọn ngày bắt đầu.',
                 'start_date.date'     => 'Ngày bắt đầu không hợp lệ.',
@@ -136,6 +158,8 @@ class DiscountController extends Controller
                 // Hoạt động
                 'is_active.boolean' => 'Trạng thái hoạt động không hợp lệ.',
             ]);
+                // Nếu loại là phần trăm → giới hạn 100
+
         $exists = DiscountCode::where('code', $request->code)
                     ->where('discount_id', '!=', $discount->discount_id) // loại trừ size hiện tại
                     ->exists();

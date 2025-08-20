@@ -131,7 +131,29 @@
                 @enderror
             </div>
         </div>
+{{-- Giá trị đơn tối đa --}}
+        <div class="mb-3">
+            <label for="max_order_value" class="form-label">Giá Trị Đơn Tối Đa</label>
+            <input type="number"   name="max_order_value" id="max_order_value" class="form-control @error('max_order_value') is-invalid @enderror" 
+                   value="{{ old('max_order_value', (int) $discount->max_order_value) }}" placeholder="Nhập giá trị đơn tối đa" min="0" step="1000" >
+            <div class="error-message text-danger">
+                @error('max_order_value')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
+        </div>
+        {{-- Số lượng --}}
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Giá Trị</label>
+            <input type="number" name="quantity" id="quantity" class="form-control @error('quantity') is-invalid @enderror" 
+                   value="{{ old('quantity',(int) $discount->quantity) }}" placeholder="Nhập số lượng" min="0" step="1" >
+              <div class="error-message text-danger">
+                @error('quantity')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
 
+        </div>
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="start_date" class="form-label">Ngày bắt đầu</label>
@@ -188,12 +210,20 @@ document.addEventListener('DOMContentLoaded', function () {
         type: { required: true, in: ['0', '1'] },
         value: { required: true, numeric: true, min: 1 },
         min_order_value: { required: true, numeric: true, min: 1000 },
+        max_order_value: { required: true, numeric: true, min: 1000, max: undefined },
+        quantity: { required: true, numeric: true, min: 1 },
         start_date: { required: true, date: true },
         end_date: { required: true, date: true, afterOrEqual: 'start_date' },
         is_active: { boolean: true }
     };
     const typeInput = form.querySelector('[name="type"]');
     const valueInput = form.querySelector('[name="value"]');
+    const maxOrderValueInput = form.querySelector('[name="max_order_value"]');
+    const minOrderValueInput = form.querySelector('[name="min_order_value"]');
+
+    // const minVal = parseInt(minOrderValueInput.value, 10) || 0; 
+
+
 
     // Khi type thay đổi
     
@@ -218,6 +248,16 @@ document.addEventListener('DOMContentLoaded', function () {
             required: 'Vui lòng nhập giá trị đơn tối thiểu.',
             numeric: 'Giá trị đơn tối thiểu phải là số.',
             min: 'Giá trị đơn tối thiểu không được nhỏ hơn 1000.'
+        },
+        max_order_value: {
+            required: 'Vui lòng nhập giá trị đơn tối đa.',
+            numeric: 'Giá trị đơn tối đa phải là số.',
+            // min: 'Giá trị đơn tối đa không được nhỏ hơn 1000.'
+        },
+        quantity: {
+            required: 'Vui lòng nhập số lượng mã giảm giá.',
+            numeric: 'Số lượng phải là số.',
+            min: 'Số lượng không được nhỏ hơn 1.',
         },
         start_date: {
             required: 'Vui lòng chọn ngày bắt đầu.',
@@ -251,6 +291,24 @@ typeInput.addEventListener('change', function () {
             messages.value.max = ''; // không cần thông báo max
         }
     })
+maxOrderValueInput.addEventListener('input', function () {
+    const minVal = parseInt(minOrderValueInput.value, 10) || 0;
+    const maxVal = parseInt(maxOrderValueInput.value, 10) || 0;
+
+    if (maxVal && minVal >= maxVal) {
+            rules.max_order_value.min = minVal + 1000;
+            rules.max_order_value.max = undefined;
+            // Cập nhật thông báo theo type
+            messages.max_order_value.min = 'Đơn hàng tối đa không được nhỏ hơn đơn hàng tối thiểu.';
+    } else {
+            rules.max_order_value.min = 1000;
+            rules.max_order_value.max = undefined;
+            // Cập nhật thông báo theo type
+            messages.max_order_value.min = 'Đơn hàng tối đa không được nhỏ hơn 1000.';
+    }
+});
+
+
     // Hàm hiển thị lỗi
     function showError(input, message) {
         const errorDiv = input.parentNode.querySelector('.error-message');
@@ -349,13 +407,10 @@ form.addEventListener('submit', function(e) {
     let isValid = true;
 
     inputs.forEach(input => {
-        const errorMessage = validateField(input); // validateField trả về message nếu lỗi, null nếu đúng
+        const valid = validateField(input); // trả về true/false
 
-        if (errorMessage) {
-            isValid = false;
-            showError(input, errorMessage); // ✅ hiện lỗi khi submit
-        } else {
-            clearError(input); // Nếu hợp lệ thì xóa lỗi cũ
+        if (!valid) {
+            isValid = false; // Nếu có input không hợp lệ
         }
     });
 
@@ -363,6 +418,7 @@ form.addEventListener('submit', function(e) {
         e.preventDefault(); // Ngăn submit nếu có lỗi
     }
 });
+
 
 
 });

@@ -158,7 +158,29 @@
             </div>
 
         </div>
+        {{-- Giá trị đơn tối đa --}}
+        <div class="mb-3">
+            <label for="max_order_value" class="form-label">Giá Trị Đơn Tối Đa</label>
+            <input type="number"   name="max_order_value" id="max_order_value" class="form-control @error('max_order_value') is-invalid @enderror" 
+                   value="{{ old('max_order_value') }}" placeholder="Nhập giá trị đơn tối đa" min="0" step="1000" >
+            <div class="error-message text-danger">
+                @error('max_order_value')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
+        </div>
+        {{-- Số lượng --}}
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Giá Trị</label>
+            <input type="number" name="quantity" id="quantity" class="form-control @error('quantity') is-invalid @enderror" 
+                   value="{{ old('quantity') }}" placeholder="Nhập số lượng" min="0" step="1" >
+              <div class="error-message text-danger">
+                @error('quantity')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
 
+        </div>
         {{-- Ngày bắt đầu --}}
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -222,13 +244,16 @@ document.addEventListener('DOMContentLoaded', function () {
         type: { required: true, in: ['0', '1'] },
         value: { required: true, numeric: true, min: 1 },
         min_order_value: { required: true, numeric: true, min: 1000 },
+        max_order_value: { required: true, numeric: true, min: 1000, max: undefined },
+        quantity: { required: true, numeric: true, min: 1 },
         start_date: { required: true, date: true },
         end_date: { required: true, date: true, afterOrEqual: 'start_date' },
         is_active: { boolean: true }
     };
     const typeInput = form.querySelector('[name="type"]');
     const valueInput = form.querySelector('[name="value"]');
-
+    const maxOrderValueInput = form.querySelector('[name="max_order_value"]');
+    const minOrderValueInput = form.querySelector('[name="min_order_value"]');
     // Khi type thay đổi
     
     const messages = {
@@ -246,13 +271,22 @@ document.addEventListener('DOMContentLoaded', function () {
         value: {
             required: 'Vui lòng nhập giá trị giảm.',
             numeric: 'Giá trị giảm phải là số.',
-            min: 'Giá trị giảm không được nhỏ hơn 0.',
+            min: 'Giá trị giảm không được nhỏ hơn 1.',
             max: 'Khi chọn loại phần trăm, giá trị không được vượt quá 100%.'
         },
         min_order_value: {
             required: 'Vui lòng nhập giá trị đơn tối thiểu.',
             numeric: 'Giá trị đơn tối thiểu phải là số.',
             min: 'Giá trị đơn tối thiểu không được nhỏ hơn 1000.'
+        },
+        max_order_value: {
+            required: 'Vui lòng nhập giá trị đơn tối đa.',
+            numeric: 'Giá trị đơn tối đa phải là số.',
+        },
+        quantity: {
+            required: 'Vui lòng nhập số lượng mã giảm giá.',
+            numeric: 'Số lượng phải là số.',
+            min: 'Số lượng không được nhỏ hơn 1.',
         },
         start_date: {
             required: 'Vui lòng chọn ngày bắt đầu.',
@@ -267,25 +301,41 @@ document.addEventListener('DOMContentLoaded', function () {
             boolean: 'Trạng thái hoạt động không hợp lệ.'
         }
     };
-typeInput.addEventListener('change', function () {
-         // Luôn giữ min = 0
+        typeInput.addEventListener('change', function () {
+                // Luôn giữ min = 0
 
-        if (typeInput.value === '0') {
-            // Giảm % → max = 100
-            rules.value.min = 1;
-            rules.value.max = 100;
-            messages.value.min = 'Giá trị giảm không được nhỏ hơn 1.';
-            messages.value.max = 'Khi chọn loại phần trăm, giá trị không được vượt quá 100%.';
-            
-        } else if (typeInput.value === '1') {
-            // Giảm cố định → max không giới hạn
-            rules.value.min = 1000;
-            rules.value.max = undefined;
-            // Cập nhật thông báo theo type
-            messages.value.min = 'Giá trị giảm không được nhỏ hơn 1000.';
-            messages.value.max = ''; // không cần thông báo max
-        }
-    })
+                if (typeInput.value === '0') {
+                    // Giảm % → max = 100
+                    rules.value.min = 1;
+                    rules.value.max = 100;
+                    messages.value.min = 'Giá trị giảm không được nhỏ hơn 1.';
+                    messages.value.max = 'Khi chọn loại phần trăm, giá trị không được vượt quá 100%.';
+                    
+                } else if (typeInput.value === '1') {
+                    // Giảm cố định → max không giới hạn
+                    rules.value.min = 1000;
+                    rules.value.max = undefined;
+                    // Cập nhật thông báo theo type
+                    messages.value.min = 'Giá trị giảm không được nhỏ hơn 1000.';
+                    messages.value.max = ''; // không cần thông báo max
+                }
+            })
+            maxOrderValueInput.addEventListener('input', function () {
+            const minVal = parseInt(minOrderValueInput.value, 10) || 0;
+            const maxVal = parseInt(maxOrderValueInput.value, 10) || 0;
+
+            if (maxVal && minVal >= maxVal) {
+                    rules.max_order_value.min = minVal + 1000;
+                    rules.max_order_value.max = undefined;
+                    // Cập nhật thông báo theo type
+                    messages.max_order_value.min = 'Đơn hàng tối đa không được nhỏ hơn đơn hàng tối thiểu.';
+            } else {
+                    rules.max_order_value.min = 1000;
+                    rules.max_order_value.max = undefined;
+                    // Cập nhật thông báo theo type
+                    messages.max_order_value.min = 'Đơn hàng tối đa không được nhỏ hơn 1000.';
+            }
+        });
     // Hàm hiển thị lỗi
     function showError(input, message) {
         const errorDiv = input.parentNode.querySelector('.error-message');
