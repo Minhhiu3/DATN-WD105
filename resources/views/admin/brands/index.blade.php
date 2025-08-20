@@ -139,9 +139,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Tên thương hiệu</th>
-                    <th>Slug</th>
                     <th>Logo</th>
-                    <th>Trạng thái</th>
                     <th>Hành động</th>
                 </tr>
             </thead>
@@ -150,16 +148,10 @@
                     <tr>
                         <td>{{ $brand->id_brand }}</td>
                         <td>{{ $brand->name }}</td>
-                        <td>{{ $brand->slug }}</td>
                         <td>
                             @if($brand->logo)
                                 <img src="{{ asset('storage/' . $brand->logo) }}" alt="Logo" width="50" class="rounded">
                             @endif
-                        </td>
-                        <td>
-                            <span class="badge {{ $brand->status == 'visible' ? 'bg-success' : 'bg-secondary' }}">
-                                {{ $brand->status == 'visible' ? 'Hiển thị' : 'Ẩn' }}
-                            </span>
                         </td>
                         <td>
                             <a href="{{ route('admin.brands.edit', $brand->id_brand) }}" class="btn btn-action btn-edit">

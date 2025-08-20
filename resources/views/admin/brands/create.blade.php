@@ -154,19 +154,6 @@
             </div>
         </div>
 
-        <div class="mb-3">
-            <label for="status" class="form-label">Trạng thái</label>
-            <select name="status" id="status" class="form-select">
-                <option value="visible" {{ old('status') == 'visible' ? 'selected' : '' }}>Hiển thị</option>
-                <option value="hidden" {{ old('status') == 'hidden' ? 'selected' : '' }}>Ẩn</option>
-            </select>
-            <div class="error-message text-danger">
-                @error('status')
-                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
-                @enderror
-            </div>
-        </div>
-
         <div class="d-flex justify-content-between">
             <button type="submit" class="btn-primary-custom">
                 <i class="bi bi-check-circle"></i> Lưu
@@ -202,7 +189,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const rules = {
         name: { required: true, string: true, max: 255 },
         logo: { required: true, image: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 },
-        status: { required: true },
     };
 
     const messages = {
@@ -211,7 +197,6 @@ document.addEventListener('DOMContentLoaded', function () {
             string: 'Tên thương hiệu không hợp lệ.',
             max: 'Tên sản thương hiệu được vượt quá 255 ký tự.'
         },
-        status: { required: 'Vui lòng chọn trạng thái.' },
         logo: {
             required: 'Bạn cần tải lên hình ảnh thương hiệu.',
             mimes: 'File chỉ chấp nhận định dạng: jpeg, png, jpg.',
