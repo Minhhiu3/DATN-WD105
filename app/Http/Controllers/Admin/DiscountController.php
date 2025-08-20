@@ -11,14 +11,31 @@ use Illuminate\Validation\Rule;
 class DiscountController extends Controller
 {
     //
-    public function index()
-    {
-        $discounts = DiscountCode::all();
-        return view('admin.discounts.index',compact('discounts'));
+public function index(Request $request)
+{
+    $query = DiscountCode::query(); 
+
+    // Lọc theo từ khóa
+    if ($request->filled('keyword')) {
+        $query->where('code', 'like', '%' . $request->keyword . '%');
     }
+
+    // Lọc theo loại
+    if ($request->filled('type')) {
+        $query->where('type', $request->type); 
+    }
+    // Lọc theo hoạt động
+    if ($request->filled('is_active')) {
+        $query->where('is_active', $request->is_active); 
+    }
+    // Lấy kết quả
+    $discounts = $query->paginate(6);
+
+    return view('admin.discounts.index', compact('discounts'));
+}
+    
     public function create()
     {
-
         return view('admin.discounts.create');
     }
     public function store(Request $request)

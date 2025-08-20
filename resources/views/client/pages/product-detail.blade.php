@@ -69,8 +69,13 @@
                                 @if (optional($product->advice_product)->status === 'off')
                                     <span id="dynamic-price"></span>
                                 @endif
-
-                                @if (optional($product->advice_product)->status === 'on')
+                                    @php
+                                        $sale = optional($product->advice_product);
+                                        $now = \Carbon\Carbon::now();
+                                        $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                                        $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                                    @endphp
+                                @if ( $sale && $sale->status === "on" && $now->between($start, $end))
                                     <h4 style="margin-left: 15px; margin-top: 3px;">
                                         <span id="dynamic-price" style="text-decoration: line-through;">
                                             @if ($product->variants->count() > 0)
@@ -80,12 +85,6 @@
                                             @endif
                                         </span>
                                     </h4>
-                                    @php
-                                        $sale = optional($product->advice_product);
-                                        $now = \Carbon\Carbon::now();
-                                        $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
-                                        $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
-                                    @endphp
 
                                     <div style="
                                         display: inline-block;

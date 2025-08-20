@@ -180,6 +180,7 @@ class CheckoutController extends Controller
                                     'used' => '1',
                                     'used_at' => now(),
                                 ]);
+                        DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
 
                         }else{
                             UserVoucher::create([
@@ -188,6 +189,7 @@ class CheckoutController extends Controller
                                 'used'       => 1,
                                 'used_at'    => now(),
                             ]);
+                            DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
                         }
                     }
 
@@ -243,7 +245,7 @@ class CheckoutController extends Controller
                                 'used' => '1',
                                 'used_at' => now(),
                             ]);
-
+                        DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
                     }else{
                         UserVoucher::create([
                             'user_id'    => Auth::id(),
@@ -251,6 +253,7 @@ class CheckoutController extends Controller
                             'used'       => 1,
                             'used_at'    => now(),
                         ]);
+                        DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
                     }
                 }
 
@@ -530,6 +533,8 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                             'used' => '1',
                             'used_at' => now(),
                         ]);
+                    DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
+
 
                 }else{
                     UserVoucher::create([
@@ -538,6 +543,8 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                         'used'       => 1,
                         'used_at'    => now(),
                     ]);
+                    DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
+
                 }
             }
 
@@ -631,7 +638,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                             'used' => '1',
                             'used_at' => now(),
                         ]);
-
+                    DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
                 }else{
                     UserVoucher::create([
                         'user_id'    => Auth::id(),
@@ -639,6 +646,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                         'used'       => 1,
                         'used_at'    => now(),
                     ]);
+                    DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
                 }
             }
 
@@ -698,7 +706,12 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 'message' => 'Đơn hàng phải từ ' . number_format($coupon->min_order_value, 0, ',', '.') . 'đ mới được áp dụng mã giảm giá'
             ]);
         }
-
+        if ($subtotal > $coupon->max_order_value) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng phải dưới ' . number_format($coupon->max_order_value, 0, ',', '.') . 'đ mới được áp dụng mã giảm giá'
+            ]);
+        }
         $type = (int) $coupon->type; // ép kiểu chắc chắn
 
         switch ($type) {

@@ -124,6 +124,42 @@
         margin-bottom: 15px;
         animation: fadeIn 0.5s ease-out;
     }
+            .btn-primary-custom {
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 20px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background 0.3s ease, transform 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary-custom:hover {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(56, 189, 248, 0.4);
+        }
+                .search-form input,
+        .search-form select {
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            flex: none;
+            /* không để input kéo dài */
+            min-width: 200px;
+            transition: all 0.3s ease;
+            width: 30%;
+        }
+
+        .search-form input:focus,
+        .search-form select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 0.15rem rgba(56, 189, 248, 0.3);
+            background: #fff;
+        }
 </style>
 
 <div class="card card-modern">
@@ -136,11 +172,36 @@
 
     <div class="card-body">
         @if (session('success'))
-            <div class="alert alert-modern-success">
+            <div class="alert alert-modern-success" id="success-alert">
                 <i class="fas fa-check-circle"></i> {{ session('success') }}
             </div>
         @endif
-
+ <!-- Form tìm kiếm và lọc -->
+       <form method="GET" action="{{ route('admin.discounts.index') }}"  class="search-form">
+            <div class="row g-3">
+                <div class="col-12 col-md-5">
+                    <input type="text" name="keyword" class="form-control w-100" 
+                        placeholder="Tìm kiếm sản phẩm..." value="{{ request('keyword') }}">
+                </div>
+                <div class="col-12 col-md-3">
+                    <select name="type" class="form-select form-control w-100">
+                        <option value="">Tất cả loại mã giảm giá</option>
+                        <option value="0" >Phần trăm</option>
+                        <option value="1" >Cố định</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <select name="is_active" class="form-select form-control w-100">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="0" >Không hoạt động</option>
+                        <option value="1" >Hoạt động</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-1 d-grid">
+                    <button type="submit" class="btn btn-primary-custom"><i class="bi bi-search"></i> Tìm</button>
+                </div>
+            </div>
+        </form>
         <div class="table-responsive">
             <table class="table table-modern">
                 <thead>
@@ -185,9 +246,26 @@
                             <td>{{ $discount->start_date }}</td>
                             <td>{{ $discount->end_date }}</td>
                             <td>
-                                <span class="{{ $discount->is_active ? 'badge-active' : 'badge-inactive' }}">
-                                    {{ $discount->is_active ? 'Hoạt động' : 'Không hoạt động' }}
-                                </span>
+                                {{-- @php
+                                    $today = now();
+                                    $discounts = App\Models\DiscountCode::all();
+                                    $activeDiscounts = []; // Mảng để lưu trữ trạng thái
+
+                                    foreach ($discounts as $discount1) {
+                                        if ($discount1->is_active && $discount1->end_date < $today) {
+                                            $discount1->is_active = 0;
+                                            $discount1->save();
+                                        }
+                                        $activeDiscounts[] = $discount1->is_active; // Lưu trạng thái
+                                    }
+                                @endphp --}}
+                                @if ($discount->is_active === 1)
+                                    <span class="badge-active">Hoạt động</span>
+                                @else
+                                    <span class="badge-inactive">Không </span>
+                                @endif
+
+                                
                             </td>
                             <td>
                                 <a href="{{ route('admin.discounts.edit', $discount->discount_id) }}"
@@ -207,6 +285,62 @@
                 </tbody>
             </table>
         </div>
+@if ($discounts->hasPages())
+    <div class="d-flex justify-content-center mt-3">
+        {{ $discounts->links('pagination::bootstrap-5') }}
+    </div>
+@endif
+
     </div>
 </div>
+<script>
+  window.addEventListener('load', function() {
+  let isLoading = false;
+
+  function reloadPageInBackground() {
+    if (isLoading) return;
+    isLoading = true;
+
+    // Tạo một iframe ẩn
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // Load trang mới trong iframe
+    iframe.contentWindow.location.replace(window.location.href);
+
+    // Lắng nghe sự kiện 'load' của iframe
+    iframe.onload = function() {
+      // Lấy nội dung mới từ iframe
+      var newContent = new DOMParser().parseFromString(iframe.contentDocument.documentElement.innerHTML, 'text/html').querySelector('table');
+
+      // Cập nhật nội dung của trang chính
+      var mainElement = document.querySelector('table');
+      mainElement.parentNode.replaceChild(newContent, mainElement);
+
+      // Xóa iframe
+      document.body.removeChild(iframe);
+      isLoading = false;
+
+      // Gọi lại hàm reloadPageInBackground() sau 1 giây
+      setTimeout(reloadPageInBackground, 1000);
+    };
+  }
+
+    // Khởi chạy animation
+    reloadPageInBackground();
+    });
+    // Chờ 3 giây rồi ẩn alert
+    setTimeout(function() {
+        const alert = document.getElementById('success-alert');
+        if (alert) {
+            // Tùy chọn: fade out mượt
+            alert.style.transition = "opacity 0.7s";
+            alert.style.opacity = 0.5;
+
+            // Sau 0.5s remove khỏi DOM
+            setTimeout(() => alert.remove(), 500);
+        }
+    }, 2000);
+</script>
 @endsection
