@@ -712,6 +712,12 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 'message' => 'Đơn hàng phải dưới ' . number_format($coupon->max_order_value, 0, ',', '.') . 'đ mới được áp dụng mã giảm giá'
             ]);
         }
+        if ($coupon->quantity == 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Số lượng mã giảm giá có giới hạn.'
+            ]);
+        }
         $type = (int) $coupon->type; // ép kiểu chắc chắn
 
         switch ($type) {
@@ -826,6 +832,12 @@ $finalTotalShip = max(0, $subtotal - $discount) + $shippingFee;
             return response()->json([
                 'success' => false,
                 'message' => 'Đơn hàng phải từ ' . number_format($coupon->min_order_value, 0, ',', '.') . 'đ mới được áp dụng mã giảm giá'
+            ]);
+        }
+        if ($coupon->quantity = 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Số lượng mã giảm giá có giới hạn.'
             ]);
         }
         $discount = 0;

@@ -114,6 +114,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
 
     // Category Management Routes
+    // Thùng rác danh mục
+    Route::get('categories/trash', [CategoryController::class, 'trash'])->name('admin.categories.trash');
+    Route::post('categories/restore/{id}', [CategoryController::class, 'restore'])->name('admin.categories.restore');
+    Route::delete('categories/force-delete/{id}', [CategoryController::class, 'forceDelete'])->name('admin.categories.forceDelete');
     Route::resource('/categories', CategoryController::class)->names([
         'index' => 'admin.categories.index',
         'create' => 'admin.categories.create',
