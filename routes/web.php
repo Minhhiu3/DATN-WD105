@@ -157,7 +157,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.products.destroy',
     ]);
 
-    
+    // Thùng rác size
+    Route::get('sizes/trash', [SizeController::class, 'trash'])->name('admin.sizes.trash');
+    Route::post('sizes/restore/{id}', [SizeController::class, 'restore'])->name('admin.sizes.restore');
+    Route::delete('sizes/force-delete/{id}', [SizeController::class, 'forceDelete'])->name('admin.sizes.forceDelete');
     // Size Management Routes
     Route::resource('/sizes', SizeController::class)->names([
         'index' => 'admin.sizes.index',
