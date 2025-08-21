@@ -206,7 +206,20 @@
 
             </div>
         </div>
+        <div class="mb-3">
+            <label for="program_type" class="form-label">Loại chương trình</label>
+            <select name="program_type" id="program_type" class="form-select @error('program_type') is-invalid @enderror" >
+                <option value=""  selected>-- Chọn loại chương trình --</option>
+                <option value="input_code" {{ old('program_type') == 'input_code' ? 'selected' : '' }}>Nhập mã code</option>
+                <option value="choose_voucher" {{ old('program_type') == 'choose_voucher' ? 'selected' : '' }}>Chọn Voucher</option>
+            </select>
+            <div class="error-message text-danger">
+                @error('program_type')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
 
+        </div>
         {{-- Hoạt động --}}
         <div class="form-check mb-4">
             <input type="checkbox" name="is_active" id="is_active" class="form-check-input " 
@@ -217,8 +230,6 @@
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
                 @enderror
             </div>
-
-
         </div>
 
         {{-- Nút --}}
@@ -248,8 +259,9 @@ document.addEventListener('DOMContentLoaded', function () {
         quantity: { required: true, numeric: true, min: 1 },
         start_date: { required: true, date: true },
         end_date: { required: true, date: true, afterOrEqual: 'start_date' },
-        is_active: { boolean: true }
-    };
+        program_type: { required: true }
+
+        };
     const typeInput = form.querySelector('[name="type"]');
     const valueInput = form.querySelector('[name="value"]');
     const maxOrderValueInput = form.querySelector('[name="max_order_value"]');
@@ -297,9 +309,9 @@ document.addEventListener('DOMContentLoaded', function () {
             date: 'Ngày kết thúc không hợp lệ.',
             afterOrEqual: 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.'
         },
-        is_active: {
-            boolean: 'Trạng thái hoạt động không hợp lệ.'
-        }
+        program_type: {
+            required: 'Vui lòng chọn loại chương trình giảm giá.',
+        },
     };
         typeInput.addEventListener('change', function () {
                 // Luôn giữ min = 0

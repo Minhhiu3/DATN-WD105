@@ -24,6 +24,7 @@ class DiscountCode extends Model
         'start_date',
         'end_date',
         'is_active',
+        'program_type',
     ];
         public function userVouchers()
 {

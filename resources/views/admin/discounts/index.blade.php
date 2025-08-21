@@ -212,18 +212,25 @@
                     <input type="text" name="keyword" class="form-control w-100" 
                         placeholder="Tìm kiếm sản phẩm..." value="{{ request('keyword') }}">
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-2">
                     <select name="type" class="form-select form-control w-100">
                         <option value="">Tất cả loại mã giảm giá</option>
                         <option value="0" >Phần trăm</option>
                         <option value="1" >Cố định</option>
                     </select>
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-2">
                     <select name="is_active" class="form-select form-control w-100">
                         <option value="">Tất cả trạng thái</option>
                         <option value="0" >Không hoạt động</option>
                         <option value="1" >Hoạt động</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <select name="program_type" class="form-select form-control w-100">
+                        <option value="">Tất cả loại chương trình</option>
+                        <option value="input_code" >Nhập mã code</option>
+                        <option value="choose_voucher" >Chọn Voucher</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-1 d-grid">
@@ -240,6 +247,8 @@
                         <th>Loại</th>
                         <th>Giá trị</th>
                         <th>Số lượng</th>
+                        <th>Chương trình</th>
+                        <th>Ngày hết hạn</th>
                         <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
@@ -267,19 +276,20 @@
                             </td>
                             <td>{{ $discount->quantity }}</td>
                             <td>
-                                {{-- @php
-                                    $today = now();
-                                    $discounts = App\Models\DiscountCode::all();
-                                    $activeDiscounts = []; // Mảng để lưu trữ trạng thái
-
-                                    foreach ($discounts as $discount1) {
-                                        if ($discount1->is_active && $discount1->end_date < $today) {
-                                            $discount1->is_active = 0;
-                                            $discount1->save();
-                                        }
-                                        $activeDiscounts[] = $discount1->is_active; // Lưu trạng thái
-                                    }
-                                @endphp --}}
+                                @if($discount->program_type === 'input_code')
+                                    <span class="badge" style="background-color: #ff9800; color: #fff;">
+                                        Nhập mã code
+                                    </span>
+                                @elseif($discount->program_type === 'choose_voucher')
+                                    <span class="badge" style="background-color: #2196f3; color: #fff;">
+                                        Chọn Voucher
+                                    </span>
+                                @else
+                                    <span class="badge bg-secondary">Không xác định</span>
+                                @endif
+                            </td>
+                            <td>{{ $discount->end_date }}</td>
+                            <td>
                                 @if ($discount->is_active === 1)
                                     <span class="badge-active">Hoạt động</span>
                                 @else
@@ -311,11 +321,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted">Không có mã giảm giá nào.</td>
+                            <td colspan="9" class="text-center text-muted">Không có mã giảm giá nào.</td>
                         </tr>
                     @endforelse
                         <tr>
-                            <td colspan="6" class="text-center text-muted"></td>
+                            <td colspan="8" class="text-center text-muted"></td>
                             <td colspan="1" class="text-center text-muted">        
                                 <a href="{{ route('admin.discounts.trash') }}" class="btn ">
                                         <i class="bi bi-trash3-fill"></i> Thùng Rác
@@ -334,42 +344,32 @@
     </div>
 </div>
 <script>
-  window.addEventListener('load', function() {
-  let isLoading = false;
+window.addEventListener('load', function () {
+    const lastCheck = localStorage.getItem('lastVoucherCheckTime');
+    const now = Date.now(); // tính theo milliseconds
+    const thirtyMinutes = 30 * 60 * 1000; // 30 phút = 1800000 ms
 
-  function reloadPageInBackground() {
-    if (isLoading) return;
-    isLoading = true;
+    if (!lastCheck || now - parseInt(lastCheck) >= thirtyMinutes) {
+        // Gọi API checkExpire
+        fetch("{{ route('admin.discounts.checkExpire') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("Voucher expired updated:", data.updated);
+            localStorage.setItem('lastVoucherCheckTime', now.toString()); // Lưu timestamp hiện tại
+            location.reload(); // reload để cập nhật bảng
+        })
+        .catch(err => console.error(err));
+    }
+});
 
-    // Tạo một iframe ẩn
-    var iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
 
-    // Load trang mới trong iframe
-    iframe.contentWindow.location.replace(window.location.href);
-
-    // Lắng nghe sự kiện 'load' của iframe
-    iframe.onload = function() {
-      // Lấy nội dung mới từ iframe
-      var newContent = new DOMParser().parseFromString(iframe.contentDocument.documentElement.innerHTML, 'text/html').querySelector('table');
-
-      // Cập nhật nội dung của trang chính
-      var mainElement = document.querySelector('table');
-      mainElement.parentNode.replaceChild(newContent, mainElement);
-
-      // Xóa iframe
-      document.body.removeChild(iframe);
-      isLoading = false;
-
-      // Gọi lại hàm reloadPageInBackground() sau 1 giây
-      setTimeout(reloadPageInBackground, 1000);
-    };
-  }
-
-    // Khởi chạy animation
-    reloadPageInBackground();
-    });
     // Chờ 3 giây rồi ẩn alert
     setTimeout(function() {
         const alert = document.getElementById('success-alert');

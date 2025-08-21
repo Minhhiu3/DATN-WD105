@@ -244,6 +244,8 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
     Route::get('discounts/trash', [DiscountController::class, 'trash'])->name('admin.discounts.trash');
     Route::post('discounts/restore/{id}', [DiscountController::class, 'restore'])->name('admin.discounts.restore');
     Route::delete('discounts/force-delete/{id}', [DiscountController::class, 'forceDelete'])->name('admin.discounts.forceDelete');
+    Route::post('/discounts/check-expire', [DiscountController::class, 'checkExpire'])->name('admin.discounts.checkExpire');
+
     Route::resource('/discounts', DiscountController::class)->names([
         'index' => 'admin.discounts.index',
         'create' => 'admin.discounts.create',

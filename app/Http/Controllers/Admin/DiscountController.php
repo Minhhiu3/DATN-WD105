@@ -24,6 +24,10 @@ public function index(Request $request)
     if ($request->filled('type')) {
         $query->where('type', $request->type); 
     }
+    // Lọc theo chương trình
+    if ($request->filled('program_type')) {
+        $query->where('program_type', $request->program_type); 
+    }
     // Lọc theo hoạt động
     if ($request->filled('is_active')) {
         $query->where('is_active', $request->is_active); 
@@ -50,13 +54,16 @@ public function index(Request $request)
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date',
         'is_active' => 'sometimes|boolean',
+        'program_type' => 'required',
     ];
 
     // Nếu loại là phần trăm → giới hạn 100
     if ($request->input('type') == '0') {
         $rules['value'] = '|max:100';
     }
-
+    if ($request->input('is_active') === null) {
+        $request->merge(['is_active' => 0]);
+    }
     $messages = [
         // Mã giảm giá
         'code.required' => 'Vui lòng nhập mã giảm giá.',
@@ -97,6 +104,7 @@ public function index(Request $request)
 
         // Hoạt động
         'is_active.boolean' => 'Trạng thái hoạt động không hợp lệ.',
+        'program_type.required'        => 'Vui lòng chọn loại chương trình.',
     ];
 
     $validator = Validator::make($request->all(), $rules, $messages);
@@ -134,6 +142,7 @@ public function index(Request $request)
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'is_active' => 'boolean',
+            'program_type' => 'required',
                 ],
             [
                 // Mã giảm giá
@@ -176,11 +185,10 @@ public function index(Request $request)
                 'end_date.date'            => 'Ngày kết thúc không hợp lệ.',
                 'end_date.after_or_equal'  => 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.',
 
-                // Hoạt động
-                'is_active.boolean' => 'Trạng thái hoạt động không hợp lệ.',
             ]);
-                // Nếu loại là phần trăm → giới hạn 100
-
+            if ($request->input('is_active') === null) {
+                $request->merge(['is_active' => 0]);
+            }
         $exists = DiscountCode::where('code', $request->code)
                     ->where('discount_id', '!=', $discount->discount_id) // loại trừ size hiện tại
                     ->exists();
@@ -256,6 +264,15 @@ public function index(Request $request)
         return redirect()->route('admin.discounts.trash')
             ->with('success', 'Xóa vĩnh viễn mã giảm giá thành công!');
     }
+    public function checkExpire()
+{
+    $updated = DiscountCode::where('end_date', '<', now())
+        ->where('is_active', 1)
+        ->update(['is_active' => 0]);
+
+    return response()->json(['updated' => $updated]);
+}
+
 
 }
 

@@ -21,6 +21,7 @@ class ClientDiscountController extends Controller
         ->where('is_active', 1)
         ->whereDate('start_date', '<=', now())
         ->whereDate('end_date', '>=', now())
+        ->where('program_type', 'choose_voucher')
         ->get();
     }else {
          $discountCodes = DiscountCode::where('is_active', true)
