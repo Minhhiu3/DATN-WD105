@@ -160,6 +160,35 @@
             box-shadow: 0 0 0 0.15rem rgba(56, 189, 248, 0.3);
             background: #fff;
         }
+          .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #fff;
+        border: none;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .btn-view {
+        background: linear-gradient(135deg, #4e73df, #2e59d9);
+    }
+    .btn-edit {
+        background: linear-gradient(135deg, #f6c23e, #dda20a);
+    }
+    .btn-delete {
+        background: linear-gradient(135deg, #e74a3b, #c0392b);
+    }
+    .btn-view:hover,
+    .btn-edit:hover,
+    .btn-delete:hover {
+        opacity: 0.95;
+        transform: scale(1.05);
+    }
 </style>
 
 <div class="card card-modern">
@@ -210,17 +239,13 @@
                         <th>Mã</th>
                         <th>Loại</th>
                         <th>Giá trị</th>
-                        <th>Đơn tối thiểu</th>
-                        <th>Đơn tối đa</th>
                         <th>Số lượng</th>
-                        <th>Ngày bắt đầu</th>
-                        <th>Ngày kết thúc</th>
                         <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($discounts as $discount)
+                    @forelse ($discounts as $discount)
                         <tr>
                             <td>{{ $discount->discount_id }}</td>
                             <td>{{ $discount->code }}</td>
@@ -240,11 +265,7 @@
                                     {{ number_format($discount->value, 0, ',', '.') }} VNĐ
                                 @endif
                             </td>
-                            <td>{{ number_format($discount->min_order_value, 0, ',', '.') }} VNĐ</td>
-                            <td>{{ number_format($discount->max_order_value, 0, ',', '.') }} VNĐ</td>
                             <td>{{ $discount->quantity }}</td>
-                            <td>{{ $discount->start_date }}</td>
-                            <td>{{ $discount->end_date }}</td>
                             <td>
                                 {{-- @php
                                     $today = now();
@@ -268,22 +289,33 @@
                                 
                             </td>
                             <td>
-                                <a href="{{ route('admin.discounts.edit', $discount->discount_id) }}"
-                                    class="btn btn-action btn-edit">
-                                    <i class="fas fa-edit"></i> Sửa
+                                <a href="{{ route('admin.discounts.show', $discount->discount_id) }}" 
+                                   class="btn-action btn-view">
+                                    <i class="bi bi-eye-fill"></i>
                                 </a>
-                                <form action="{{ route('admin.discounts.destroy', $discount->discount_id) }}" method="POST" class="d-inline">
+                                <a href="{{ route('admin.discounts.edit', $discount->discount_id) }}" 
+                                   class="btn-action btn-edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ route('admin.discounts.destroy', $discount->discount_id) }}" 
+                                      method="POST" style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')
-                                    <button onclick="return confirm('Bạn có chắc muốn xóa?')" class="btn btn-action btn-delete">
-                                        <i class="fas fa-trash-alt"></i> Xóa
+                                    <button onclick="return confirm('Bạn có chắc muốn xóa?')" 
+                                            type="submit" 
+                                            class="btn-action btn-delete">
+                                        <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
                         <tr>
-                            <td colspan="10" class="text-center text-muted"></td>
+                            <td colspan="7" class="text-center text-muted">Không có mã giảm giá nào.</td>
+                        </tr>
+                    @endforelse
+                        <tr>
+                            <td colspan="6" class="text-center text-muted"></td>
                             <td colspan="1" class="text-center text-muted">        
                                 <a href="{{ route('admin.discounts.trash') }}" class="btn ">
                                         <i class="bi bi-trash3-fill"></i> Thùng Rác

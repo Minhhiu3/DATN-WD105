@@ -111,7 +111,11 @@ public function index(Request $request)
 
     return redirect()->route('admin.discounts.index')->with('success', 'Mã giảm giá đã được tạo.');
 }
-
+    public function show($id)
+    {
+        $discount = DiscountCode::findOrFail($id);
+        return view('admin.discounts.show', compact('discount'));
+    }
     public function edit(DiscountCode $discount)
     {
         return view('admin.discounts.edit', compact('discount'));
@@ -223,7 +227,7 @@ public function index(Request $request)
         if ($request->filled('keyword')) {
             $discountsQuery->where('code', 'like', '%' . $request->keyword . '%');
         }
-
+       
         $discounts = $discountsQuery->latest('discount_id')->paginate(5);
 
         return view('admin.discounts.trash', compact('discounts'));
