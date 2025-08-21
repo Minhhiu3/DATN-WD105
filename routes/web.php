@@ -176,6 +176,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.sizes.destroy',
     ]);
 
+    // thùng rác bảng banner
+    Route::get('banner/trash', [BannerController::class, 'trash'])->name('admin.banner.trash');
+    Route::post('banner/restore/{id}', [BannerController::class, 'restore'])->name('admin.banner.restore');
+    Route::delete('banner/force-delete/{id}', [BannerController::class, 'forceDelete'])->name('admin.banner.forceDelete');
     // Banner Management Routes
     Route::resource('banner', BannerController::class)->names([
         'index' => 'admin.banner.index',
