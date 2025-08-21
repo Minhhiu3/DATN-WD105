@@ -118,4 +118,44 @@ class BrandController extends Controller
         $brand->delete();
         return redirect()->route('admin.brands.index')->with('success', 'Xóa thương hiệu thành công.');
     }
+        /**
+     * Hiển thị danh sách brand trong thùng rác
+     */
+    public function trash(Request $request)
+    {
+        $brandsQuery = Brand::onlyTrashed();
+
+        if ($request->filled('keyword')) {
+            $brandsQuery->where('name', 'like', '%' . $request->keyword . '%');
+        }
+
+        $brands = $brandsQuery->latest('id_brand')->paginate(5);
+
+        return view('admin.brands.trash', compact('brands'));
+    }
+
+    /**
+     * Khôi phục brand đã xóa mềm
+     */
+    public function restore($id)
+    {
+        $brand = Brand::onlyTrashed()->findOrFail($id);
+        $brand->restore();
+
+        return redirect()->route('admin.brands.trash')
+            ->with('success', 'Khôi phục thương hiệu thành công!');
+    }
+
+    /**
+     * Xóa vĩnh viễn brand
+     */
+    public function forceDelete($id)
+    {
+        $brand = Brand::onlyTrashed()->findOrFail($id);
+        $brand->forceDelete();
+
+        return redirect()->route('admin.brands.trash')
+            ->with('success', 'Xóa vĩnh viễn thương hiệu thành công!');
+    }
+
 }

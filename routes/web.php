@@ -127,7 +127,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.categories.update',
         'destroy' => 'admin.categories.destroy',
     ]);
-    // route bảng brands
+
+    // thùng rác bảng thương hiệu
+    Route::get('brands/trash', [BrandController::class, 'trash'])->name('admin.brands.trash');
+    Route::post('brands/restore/{id}', [BrandController::class, 'restore'])->name('admin.brands.restore');
+    Route::delete('brands/force-delete/{id}', [BrandController::class, 'forceDelete'])->name('admin.brands.forceDelete');
     // Brand Management Routes
     Route::resource('/brands', BrandController::class)->names([
         'index' => 'admin.brands.index',

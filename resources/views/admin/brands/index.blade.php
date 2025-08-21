@@ -171,6 +171,14 @@
                         <td colspan="6" class="text-center">Không có thương hiệu nào</td>
                     </tr>
                 @endforelse
+                    <tr>
+                        <td colspan="2" class="text-center text-muted"></td>
+                        <td colspan="1" class="text-center text-muted">        
+                            <a href="{{ route('admin.brands.trash') }}" class="btn ">
+                                    <i class="bi bi-trash3-fill"></i> Thùng Rác
+                            </a>
+                        </td>
+                    </tr>
             </tbody>
         </table>
 
