@@ -4,120 +4,118 @@
 
 @section('content')
 <style>
-.card-modern {
-    border-radius: 14px;
-    background: #ffffff;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-}
-.card-modern-header {
-    background: #f8f9fc;
-    padding: 1rem 1.5rem;
-    font-weight: 600;
-    font-size: 1.2rem;
-    color: #495057;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e9ecef;
-}
-.btn-add-modern {
-    background: linear-gradient(135deg, #42a5f5, #1e88e5);
-    color: #fff;
-    border-radius: 40px;
-    padding: 0.45rem 1.3rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 16px rgba(66, 165, 245, 0.3);
-    text-decoration: none;
-}
-.btn-add-modern:hover {
-    opacity: 0.95;
-    transform: translateY(-2px);
-}
-.alert-success-modern {
-    background: #e6fffa;
-    color: #117864;
-    border: 1px solid #a3e4d7;
-    border-radius: 10px;
-    padding: 12px 18px;
-    font-weight: 500;
-    margin-bottom: 16px;
-}
-.table-modern {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-bottom: 1rem;
-}
-.table-modern thead {
-    background: #f1f5f9;
-}
-.table-modern th, 
-.table-modern td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #e9ecef;
-    text-align: left;
-    vertical-align: middle;
-}
-.table-modern th {
-    font-weight: 600;
-    color: #374151;
-}
-.table-modern tr:hover {
-    background: #f9fafb;
-}
-.btn-sm-modern {
-    border-radius: 8px;
-    padding: 5px 12px;
-    font-size: 0.85rem;
-    transition: 0.2s;
-}
-.btn-warning-modern {
-    background: #fbbf24;
-    color: #fff;
-    border: none;
-}
-.btn-warning-modern:hover {
-    background: #f59e0b;
-}
-.btn-danger-modern {
-    background: #ef4444;
-    color: #fff;
-    border: none;
-}
-.btn-danger-modern:hover {
-    background: #dc2626;
-}
- .btn-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0.45rem 1rem;
-    font-size: 0.95rem;
-    font-weight: 600;
-    border-radius: 10px;
-    color: #fff;
-    text-decoration: none;
-    transition: 0.25s;
-    border: none;
-}
-.btn-edit {
-    background: linear-gradient(135deg, #fbc02d, #f57f17);
-    box-shadow: 0 4px 10px rgba(251, 192, 45, 0.4);
-}
-.btn-edit:hover {
-    transform: scale(1.05);
-    background: linear-gradient(135deg, #f9a825, #f57c00);
-}
-.btn-delete {
-    background: linear-gradient(135deg, #e53935, #c62828);
-    box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
-}
-.btn-delete:hover {
-    transform: scale(1.05);
-    background: linear-gradient(135deg, #d32f2f, #b71c1c);
-}
+    /* ==== CARD ==== */
+    .card-modern {
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+    .card-modern-header {
+        background: #f8f9fc;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: #495057;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .btn-add-modern {
+        background: linear-gradient(135deg, #42a5f5, #478ed1);
+        color: #fff;
+        border-radius: 50px;
+        padding: 0.5rem 1.2rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(66, 165, 245, 0.3);
+    }
+    .btn-add-modern:hover {
+        opacity: 0.95;
+        transform: translateY(-2px);
+    }
+
+    /* ==== TABLE ==== */
+    .table-modern {
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        width: 100%;
+    }
+    .table-modern thead {
+        background-color: #f1f3f5;
+    }
+    .table-modern th {
+        font-weight: 600;
+        color: #495057;
+        padding: 12px;
+        border: none;
+        text-align: center;
+    }
+    .table-modern td {
+        background: #fff;
+        border: none;
+        padding: 12px;
+        text-align: center;
+        vertical-align: middle;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        border-radius: 8px;
+    }
+    .table-modern tbody tr:hover td {
+        background: #f8f9fa;
+        transition: background 0.3s ease;
+    }
+
+    /* ==== ACTION BUTTONS ==== */
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 8px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #fff;
+        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    .btn-edit {
+        background: linear-gradient(135deg, #fbc02d, #f57f17);
+    }
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #f9a825, #f57c00);
+        transform: translateY(-1px);
+    }
+    .btn-delete {
+        background: linear-gradient(135deg, #e53935, #b71c1c);
+    }
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #d32f2f, #b71c1c);
+        transform: translateY(-1px);
+    }
+
+    /* ==== ALERT ==== */
+    .alert-modern-success {
+        background: #d1f2eb;
+        color: #117864;
+        border: 1px solid #a3e4d7;
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        animation: fadeIn 0.5s ease-out;
+    }
+    .alert-modern-danger {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        animation: fadeIn 0.5s ease-out;
+    }
 </style>
 
 <div class="card card-modern">
@@ -172,7 +170,7 @@
                     </tr>
                 @endforelse
                     <tr>
-                        <td colspan="2" class="text-center text-muted"></td>
+                        <td colspan="3" class="text-center text-muted"></td>
                         <td colspan="1" class="text-center text-muted">        
                             <a href="{{ route('admin.brands.trash') }}" class="btn ">
                                     <i class="bi bi-trash3-fill"></i> Thùng Rác
@@ -181,8 +179,11 @@
                     </tr>
             </tbody>
         </table>
-
-        {{ $brands->links() }}
+        @if ($brands->hasPages())
+            <div class="d-flex justify-content-center mt-4">
+                {!! $brands->links('pagination::bootstrap-5') !!}
+            </div>
+        @endif
     </div>
 </div>
 @endsection
