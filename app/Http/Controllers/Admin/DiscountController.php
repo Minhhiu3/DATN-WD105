@@ -215,6 +215,44 @@ public function index(Request $request)
             'isUnique' => !$exists
         ]);
     }
+    public function trash(Request $request)
+    {
+        $discountsQuery = DiscountCode::onlyTrashed();
+
+        // Tìm kiếm theo mã giảm giá
+        if ($request->filled('keyword')) {
+            $discountsQuery->where('code', 'like', '%' . $request->keyword . '%');
+        }
+
+        $discounts = $discountsQuery->latest('discount_id')->paginate(5);
+
+        return view('admin.discounts.trash', compact('discounts'));
+    }
+
+    /**
+     * Khôi phục discount code đã xóa mềm
+     */
+    public function restore($id)
+    {
+        $discount = DiscountCode::onlyTrashed()->findOrFail($id);
+        $discount->restore();
+
+        return redirect()->route('admin.discounts.trash')
+            ->with('success', 'Khôi phục mã giảm giá thành công!');
+    }
+
+    /**
+     * Xóa cứng discount code
+     */
+    public function forceDelete($id)
+    {
+        $discount = DiscountCode::onlyTrashed()->findOrFail($id);
+        $discount->forceDelete();
+
+        return redirect()->route('admin.discounts.trash')
+            ->with('success', 'Xóa vĩnh viễn mã giảm giá thành công!');
+    }
+
 }
 
 

@@ -241,7 +241,9 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
     // Discount Management Routes
 
     Route::get('/check-code', [DiscountController::class, 'checkCode']);
-
+    Route::get('discounts/trash', [DiscountController::class, 'trash'])->name('admin.discounts.trash');
+    Route::post('discounts/restore/{id}', [DiscountController::class, 'restore'])->name('admin.discounts.restore');
+    Route::delete('discounts/force-delete/{id}', [DiscountController::class, 'forceDelete'])->name('admin.discounts.forceDelete');
     Route::resource('/discounts', DiscountController::class)->names([
         'index' => 'admin.discounts.index',
         'create' => 'admin.discounts.create',

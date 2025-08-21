@@ -282,6 +282,14 @@
                             </td>
                         </tr>
                     @endforeach
+                        <tr>
+                            <td colspan="10" class="text-center text-muted"></td>
+                            <td colspan="1" class="text-center text-muted">        
+                                <a href="{{ route('admin.discounts.trash') }}" class="btn ">
+                                        <i class="bi bi-trash3-fill"></i> Thùng Rác
+                                </a>
+                            </td>
+                        </tr>
                 </tbody>
             </table>
         </div>
