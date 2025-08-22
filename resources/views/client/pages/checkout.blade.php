@@ -464,7 +464,8 @@ function showCouponMessage(message, type = 'success') {
                     name="user_name"
                     class="form-control"
                     value="{{ auth()->user()->name }}"
-                    required>
+                    required oninvalid="this.setCustomValidity('Vui lòng nhập họ tên')"
+                    oninput="this.setCustomValidity('')">
                 </div>
 
                 <div class="form-group">
@@ -474,7 +475,8 @@ function showCouponMessage(message, type = 'success') {
                     name="phone"
                     class="form-control"
                     value="{{ auth()->user()->phone_number }}"
-                    required>
+                    required oninvalid="this.setCustomValidity('Vui lòng nhập số điện thoại')"
+                    oninput="this.setCustomValidity('')">
                 </div>
 
                 <div class="form-group">
@@ -484,7 +486,8 @@ function showCouponMessage(message, type = 'success') {
         name="email"
         class="form-control"
         value="{{ old('email', auth()->user()->email) }}"
-        required>
+        required oninvalid="this.setCustomValidity('Vui lòng nhập email')"
+        oninput="this.setCustomValidity('')">
 </div>
 
 
@@ -498,7 +501,7 @@ function showCouponMessage(message, type = 'success') {
 <div class="col-md-12 form-group">
     <label><b>Tỉnh/Thành</b></label>
     <div class="select-wrapper">
-        <select id="province" name="province" class="form-control select2" required>
+        <select id="province" name="province" class="form-control select2" required oninvalid="this.setCustomValidity('Vui lòng chọn Tỉnh/Thành phố')" oninput="this.setCustomValidity('')">
             <option value="">-- Chọn Tỉnh/Thành phố --</option>
         </select>
         <span class="spinner" id="province-spinner"></span>
@@ -507,7 +510,7 @@ function showCouponMessage(message, type = 'success') {
 <div class="col-md-12 form-group">
     <label><b>Xã/Phường</b></label>
     <div class="select-wrapper">
-        <select id="ward" name="ward" class="form-control select2" required disabled>
+        <select id="ward" name="ward" class="form-control select2" required disabled oninvalid="this.setCustomValidity('Vui lòng chọn Xã/Phường')" oninput="this.setCustomValidity('')">
             <option value="">-- Chọn Xã/Phường --</option>
         </select>
         <span class="spinner" id="ward-spinner"></span>
@@ -516,7 +519,7 @@ function showCouponMessage(message, type = 'success') {
 
                 <div class="form-group">
                     <label>Địa chỉ chi tiết</label>
-                    <input type="text" name="address" class="form-control" placeholder="Ví dụ: Số 123, đường ABC..." required>
+                    <input type="text" name="address" class="form-control" placeholder="Ví dụ: Số 123, đường ABC..." required oninvalid="this.setCustomValidity('Vui lòng nhập địa chỉ chi tiết')" oninput="this.setCustomValidity('')">
                 </div>
             </div>
 
@@ -549,6 +552,14 @@ function showCouponMessage(message, type = 'success') {
                                 <span id="order-total">{{ number_format($priceSale * $quantity + $shippingFee, 0, ',', '.') }} VNĐ</span></a>
                         </li>
                     </ul>
+
+    <div class="form-check my-3">
+        <input class="form-check-input" type="checkbox" id="agreePolicy" required oninvalid="this.setCustomValidity('Bạn cần đồng ý với chính sách mua hàng')" oninput="this.setCustomValidity('')">
+        <label class="form-check-label" for="agreePolicy">
+            Tôi đã đọc và đồng ý với 
+            <a href="{{ route('polyc') }}" target="_blank">Chính sách mua hàng</a>
+        </label>
+    </div>
 
                    <div class="col-md-12 text-right mt-3 d-flex justify-content-between">
                                 <button type="submit" name="payment_method" value="cod" class="btn primary-btn mr-2">

@@ -17,6 +17,14 @@ public function store(Request $request)
         'order_id' => 'required|exists:orders,id_order',
         'rating' => 'required|integer|min:1|max:5',
         'comment' => 'nullable|string|max:1000',
+    ],[
+        'product_id.exists' => 'Sản phẩm không tồn tại.',
+        'order_id.exists' => 'Đơn hàng không tồn tại.',
+        'rating.required' => 'Vui lòng chọn đánh giá từ 1 đến 5 sao.',
+        'rating.integer' => 'Đánh giá phải là một số nguyên.',
+        'rating.min' => 'Đánh giá tối thiểu là 1 sao.',
+        'rating.max' => 'Đánh giá tối đa là 5 sao.',
+        'comment.max' => 'Bình luận không được vượt quá 1000 ký tự.',
     ]);
 
 

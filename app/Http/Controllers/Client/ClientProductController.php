@@ -86,6 +86,10 @@ class ClientProductController extends Controller
         // Validate dữ liệu tìm kiếm
         $request->validate([
             'query' => 'required|string|max:255',
+        ],[
+            'query.required' => 'Vui lòng nhập từ khóa tìm kiếm.',
+            'query.string' => 'Từ khóa tìm kiếm phải là chuỗi.',
+            'query.max' => 'Từ khóa tìm kiếm không được vượt quá 255 ký tự.',
         ]);
 
         // Tìm kiếm sản phẩm theo tên

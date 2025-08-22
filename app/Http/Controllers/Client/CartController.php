@@ -46,6 +46,9 @@ class CartController extends Controller
             $request->validate([
                 'variant_id' => 'required|exists:variant,id_variant',
                 'quantity' => 'required|integer|min:1',
+            ],[
+                'variant_id.exists' => 'Sản phẩm không tồn tại hoặc đã bị xóa.',
+                'quantity.min' => 'Số lượng phải lớn hơn 0.',
             ]);
 
             $variant = Variant::with(['product', 'size', 'color'])->find($request->variant_id);
@@ -99,6 +102,9 @@ class CartController extends Controller
             $request->validate([
                 'variant_id' => 'required|exists:variant,id_variant',
                 'quantity' => 'required|integer|min:1',
+            ],[
+                'variant_id.exists' => 'Sản phẩm không tồn tại hoặc đã bị xóa.',
+                'quantity.min' => 'Số lượng phải lớn hơn 0.',
             ]);
 
             $variant = Variant::find($request->variant_id);
@@ -159,6 +165,8 @@ class CartController extends Controller
         try {
             $request->validate([
                 'variant_id' => 'required|exists:variant,id_variant',
+            ],[
+                'variant_id.exists' => 'Sản phẩm không tồn tại hoặc đã bị xóa.',
             ]);
 
             if (Auth::check()) {

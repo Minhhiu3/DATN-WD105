@@ -170,8 +170,8 @@
                     <div class="f-icon">
                         <img src="{{asset('assets/img/features/f-icon1.png')}}" alt="">
                     </div>
-                    <h6>Giao hàng miễn phí</h6>
-                    <p>Miễn phí vận chuyển cho tất cả đơn hàng</p>
+                    <h6>Giao hàng nhanh chóng</h6>
+                    <p>Giao vận trong 3 ngày cho tất cả đơn hàng</p>
                 </div>
             </div>
             <!-- single features -->

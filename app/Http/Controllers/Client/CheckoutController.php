@@ -28,6 +28,9 @@ class CheckoutController extends Controller
         $request->validate([
             'variant_id' => 'required|exists:variant,id_variant',
             'quantity'   => 'required|integer|min:1',
+        ], [
+            'variant_id.exists' => 'Sản phẩm không tồn tại hoặc đã bị xóa.',
+            'quantity.min' => 'Số lượng phải lớn hơn 0.',
         ]);
 
 
@@ -74,6 +77,18 @@ class CheckoutController extends Controller
         'user_name'       => 'required|string',
         'ward'            => 'required|string',
         'address'         => 'required|string',
+        'terms'           => 'accepted', // Kiểm tra đã đồng ý với chính sách mua hàng
+    ], [
+        'terms.accepted' => 'Bạn cần đồng ý với chính sách mua hàng.',
+        'variant_id.exists' => 'Sản phẩm không tồn tại hoặc đã bị xóa.',
+        'quantity.min' => 'Số lượng phải lớn hơn 0.',
+        'payment_method.in' => 'Phương thức thanh toán không hợp lệ.',
+        'province.required' => 'Vui lòng chọn Tỉnh/Thành phố.',
+        'ward.required' => 'Vui lòng chọn Xã/Phường.',
+        'address.required' => 'Vui lòng nhập địa chỉ chi tiết.',
+        'email.required' => 'Vui lòng nhập email.',
+        'phone.required' => 'Vui lòng nhập số điện thoại.',
+        'user_name.required' => 'Vui lòng nhập họ tên.',
     ]);
 
     $user = Auth::user();
@@ -364,6 +379,11 @@ return view('client.pages.checkout_cart', compact(
 
     public function placeOrderFromCart(Request $request)
     {
+         $request->validate([
+        'terms' => 'accepted',
+    ], [
+        'terms.accepted' => 'Bạn cần đồng ý với chính sách mua hàng.',
+    ]);
         $user = Auth::user();
 
         $cart = Cart::where('user_id', $user->id_user)->first();
@@ -422,6 +442,16 @@ return view('client.pages.checkout_cart', compact(
             // 'district'        => 'required|string',
             'ward'            => 'required|string',
             'address'         => 'required|string',
+        // 'terms'           => 'accepted', // Kiem cha bam check box chua 
+        ],[
+            'payment_method.in' => 'Phương thức thanh toán không hợp lệ.',
+            'province.required' => 'Vui lòng chọn Tỉnh/Thành phố.',
+            'ward.required' => 'Vui lòng chọn Xã/Phường.',
+            'address.required' => 'Vui lòng nhập địa chỉ chi tiết.',
+            'email.required' => 'Vui lòng nhập email.',
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'user_name.required' => 'Vui lòng nhập họ tên.',
+            // 'terms.accepted' => 'Bạn cần đồng ý với chính sách mua hàng.',
         ]);
    if ($request->payment_method === 'cod') {
         DB::beginTransaction();

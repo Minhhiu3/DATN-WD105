@@ -172,7 +172,7 @@
                                 <div class="card_area d-flex align-items-center gap-3">
                                     <input type="hidden" name="variant_id" id="add-cart-variant-id" value="">
                                     <input type="hidden" name="quantity" id="add-cart-quantity">
-                                    <button type="submit" class="primary-btn" id="add-to-cart-btn" style="{{ $product->variants->sum('quantity') == 0 ? 'opacity: 0.5;' : '' }}">Thêm vào giỏ hàng</button>
+                                    <button type="submit" class="primary-btn {{ $product->variants->sum('quantity') == 0 ? 'out-of-stock-btn' : '' }}" id="add-to-cart-btn" style="{{ $product->variants->sum('quantity') == 0 ? 'opacity: 0.5;' : '' }}">Thêm vào giỏ hàng</button>
                                 </div>
 
                                 <div id="cart-message" class="alert alert-danger d-none mt-3"></div>
@@ -185,7 +185,7 @@
                                 <input type="hidden" name="variant_id" id="selectedVariant">
                                 <input type="hidden" name="quantity" id="selectedQty" value="1">
                                 <div class="card_area d-flex align-items-center gap-3">
-                                    <button type="submit" class="primary-btn" style="{{ $product->variants->sum('quantity') == 0 ? 'opacity: 0.5;' : '' }}">Mua ngay</button>
+                                    <button type="submit" class="primary-btn {{ $product->variants->sum('quantity') == 0 ? 'out-of-stock-btn' : '' }}" style="{{ $product->variants->sum('quantity') == 0 ? 'opacity: 0.5;' : '' }}">Mua ngay</button>
                                 </div>
                             </form>
                         @endguest
@@ -345,6 +345,27 @@
         .qty-input:focus {
             outline: none;
             box-shadow: none;
+        }
+
+        .out-of-stock-btn:hover {
+            cursor: not-allowed;
+            position: relative;
+            background-color: #bbbccc;
+        }
+
+        .out-of-stock-btn:hover::after {
+            content: 'Hết hàng';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10;
         }
     </style>
 @endpush

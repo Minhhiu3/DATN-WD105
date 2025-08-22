@@ -328,7 +328,9 @@ Route::get('/api/vl/wards/{districtCode}', function ($districtCode) {
 
 
 
-
+Route::get('/polyc', function () {
+    return view('client.pages.polyc');
+})->name('polyc');
 // Client Routes
 Route::get('/blogs', function () {
     return view('client.pages.blogs');
