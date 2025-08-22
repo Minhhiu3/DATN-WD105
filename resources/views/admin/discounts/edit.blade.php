@@ -112,8 +112,8 @@
 
         <div class="mb-3">
             <label for="value" class="form-label">Giá trị</label>
-            <input type="number" step="0.01" name="value" id="value" class="form-control @error('value') is-invalid @enderror"
-                value="{{ old('value', $discount->value) }}" placeholder="Nhập giá trị" >
+            <input type="number"  name="value" id="value" class="form-control @error('value') is-invalid @enderror"
+                value="{{ old('value', (int) $discount->value) }}" placeholder="Nhập giá trị" >
             <div class="error-message text-danger">
                 @error('value')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
@@ -123,15 +123,37 @@
 
         <div class="mb-3">
             <label for="min_order_value" class="form-label">Giá trị đơn tối thiểu</label>
-            <input type="number" step="0.01" name="min_order_value" id="min_order_value" class="form-control @error('min_order_value') is-invalid @enderror"
-                value="{{ old('min_order_value', $discount->min_order_value) }}" placeholder="Nhập giá trị đơn tối thiểu" >
+            <input type="number"  name="min_order_value" id="min_order_value" class="form-control @error('min_order_value') is-invalid @enderror"
+                value="{{ old('min_order_value', (int) $discount->min_order_value) }}" placeholder="Nhập giá trị đơn tối thiểu" min="0" step="1000">
             <div class="error-message text-danger">
                 @error('min_order_value')
                     <i class="bi bi-exclamation-circle"></i> {{ $message }}
                 @enderror
             </div>
         </div>
+{{-- Giá trị đơn tối đa --}}
+        <div class="mb-3">
+            <label for="max_order_value" class="form-label">Giá Trị Đơn Tối Đa</label>
+            <input type="number"   name="max_order_value" id="max_order_value" class="form-control @error('max_order_value') is-invalid @enderror" 
+                   value="{{ old('max_order_value', (int) $discount->max_order_value) }}" placeholder="Nhập giá trị đơn tối đa" min="0" step="1000" >
+            <div class="error-message text-danger">
+                @error('max_order_value')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
+        </div>
+        {{-- Số lượng --}}
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Giá Trị</label>
+            <input type="number" name="quantity" id="quantity" class="form-control @error('quantity') is-invalid @enderror" 
+                   value="{{ old('quantity',(int) $discount->quantity) }}" placeholder="Nhập số lượng" min="0" step="1" >
+              <div class="error-message text-danger">
+                @error('quantity')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
 
+        </div>
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="start_date" class="form-label">Ngày bắt đầu</label>
@@ -154,7 +176,20 @@
                 </div>
             </div>
         </div>
+         <div class="mb-3">
+            <label for="program_type" class="form-label">Loại chương trình</label>
+            <select name="program_type" id="program_type" class="form-select @error('program_type') is-invalid @enderror">
+                <option value="" {{ old('program_type') == '' ? 'selected' : '' }}>-- Chọn loại chương trình --</option>
+                <option value="input_code" {{ old('program_type',$discount->program_type) == 'input_code' ? 'selected' : '' }}>Nhập mã code</option>
+                <option value="choose_voucher" {{ old('program_type',$discount->program_type) == 'choose_voucher' ? 'selected' : '' }}>Chọn Voucher</option>
+            </select>
+            <div class="error-message text-danger">
+                @error('program_type')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
 
+        </div>
         <div class="mb-3 form-check">
             <input type="checkbox" name="is_active" id="is_active" class="form-check-input "
                 value="1" {{ old('is_active', $discount->is_active) ? 'checked' : '' }}>
@@ -188,12 +223,16 @@ document.addEventListener('DOMContentLoaded', function () {
         type: { required: true, in: ['0', '1'] },
         value: { required: true, numeric: true, min: 1 },
         min_order_value: { required: true, numeric: true, min: 1000 },
+        max_order_value: { required: true, numeric: true, min: 1000, max: undefined },
+        quantity: { required: true, numeric: true, min: 1 },
         start_date: { required: true, date: true },
         end_date: { required: true, date: true, afterOrEqual: 'start_date' },
-        is_active: { boolean: true }
+        program_type: { required: true }
     };
     const typeInput = form.querySelector('[name="type"]');
     const valueInput = form.querySelector('[name="value"]');
+    const maxOrderValueInput = form.querySelector('[name="max_order_value"]');
+    const minOrderValueInput = form.querySelector('[name="min_order_value"]');
 
     // Khi type thay đổi
     
@@ -201,7 +240,6 @@ document.addEventListener('DOMContentLoaded', function () {
         code: {
             required: 'Vui lòng nhập mã giảm giá.',
             max: 'Mã giảm giá không được vượt quá 50 ký tự.',
-            // unique: 'Mã giảm giá đã tồn tại trong hệ thống.'
             
         },
         type: {
@@ -213,12 +251,22 @@ document.addEventListener('DOMContentLoaded', function () {
             required: 'Vui lòng nhập giá trị giảm.',
             numeric: 'Giá trị giảm phải là số.',
             min: 'Giá trị giảm không được nhỏ hơn 0.',
-            max: 'Khi chọn loại phần trăm, giá trị không được vượt quá 100%.'
+            max: 'Khi chọn loại phần trăm, giá trị không được vượt quá 99%.'
         },
         min_order_value: {
             required: 'Vui lòng nhập giá trị đơn tối thiểu.',
             numeric: 'Giá trị đơn tối thiểu phải là số.',
             min: 'Giá trị đơn tối thiểu không được nhỏ hơn 1000.'
+        },
+        max_order_value: {
+            required: 'Vui lòng nhập giá trị đơn tối đa.',
+            numeric: 'Giá trị đơn tối đa phải là số.',
+            // min: 'Giá trị đơn tối đa không được nhỏ hơn 1000.'
+        },
+        quantity: {
+            required: 'Vui lòng nhập số lượng mã giảm giá.',
+            numeric: 'Số lượng phải là số.',
+            min: 'Số lượng không được nhỏ hơn 1.',
         },
         start_date: {
             required: 'Vui lòng chọn ngày bắt đầu.',
@@ -229,9 +277,9 @@ document.addEventListener('DOMContentLoaded', function () {
             date: 'Ngày kết thúc không hợp lệ.',
             afterOrEqual: 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.'
         },
-        is_active: {
-            boolean: 'Trạng thái hoạt động không hợp lệ.'
-        }
+        program_type: {
+            required: 'Vui lòng chọn loại chương trình giảm giá.',
+        },
     };
 typeInput.addEventListener('change', function () {
          // Luôn giữ min = 0
@@ -239,9 +287,9 @@ typeInput.addEventListener('change', function () {
         if (typeInput.value === '0') {
             // Giảm % → max = 100
             rules.value.min = 1;
-            rules.value.max = 100;
+            rules.value.max = 99;
             messages.value.min = 'Giá trị giảm không được nhỏ hơn 1.';
-            messages.value.max = 'Khi chọn loại phần trăm, giá trị không được vượt quá 100%.';
+            messages.value.max = 'Khi chọn loại phần trăm, giá trị không được vượt quá 99%.';
             
         } else if (typeInput.value === '1') {
             // Giảm cố định → max không giới hạn
@@ -252,6 +300,24 @@ typeInput.addEventListener('change', function () {
             messages.value.max = ''; // không cần thông báo max
         }
     })
+maxOrderValueInput.addEventListener('input', function () {
+    const minVal = parseInt(minOrderValueInput.value, 10) || 0;
+    const maxVal = parseInt(maxOrderValueInput.value, 10) || 0;
+
+    if (maxVal && minVal >= maxVal) {
+            rules.max_order_value.min = minVal + 1000;
+            rules.max_order_value.max = undefined;
+            // Cập nhật thông báo theo type
+            messages.max_order_value.min = 'Đơn hàng tối đa không được nhỏ hơn đơn hàng tối thiểu.';
+    } else {
+            rules.max_order_value.min = 1000;
+            rules.max_order_value.max = undefined;
+            // Cập nhật thông báo theo type
+            messages.max_order_value.min = 'Đơn hàng tối đa không được nhỏ hơn 1000.';
+    }
+});
+
+
     // Hàm hiển thị lỗi
     function showError(input, message) {
         const errorDiv = input.parentNode.querySelector('.error-message');
@@ -350,13 +416,10 @@ form.addEventListener('submit', function(e) {
     let isValid = true;
 
     inputs.forEach(input => {
-        const errorMessage = validateField(input); // validateField trả về message nếu lỗi, null nếu đúng
+        const valid = validateField(input); // trả về true/false
 
-        if (errorMessage) {
-            isValid = false;
-            showError(input, errorMessage); // ✅ hiện lỗi khi submit
-        } else {
-            clearError(input); // Nếu hợp lệ thì xóa lỗi cũ
+        if (!valid) {
+            isValid = false; // Nếu có input không hợp lệ
         }
     });
 
@@ -364,6 +427,7 @@ form.addEventListener('submit', function(e) {
         e.preventDefault(); // Ngăn submit nếu có lỗi
     }
 });
+
 
 
 });

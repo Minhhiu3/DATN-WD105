@@ -236,12 +236,8 @@
         <a href="{{ route('admin.products.create') }}" class="btn-icon" title="Thêm sản phẩm mới">
             <i class="bi bi-plus-lg"></i>
         </a>
-         <a href="{{ route('admin.products.trash') }}" class="btn btn-add-modern">
-                <i class="bi bi-trash3-fill"></i> Thùng Rác
-            </a>
-        
+    
     </div>
-
     <div class="card-body">
         
         <form action="{{ route('admin.products.index') }}" method="GET" class="search-form mb-3">
@@ -375,9 +371,16 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center text-muted">Không có sản phẩm nào.</td>
+                            <td colspan="14" class="text-center text-muted">Không có sản phẩm nào.</td>
                         </tr>
                     @endforelse
+                        <tr>
+                            <td colspan="13" class="text-center text-muted"></td>
+                            <td colspan="1" class="text-center text-muted">        <a href="{{ route('admin.products.trash') }}" class="btn btn-add-modern">
+                <i class="bi bi-trash3-fill"></i> Thùng Rác
+        </a>
+        </td>
+                        </tr>
                 </tbody>
             </table>
         </div>

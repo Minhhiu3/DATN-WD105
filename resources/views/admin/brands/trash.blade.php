@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Danh Sách Banner')
+@section('title', 'Thùng Rác - Thương Hiệu')
 
 @section('content')
 <style>
@@ -71,19 +71,19 @@
     transition: 0.25s;
     border: none;
 }
-.btn-edit {
-    background: linear-gradient(135deg, #fbc02d, #f57f17);
-    box-shadow: 0 4px 10px rgba(251, 192, 45, 0.4);
+.btn-restore {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
 }
-.btn-edit:hover {
+.btn-restore:hover {
     transform: scale(1.05);
-    background: linear-gradient(135deg, #f9a825, #f57c00);
+    background: linear-gradient(135deg, #218838, #1c6d2f);
 }
-.btn-delete {
+.btn-force-delete {
     background: linear-gradient(135deg, #e53935, #c62828);
     box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
 }
-.btn-delete:hover {
+.btn-force-delete:hover {
     transform: scale(1.05);
     background: linear-gradient(135deg, #d32f2f, #b71c1c);
 }
@@ -100,11 +100,12 @@
 
 <div class="card card-modern">
     <div class="card-modern-header">
-        <span><i class="bi bi-image"></i> Danh Sách Banner</span>
-        <a href="{{ route('admin.banner.create') }}" class="btn btn-add-modern">
-            <i class="bi bi-plus-circle"></i> Thêm mới
+        <span><i class="bi bi-trash3-fill"></i> Thùng Rác - Thương Hiệu</span>
+        <a href="{{ route('admin.brands.index') }}" class="btn btn-add-modern">
+            <i class="bi bi-arrow-left"></i> Quay lại danh sách
         </a>
     </div>
+
     <div class="card-body">
         @if (session('success'))
             <div class="alert alert-success-modern">
@@ -117,65 +118,51 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Tên Banner</th>
-                        <th>Hình ảnh</th>
-                        <th>Sản phẩm liên kết</th>
-                        <th>Hành động</th>
+                        <th>Tên thương hiệu</th>
+                        <th>Logo</th>
+                        <th class="text-center">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($banners as $banner)
+                    @forelse ($brands as $brand)
                         <tr>
-                            <td>{{ $banner->id }}</td>
-                            <td>{{ $banner->name }}</td>
+                            <td>{{ $brand->id_brand }}</td>
+                            <td>{{ $brand->name }}</td>
                             <td>
-                                @if ($banner->image)
-                                    <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->name }}" width="100">
-                                @else
-                                    Không có ảnh
+                                @if($brand->logo)
+                                    <img src="{{ asset('storage/' . $brand->logo) }}" alt="Logo" width="60">
                                 @endif
                             </td>
-                            <td>
-                                @if ($banner->product)
-                                    <a href="{{ route('admin.products.show', $banner->product->id_product) }}">{{ $banner->product->name_product }}</a>
-                                @else
-                                    Không liên kết
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('admin.banner.edit', $banner->id) }}" class="btn btn-action btn-edit">
-                                    <i class="bi bi-pencil-square"></i> Sửa
-                                </a>
-                                <form action="{{ route('admin.banner.destroy', $banner->id) }}" method="POST" class="d-inline">
+                            <td class="text-center">
+                                <form action="{{ route('admin.brands.restore', $brand->id_brand) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button onclick="return confirm('Bạn có chắc muốn khôi phục thương hiệu này?')" class="btn btn-action btn-restore">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Khôi phục
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.brands.forceDelete', $brand->id_brand) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button onclick="return confirm('Bạn có chắc muốn xóa?')" class="btn btn-action btn-delete">
-                                        <i class="bi bi-trash3-fill"></i> Xóa
+                                    <button onclick="return confirm('Bạn có chắc muốn xóa vĩnh viễn thương hiệu này?')" class="btn btn-action btn-force-delete">
+                                        <i class="bi bi-trash3-fill"></i> Xóa vĩnh viễn
                                     </button>
                                 </form>
                             </td>
                         </tr>
                     @empty
+                    
                         <tr>
-                            <td colspan="5" class="text-center">Không có banner nào.</td>
+                            <td colspan="4" class="text-center">Không có thương hiệu nào trong thùng rác.</td>
                         </tr>
                     @endforelse
-                        <tr>
-                        <td colspan="4" class="text-center text-muted"></td>
-                        <td colspan="1" class="text-center text-muted">        
-                            <a href="{{ route('admin.banner.trash') }}" class="btn ">
-                                    <i class="bi bi-trash3-fill"></i> Thùng Rác
-                            </a>
-                        </td>
-                    </tr>
+                    
                 </tbody>
             </table>
         </div>
-        @if ($banners->hasPages())
-            <div class="d-flex justify-content-center mt-4">
-                {!! $banners->links('pagination::bootstrap-5') !!}
-            </div>
-        @endif
+
+        <div class="d-flex justify-content-center">
+            {{ $brands->links() }}
+        </div>
     </div>
 </div>
 @endsection

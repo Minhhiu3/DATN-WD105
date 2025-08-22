@@ -28,6 +28,9 @@ class CheckoutController extends Controller
         $request->validate([
             'variant_id' => 'required|exists:variant,id_variant',
             'quantity'   => 'required|integer|min:1',
+        ], [
+            'variant_id.exists' => 'Sản phẩm không tồn tại hoặc đã bị xóa.',
+            'quantity.min' => 'Số lượng phải lớn hơn 0.',
         ]);
 
 
@@ -74,6 +77,18 @@ class CheckoutController extends Controller
         'user_name'       => 'required|string',
         'ward'            => 'required|string',
         'address'         => 'required|string',
+        'terms'           => 'accepted', // Kiểm tra đã đồng ý với chính sách mua hàng
+    ], [
+        'terms.accepted' => 'Bạn cần đồng ý với chính sách mua hàng.',
+        'variant_id.exists' => 'Sản phẩm không tồn tại hoặc đã bị xóa.',
+        'quantity.min' => 'Số lượng phải lớn hơn 0.',
+        'payment_method.in' => 'Phương thức thanh toán không hợp lệ.',
+        'province.required' => 'Vui lòng chọn Tỉnh/Thành phố.',
+        'ward.required' => 'Vui lòng chọn Xã/Phường.',
+        'address.required' => 'Vui lòng nhập địa chỉ chi tiết.',
+        'email.required' => 'Vui lòng nhập email.',
+        'phone.required' => 'Vui lòng nhập số điện thoại.',
+        'user_name.required' => 'Vui lòng nhập họ tên.',
     ]);
 
     $user = Auth::user();
@@ -180,6 +195,7 @@ class CheckoutController extends Controller
                                     'used' => '1',
                                     'used_at' => now(),
                                 ]);
+                        DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
 
                         }else{
                             UserVoucher::create([
@@ -188,6 +204,7 @@ class CheckoutController extends Controller
                                 'used'       => 1,
                                 'used_at'    => now(),
                             ]);
+                            DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
                         }
                     }
 
@@ -243,7 +260,7 @@ class CheckoutController extends Controller
                                 'used' => '1',
                                 'used_at' => now(),
                             ]);
-
+                        DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
                     }else{
                         UserVoucher::create([
                             'user_id'    => Auth::id(),
@@ -251,6 +268,7 @@ class CheckoutController extends Controller
                             'used'       => 1,
                             'used_at'    => now(),
                         ]);
+                        DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
                     }
                 }
 
@@ -364,6 +382,11 @@ return view('client.pages.checkout_cart', compact(
 
     public function placeOrderFromCart(Request $request)
     {
+         $request->validate([
+        'terms' => 'accepted',
+    ], [
+        'terms.accepted' => 'Bạn cần đồng ý với chính sách mua hàng.',
+    ]);
         $user = Auth::user();
 
         $cart = Cart::where('user_id', $user->id_user)->first();
@@ -422,6 +445,16 @@ return view('client.pages.checkout_cart', compact(
             // 'district'        => 'required|string',
             'ward'            => 'required|string',
             'address'         => 'required|string',
+        // 'terms'           => 'accepted', // Kiem cha bam check box chua 
+        ],[
+            'payment_method.in' => 'Phương thức thanh toán không hợp lệ.',
+            'province.required' => 'Vui lòng chọn Tỉnh/Thành phố.',
+            'ward.required' => 'Vui lòng chọn Xã/Phường.',
+            'address.required' => 'Vui lòng nhập địa chỉ chi tiết.',
+            'email.required' => 'Vui lòng nhập email.',
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'user_name.required' => 'Vui lòng nhập họ tên.',
+            // 'terms.accepted' => 'Bạn cần đồng ý với chính sách mua hàng.',
         ]);
    if ($request->payment_method === 'cod') {
         DB::beginTransaction();
@@ -530,6 +563,8 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                             'used' => '1',
                             'used_at' => now(),
                         ]);
+                    DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
+
 
                 }else{
                     UserVoucher::create([
@@ -538,6 +573,8 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                         'used'       => 1,
                         'used_at'    => now(),
                     ]);
+                    DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
+
                 }
             }
 
@@ -631,7 +668,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                             'used' => '1',
                             'used_at' => now(),
                         ]);
-
+                    DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
                 }else{
                     UserVoucher::create([
                         'user_id'    => Auth::id(),
@@ -639,6 +676,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                         'used'       => 1,
                         'used_at'    => now(),
                     ]);
+                    DiscountCode::where('discount_id', $discountId)->decrement('quantity', 1);
                 }
             }
 
@@ -698,7 +736,18 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                 'message' => 'Đơn hàng phải từ ' . number_format($coupon->min_order_value, 0, ',', '.') . 'đ mới được áp dụng mã giảm giá'
             ]);
         }
-
+        if ($subtotal > $coupon->max_order_value) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng phải dưới ' . number_format($coupon->max_order_value, 0, ',', '.') . 'đ mới được áp dụng mã giảm giá'
+            ]);
+        }
+        if ($coupon->quantity == 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Số lượng mã giảm giá có giới hạn.'
+            ]);
+        }
         $type = (int) $coupon->type; // ép kiểu chắc chắn
 
         switch ($type) {
@@ -813,6 +862,12 @@ $finalTotalShip = max(0, $subtotal - $discount) + $shippingFee;
             return response()->json([
                 'success' => false,
                 'message' => 'Đơn hàng phải từ ' . number_format($coupon->min_order_value, 0, ',', '.') . 'đ mới được áp dụng mã giảm giá'
+            ]);
+        }
+        if ($coupon->quantity = 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Số lượng mã giảm giá có giới hạn.'
             ]);
         }
         $discount = 0;

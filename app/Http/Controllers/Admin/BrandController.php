@@ -13,7 +13,7 @@ class BrandController extends Controller
 {
         public function index()
     {
-        $brands = Brand::latest()->paginate(10);
+        $brands = Brand::latest()->paginate(6);
         return view('admin.brands.index', compact('brands'));
     }
 
@@ -28,7 +28,6 @@ class BrandController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:brands,name',
             'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'status' => 'required|in:visible,hidden'
         ], [
             // lỗi tên thương hiệu
             'name.required' => 'Vui lòng nhập tên thương hiệu.',
@@ -49,9 +48,7 @@ class BrandController extends Controller
 
         Brand::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
             'logo' => $logoPath,
-            'status' => $request->status
         ]);
 
         return redirect()->route('admin.brands.index')->with('success', 'Thêm thương hiệu mới thành công.');
@@ -77,7 +74,6 @@ class BrandController extends Controller
         $request->validate([
             'name' => 'required|string|max:255' . $brand->id_brand . ',id_brand',
             'logo' => 'image|mimes:jpeg,png,jpg|max:2048',
-            'status' => 'required|in:visible,hidden'
         ], [
             // lỗi tên thương hiệu
             'name.required' => 'Vui lòng nhập tên thương hiệu.',
@@ -108,9 +104,7 @@ class BrandController extends Controller
 
         $brand->update([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
             'logo' => $logoPath,
-            'status' => $request->status
         ]);
 
         return redirect()->route('admin.brands.index')->with('success', 'Cập nhật thương hiệu thành công.');
@@ -124,4 +118,44 @@ class BrandController extends Controller
         $brand->delete();
         return redirect()->route('admin.brands.index')->with('success', 'Xóa thương hiệu thành công.');
     }
+        /**
+     * Hiển thị danh sách brand trong thùng rác
+     */
+    public function trash(Request $request)
+    {
+        $brandsQuery = Brand::onlyTrashed();
+
+        if ($request->filled('keyword')) {
+            $brandsQuery->where('name', 'like', '%' . $request->keyword . '%');
+        }
+
+        $brands = $brandsQuery->latest('id_brand')->paginate(5);
+
+        return view('admin.brands.trash', compact('brands'));
+    }
+
+    /**
+     * Khôi phục brand đã xóa mềm
+     */
+    public function restore($id)
+    {
+        $brand = Brand::onlyTrashed()->findOrFail($id);
+        $brand->restore();
+
+        return redirect()->route('admin.brands.trash')
+            ->with('success', 'Khôi phục thương hiệu thành công!');
+    }
+
+    /**
+     * Xóa vĩnh viễn brand
+     */
+    public function forceDelete($id)
+    {
+        $brand = Brand::onlyTrashed()->findOrFail($id);
+        $brand->forceDelete();
+
+        return redirect()->route('admin.brands.trash')
+            ->with('success', 'Xóa vĩnh viễn thương hiệu thành công!');
+    }
+
 }

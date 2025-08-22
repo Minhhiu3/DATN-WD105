@@ -531,6 +531,14 @@ function showCouponMessage(message, type = 'success') {
                                 @endforeach
                             @endif
 
+    <div class="form-check my-3">
+        <input class="form-check-input" type="checkbox" id="agreePolicy" name="terms" required oninvalid="this.setCustomValidity('Bạn cần đồng ý với chính sách mua hàng')" oninput="this.setCustomValidity('')">
+        <label class="form-check-label" for="agreePolicy">
+            Tôi đã đọc và đồng ý với 
+            <a href="{{ route('polyc') }}" target="_blank">Chính sách mua hàng</a>
+        </label>
+    </div>
+
                             <div class="col-md-12 text-right mt-3 d-flex justify-content-between">
                                 <button type="submit" name="payment_method" value="cod" class="btn primary-btn">
                                     ĐẶT HÀNG <br><small>(Trả tiền khi nhận hàng)</small>
@@ -579,7 +587,6 @@ $subTotal = (int) $cartItemz->sum(function($item) {
     $price = $item->variant->price;
     $sale = $item->variant->adviceProduct;
 
-    // Kiểm tra nếu có chương trình giảm giá và đang trong thời gian
     if (
         $sale &&
         $sale->status === "on" &&

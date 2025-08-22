@@ -91,7 +91,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.variants.update', $variant->id_variant) }}" method="POST">
+    <form action="{{ route('admin.variants.update', $variant->id_variant) }}" method="POST" id="variantForm">
         @csrf
         @method('PUT')
 
@@ -110,7 +110,7 @@
 
         <div class="mb-3">
             <label for="size_id" class="form-label">Kích Cỡ (Size)</label>
-            <select name="size_id" id="size_id" class="form-select" required>
+            <select name="size_id" id="size_id" class="form-select" >
                 <option value="">-- Chọn Size --</option>
                 @foreach ($sizes as $size)
                     <option value="{{ $size->id_size }}" 
@@ -119,19 +119,23 @@
                     </option>
                 @endforeach
             </select>
+            <div class="error-message text-danger"></div>
         </div>
 
         <div class="mb-3">
             <label for="price" class="form-label">Giá</label>
-            <input type="text" name="price" id="price" class="form-control" 
-                value="{{ old('price', number_format($variant->price)) }}" 
-                placeholder="Nhập giá biến thể" required>
+            <input type="number" name="price" id="price" class="form-control" 
+                value="{{ old('price', (int) $variant->price) }}"
+                placeholder="Nhập giá biến thể" min="0" step="1000">
+
+            <div class="error-message text-danger"></div>
         </div>
 
         <div class="mb-4">
             <label for="quantity" class="form-label">Số Lượng</label>
             <input type="number" name="quantity" id="quantity" class="form-control" 
-                value="{{ $variant->quantity }}" min="0" required placeholder="Nhập số lượng">
+                value="{{ $variant->quantity }}" min="0"  placeholder="Nhập số lượng">
+            <div class="error-message text-danger"></div>
         </div>
 
         <div class="d-flex justify-content-between">
@@ -145,5 +149,88 @@
     </form>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('variantForm');
+
+    // QUY TẮC + THÔNG BÁO LỖI
+    const rules = {
+        size_id: { required: true },
+        price: { required: true, numeric: true, min: 1000 },
+        quantity: { required: true, numeric: true, min: 1 }
+    };
+
+    const messages = {
+        size_id: { required: 'Vui lòng chọn size.' },
+        price: {
+            required: 'Vui lòng nhập giá.',
+            numeric: 'Giá phải là số.',
+            min: 'Giá phải >= 1000.'
+        },
+        quantity: {
+            required: 'Vui lòng nhập số lượng.',
+            numeric: 'Số lượng phải là số.',
+            min: 'Số lượng tối thiểu là 1.'
+        }
+    };
+
+function showError(input, message) {
+    const errorDiv = input.parentElement.querySelector('.error-message');
+    if (errorDiv) {
+        errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+    }
+    input.classList.add('is-invalid');
+}
+
+function clearError(input) {
+    const errorDiv = input.parentElement.querySelector('.error-message');
+    if (errorDiv) errorDiv.textContent = '';
+    input.classList.remove('is-invalid');
+}
+
+    // VALIDATE FIELD
+    function validateField(input) {
+        const name = input.name.includes('size_id')
+            ? 'size_id'
+            : input.name.includes('price')
+                ? 'price'
+                : input.name.includes('quantity')
+                    ? 'quantity'
+                    : null;
+
+        if (!name) return true; // không phải field cần validate
+
+        const rule = rules[name];
+        const value = (input.value || '').trim();
+
+        if (rule.required && !value) {
+            showError(input, messages[name].required);
+            return false;
+        }
+        if (rule.numeric && value && isNaN(value)) {
+            showError(input, messages[name].numeric);
+            return false;
+        }
+        if (rule.min && value && Number(value) < rule.min) {
+            showError(input, messages[name].min);
+            return false;
+        }
+
+        clearError(input);
+        return true;
+    }
+
+    // GẮN SỰ KIỆN VALIDATE
+    form.addEventListener('input', e => validateField(e.target));
+    form.addEventListener('change', e => validateField(e.target));
+    form.addEventListener('submit', e => {
+        let isValid = true;
+        form.querySelectorAll('input, select').forEach(input => {
+            if (!validateField(input)) isValid = false;
+        });
+        if (!isValid) e.preventDefault();
+    });
+});
+</script>
 
 @endsection

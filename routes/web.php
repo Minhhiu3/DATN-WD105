@@ -114,6 +114,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
 
     // Category Management Routes
+    // Thùng rác danh mục
+    Route::get('categories/trash', [CategoryController::class, 'trash'])->name('admin.categories.trash');
+    Route::post('categories/restore/{id}', [CategoryController::class, 'restore'])->name('admin.categories.restore');
+    Route::delete('categories/force-delete/{id}', [CategoryController::class, 'forceDelete'])->name('admin.categories.forceDelete');
     Route::resource('/categories', CategoryController::class)->names([
         'index' => 'admin.categories.index',
         'create' => 'admin.categories.create',
@@ -123,7 +127,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.categories.update',
         'destroy' => 'admin.categories.destroy',
     ]);
-    // route bảng brands
+
+    // thùng rác bảng thương hiệu
+    Route::get('brands/trash', [BrandController::class, 'trash'])->name('admin.brands.trash');
+    Route::post('brands/restore/{id}', [BrandController::class, 'restore'])->name('admin.brands.restore');
+    Route::delete('brands/force-delete/{id}', [BrandController::class, 'forceDelete'])->name('admin.brands.forceDelete');
     // Brand Management Routes
     Route::resource('/brands', BrandController::class)->names([
         'index' => 'admin.brands.index',
@@ -153,7 +161,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.products.destroy',
     ]);
 
-    
+    // Thùng rác size
+    Route::get('sizes/trash', [SizeController::class, 'trash'])->name('admin.sizes.trash');
+    Route::post('sizes/restore/{id}', [SizeController::class, 'restore'])->name('admin.sizes.restore');
+    Route::delete('sizes/force-delete/{id}', [SizeController::class, 'forceDelete'])->name('admin.sizes.forceDelete');
     // Size Management Routes
     Route::resource('/sizes', SizeController::class)->names([
         'index' => 'admin.sizes.index',
@@ -165,6 +176,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.sizes.destroy',
     ]);
 
+    // thùng rác bảng banner
+    Route::get('banner/trash', [BannerController::class, 'trash'])->name('admin.banner.trash');
+    Route::post('banner/restore/{id}', [BannerController::class, 'restore'])->name('admin.banner.restore');
+    Route::delete('banner/force-delete/{id}', [BannerController::class, 'forceDelete'])->name('admin.banner.forceDelete');
     // Banner Management Routes
     Route::resource('banner', BannerController::class)->names([
         'index' => 'admin.banner.index',
@@ -192,7 +207,13 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
         ->name('admin.album-products.show-album');
 
 
-
+    // Route cho thùng rác biến thể con
+    Route::get('/variants/trash/{product_id}', [VariantController::class, 'trash'])->name('admin.variants.trash');
+    Route::post('/variants/restore/{id}', [VariantController::class, 'restore'])->name('admin.variants.restore');
+    Route::delete('/variants/force-delete/{id}', [VariantController::class, 'forceDelete'])->name('admin.variants.forceDelete');
+    // Route cho thùng rác biến thể chinh
+    Route::post('/variants/restore-color/{color_id}', [VariantController::class, 'restoreColor'])->name('admin.variants.restore-color');
+    Route::delete('/variants/force-delete-color/{color_id}', [VariantController::class, 'forceDeleteColor'])->name('admin.variants.forceDelete-color');
     // Variant Management Routes
     Route::get('/variants/create-item', [VariantController::class, 'create_item'])->name('admin.variants.create_item');
     Route::post('/variants/store-item', [VariantController::class, 'storeItem'])->name('admin.variants.store_item');
@@ -205,10 +226,7 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
         'update' => 'admin.variants.update',
         'destroy' => 'admin.variants.destroy',
     ]);
-    // Route cho thùng rác biến thể
-Route::get('/admin/variants/trash', [VariantController::class, 'trash'])->name('admin.variants.trash');
-Route::post('/admin/variants/restore/{id}', [VariantController::class, 'restore'])->name('admin.variants.restore');
-Route::delete('/admin/variants/force-delete/{id}', [VariantController::class, 'forceDelete'])->name('admin.variants.forceDelete');
+   
 
     // Size Management Routes
     Route::resource('/colors', ColorController::class)->names([
@@ -223,6 +241,10 @@ Route::delete('/admin/variants/force-delete/{id}', [VariantController::class, 'f
     // Discount Management Routes
 
     Route::get('/check-code', [DiscountController::class, 'checkCode']);
+    Route::get('discounts/trash', [DiscountController::class, 'trash'])->name('admin.discounts.trash');
+    Route::post('discounts/restore/{id}', [DiscountController::class, 'restore'])->name('admin.discounts.restore');
+    Route::delete('discounts/force-delete/{id}', [DiscountController::class, 'forceDelete'])->name('admin.discounts.forceDelete');
+    Route::post('/discounts/check-expire', [DiscountController::class, 'checkExpire'])->name('admin.discounts.checkExpire');
 
     Route::resource('/discounts', DiscountController::class)->names([
         'index' => 'admin.discounts.index',
@@ -325,7 +347,9 @@ Route::get('/api/vl/wards/{districtCode}', function ($districtCode) {
 
 
 
-
+Route::get('/polyc', function () {
+    return view('client.pages.polyc');
+})->name('polyc');
 // Client Routes
 Route::get('/blogs', function () {
     return view('client.pages.blogs');

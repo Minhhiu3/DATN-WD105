@@ -84,3 +84,8 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> SU_20
 		</div>
 	</footer>
 	<!-- End footer Area -->
+	<script src="https://app.tudongchat.com/js/chatbox.js"></script>
+<script>
+  const tudong_chatbox = new TuDongChat('xd_va1ciSPsXFr292bRME')
+  tudong_chatbox.initial()
+</script>

@@ -153,7 +153,7 @@
             <input type="text" name="price" id="price" 
                 class="form-control @error('price') is-invalid @enderror" 
                 value="{{ old('price', $product->price) }}" 
-                placeholder="Nhập giá" 
+                placeholder="Nhập giá" min="0" step="1000"
                 >
             <div class="error-message text-danger">
                 @error('price')

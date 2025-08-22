@@ -170,19 +170,6 @@
                 @enderror
             </div>
         </div>
-        <div class="mb-3">
-            <label for="status" class="form-label">Trạng thái</label>
-            <select name="status" id="status" class="form-select @error('status') is-invalid @enderror">
-                <option value="visible" {{ old('status') == 'visible' ? 'selected' : '' }}>Hiển thị</option>
-                <option value="hidden" {{ old('status') == 'hidden' ? 'selected' : '' }}>Ẩn</option>
-            </select>
-            <div class="error-message text-danger">
-                @error('status')
-                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
-                @enderror
-            </div>
-        </div>
-
         <div class="d-flex justify-content-between">
             <button type="submit" class="btn-primary-custom">
                 <i class="bi bi-save"></i> Cập nhật
@@ -197,7 +184,7 @@
 
 <script>
 const logoInput = document.getElementById('logo');
-const logoPreview = document.getElementById('logo-preview');
+const logoPreview = document.getElementById('image-preview');
 
 logoInput.addEventListener('change', function(){
     const file = this.files[0];
@@ -219,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const rules = {
         name: { required: true, string: true, max: 255 },
         logo: { image: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 },
-        status: { required: true },
     };
 
     const messages = {
@@ -232,7 +218,6 @@ document.addEventListener('DOMContentLoaded', function () {
             mimes: 'File chỉ chấp nhận định dạng: jpeg, png, jpg.',
             maxSize: 'Kích thước ảnh không được vượt quá 2MB.'
         },
-        status: { required: 'Vui lòng chọn trạng thái.' },
 
     };
 

@@ -12,13 +12,13 @@ class BannerController extends Controller
 {
     public function index()
     {
-        $banners = Banner::with('product')->get();
+        $banners = Banner::with('product')->latest()->paginate(6);
         return view('admin.banner.index', compact('banners'));
     }
 
     public function create()
     {
-        $products = Product::all();
+        $products = Product::latest()->paginate(6);
         return view('admin.banner.create', compact('products'));
     }
 
@@ -126,4 +126,43 @@ class BannerController extends Controller
         $banner->delete();
         return redirect()->route('admin.banner.index')->with('success', 'Xóa mềm banner thành công.');
     }
+public function trash(Request $request)
+{
+    $bannersQuery = Banner::onlyTrashed()->with('product');
+
+    // Tìm kiếm theo tên banner
+    if ($request->filled('keyword')) {
+        $bannersQuery->where('name', 'like', '%' . $request->keyword . '%');
+    }
+
+    $banners = $bannersQuery->latest('id')->paginate(5);
+
+    return view('admin.banner.trash', compact('banners'));
+}
+
+
+    public function restore($id)
+    {
+        $banner = Banner::onlyTrashed()->findOrFail($id);
+        $banner->restore();
+
+        return redirect()->route('admin.banner.trash')
+            ->with('success', 'Khôi phục banner thành công!');
+    }
+
+    public function forceDelete($id)
+    {
+        $banner = Banner::onlyTrashed()->findOrFail($id);
+
+        // Xóa luôn ảnh khỏi storage nếu có
+        if ($banner->image && \Storage::exists('public/' . $banner->image)) {
+            \Storage::delete('public/' . $banner->image);
+        }
+
+        $banner->forceDelete();
+
+        return redirect()->route('admin.banner.trash')
+            ->with('success', 'Xóa vĩnh viễn banner thành công!');
+    }
+
 }
