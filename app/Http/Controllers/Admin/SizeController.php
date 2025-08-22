@@ -12,7 +12,7 @@ class SizeController extends Controller
 {
     public function index()
     {
-        $sizes = Size::latest()->paginate();
+        $sizes = Size::latest()->paginate(5);
         return view('admin.size.index', compact('sizes'));
     }
 
@@ -118,4 +118,44 @@ public function store(Request $request)
 
         return redirect()->route('admin.sizes.index')->with('success', 'Xóa danh mục thành công.');
     }
+    /**
+ * Hiển thị danh sách size trong thùng rác
+ */
+public function trash(Request $request)
+{
+    $sizesQuery = Size::onlyTrashed();
+
+    if ($request->filled('keyword')) {
+        $sizesQuery->where('name', 'like', '%' . $request->keyword . '%');
+    }
+
+    $sizes = $sizesQuery->latest('id_size')->paginate(5);
+
+    return view('admin.size.trash', compact('sizes'));
+}
+
+/**
+ * Khôi phục size đã xóa mềm
+ */
+public function restore($id)
+{
+    $size = Size::onlyTrashed()->findOrFail($id);
+    $size->restore();
+
+    return redirect()->route('admin.sizes.trash')
+        ->with('success', 'Khôi phục size thành công!');
+}
+
+/**
+ * Xóa vĩnh viễn size
+ */
+public function forceDelete($id)
+{
+    $size = Size::onlyTrashed()->findOrFail($id);
+    $size->forceDelete();
+
+    return redirect()->route('admin.sizes.trash')
+        ->with('success', 'Xóa vĩnh viễn size thành công!');
+}
+
 }

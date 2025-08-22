@@ -12,7 +12,7 @@ class Brand extends Model
     protected $primaryKey = 'id_brand';
 
     protected $fillable = [
-        'name', 'slug', 'logo', 'status'
+        'name','logo'
     ];
 }
 

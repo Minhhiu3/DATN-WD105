@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::query()->latest()->paginate(5);
           return view('admin.categories.index', compact('categories'));
     }
 
@@ -86,4 +86,44 @@ public function store(Request $request)
 
         return redirect()->route('admin.categories.index')->with('success', 'Xóa danh mục thành công.');
     }
+    public function trash(Request $request)
+{
+    // Lấy danh mục đã xóa mềm
+    $categoriesQuery = Category::onlyTrashed();
+
+    // Tìm kiếm theo tên
+    if ($request->filled('keyword')) {
+        $categoriesQuery->where('name_category', 'like', '%' . $request->keyword . '%');
+    }
+
+    // Phân trang
+    $categories = $categoriesQuery->latest('id_category')->paginate(5);
+
+    return view('admin.categories.trash', compact('categories'));
+}
+
+/**
+ * Khôi phục danh mục đã xóa mềm
+ */
+public function restore($id)
+{
+    $category = Category::onlyTrashed()->findOrFail($id);
+    $category->restore();
+
+    return redirect()->route('admin.categories.trash')
+        ->with('success', 'Khôi phục danh mục thành công!');
+}
+
+/**
+ * Xóa cứng danh mục
+ */
+public function forceDelete($id)
+{
+    $category = Category::onlyTrashed()->findOrFail($id);
+    $category->forceDelete();
+
+    return redirect()->route('admin.categories.trash')
+        ->with('success', 'Xóa vĩnh viễn danh mục thành công!');
+}
+
 }
