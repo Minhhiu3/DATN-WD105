@@ -296,70 +296,148 @@
 
                 {{-- {{ dd($products) }} --}}
                   <!-- single product -->
-                        @foreach ($products as $product)
-<div class="col-lg-3 col-md-4 col-sm-6">
-    <figure class="single-product">
-        <div style="overflow: hidden; display: flex; justify-content: center; align-items: center; height: 250px;">
-            <img style="height: 100%; width: auto" src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
-        </div>
-        <figcaption class="product-details" style="text-align: center;">
-            <h6>{{ $product->name_product }}</h6>
-            @php
-                $minPrice = $product->variants->min('price');
-                $maxPrice = $product->variants->max('price');
-            @endphp
-             @php
-    $sale = $product->advice_product;
-$now = \Carbon\Carbon::now();
-    $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
-$end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
-@endphp
+                @foreach ($products as $product)
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <figure class="single-product">
+                            <div style="overflow: hidden; display: flex; justify-content: center; align-items: center; height: 250px;">
+                                <img style="height: 100%; width: auto" src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
+                            </div>
+                            <figcaption class="product-details" style="text-align: center;">
+                                <h6>{{ $product->name_product }}</h6>
+                                @php
+                                    $minPrice = $product->variants->min('price');
+                                    $maxPrice = $product->variants->max('price');
+                        
+                                    $sale = $product->advice_product;
+                                    $now = \Carbon\Carbon::now();
+                                    $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                                    $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                                @endphp
 
-@if (
-    $sale &&
-    $sale->status === "on" && $now->between($start, $end)
-)
-                                        {{-- Ô vuông % giảm giá tông vàng-cam --}}
-                                        <div style="
-                                            position: absolute;
-                                            top: 10px;
-                                            left: 22px;
-                                            background: linear-gradient(135deg, #ff7e00, #ffb400);
-                                            color: white;
-                                            padding: 5px 8px;
-                                            border-radius: 5px;
-                                            font-weight: bold;
-                                            font-size: 14px;
-                                            z-index: 10;
-                                            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                                        ">
-                                            -{{$product->advice_product->value}}%
-                                        </div>
-                                        @endif
-            <div class="price">
-                @if ($minPrice === null)
-                    <h6>Hết hàng!</h6>
-                @elseif ($minPrice == $maxPrice)
-                    <h6>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</h6>
-                @else
-                    <h6>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</h6>
-                @endif
+                                @if (
+                                    $sale &&
+                                    $sale->status === "on" && $now->between($start, $end)
+                                )
+                                {{-- Ô vuông % giảm giá tông vàng-cam --}}
+                                <div style="
+                                    position: absolute;
+                                    top: 10px;
+                                    left: 22px;
+                                    background: linear-gradient(135deg, #ff7e00, #ffb400);
+                                    color: white;
+                                    padding: 5px 8px;
+                                    border-radius: 5px;
+                                    font-weight: bold;
+                                    font-size: 14px;
+                                    z-index: 10;
+                                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                                ">
+                                    -{{$product->advice_product->value}}%
+                                </div>
+                                @endif
+                                <div class="price">
+                                    @if ($minPrice === null)
+                                        <h6>Hết hàng!</h6>
+                                    @elseif ($minPrice == $maxPrice)
+                                        <h6>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</h6>
+                                    @else
+                                        <h6>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</h6>
+                                    @endif
+                                </div>
+                                <div class="prd-bottom">
+                                    <a href="{{ route('client.product.show', $product->id_product) }}"
+                                        class="social-info">
+                                        <span class="lnr lnr-move"></span>
+                                        <p class="hover-text">Xem chi tiết</p>
+                                    </a>
+                                </div>
+                            </figcaption>
+                        </figure>
+                    </div>
+                @endforeach
             </div>
-                       <div class="prd-bottom">
+        </div>
+    </div>
+</section>
 
+{{-- Sản phẩm top --}}
+<section class=" active-product-area section_gap">
+    <!-- single product slide -->
+    <div class="single-product-slider">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+                    <div class="section-title">
+                        <h1>Sản phẩm bán chạy</h1>
+                        <p>Khám phá những mẫu giày mới nhất, được thiết kế để mang lại sự thoải mái và phong cách
+                            tối ưu
+                            cho bạn.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
 
-                                            <a href="{{ route('client.product.show', $product->id_product) }}"
-                                                class="social-info">
-                                                <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">Xem chi tiết</p>
-                                            </a>
-                                        </div>
-        </figcaption>
-    </figure>
-</div>
-                        @endforeach
+                {{-- {{ dd($products) }} --}}
+                  <!-- single product -->
+                @foreach ($topProducts as $product)
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <figure class="single-product">
+                            <div style="overflow: hidden; display: flex; justify-content: center; align-items: center; height: 250px;">
+                                <img style="height: 100%; width: auto" src="{{ asset('/storage/' . $product->image) }}" alt="{{ $product->image }}">
+                            </div>
+                            <figcaption class="product-details" style="text-align: center;">
+                                <h6>{{ $product->name_product }}</h6>
+                                @php
+                                    $minPrice = $product->variants->min('price');
+                                    $maxPrice = $product->variants->max('price');
+                        
+                                    $sale = $product->advice_product;
+                                    $now = \Carbon\Carbon::now();
+                                    $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                                    $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                                @endphp
 
-
+                                @if (
+                                    $sale &&
+                                    $sale->status === "on" && $now->between($start, $end)
+                                )
+                                {{-- Ô vuông % giảm giá tông vàng-cam --}}
+                                <div style="
+                                    position: absolute;
+                                    top: 10px;
+                                    left: 22px;
+                                    background: linear-gradient(135deg, #ff7e00, #ffb400);
+                                    color: white;
+                                    padding: 5px 8px;
+                                    border-radius: 5px;
+                                    font-weight: bold;
+                                    font-size: 14px;
+                                    z-index: 10;
+                                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                                ">
+                                    -{{$product->advice_product->value}}%
+                                </div>
+                                @endif
+                                <div class="price">
+                                    @if ($minPrice === null)
+                                        <h6>Hết hàng!</h6>
+                                    @elseif ($minPrice == $maxPrice)
+                                        <h6>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</h6>
+                                    @else
+                                        <h6>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</h6>
+                                    @endif
+                                </div>
+                                <div class="prd-bottom">
+                                    <a href="{{ route('client.product.show', $product->id_product) }}"
+                                        class="social-info">
+                                        <span class="lnr lnr-move"></span>
+                                        <p class="hover-text">Xem chi tiết</p>
+                                    </a>
+                                </div>
+                            </figcaption>
+                        </figure>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>

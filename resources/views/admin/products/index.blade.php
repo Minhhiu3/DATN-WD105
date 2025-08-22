@@ -379,7 +379,7 @@
                             <td colspan="1" class="text-center text-muted">        <a href="{{ route('admin.products.trash') }}" class="btn btn-add-modern">
                 <i class="bi bi-trash3-fill"></i> Thùng Rác
         </a>
-        </td>
+                            </td>
                         </tr>
                 </tbody>
             </table>
