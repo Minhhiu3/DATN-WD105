@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\Size;
 use Illuminate\Http\Request;
+use App\Models\Brand;
 use Illuminate\Support\Facades\Auth;
 
 class ClientProductController extends Controller
@@ -19,9 +20,9 @@ class ClientProductController extends Controller
         $sizes = Size::all();
         $categories = Category::all();
         $keyword = $request->input('keyword');
-          $category = $request->input('category');
-    $size = $request->input('size');
-     $products = Product::where('visibility', 'visible')->with(['category', 'albumProducts'])
+        $category = $request->input('category');
+        $size = $request->input('size');
+        $products = Product::where('visibility', 'visible')->with(['category', 'albumProducts'])
         ->when($keyword, function ($query, $keyword) {
             $query->where('name_product', 'like', "%$keyword%");
         })
@@ -128,6 +129,8 @@ class ClientProductController extends Controller
 
         return view('client.pages.products', compact('products', 'categories', 'sizes'));
     }
+
+
 
 
 }
