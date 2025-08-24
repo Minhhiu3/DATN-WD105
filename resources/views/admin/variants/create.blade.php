@@ -293,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         <input type="file" name="variants[${colorIndex}][image]" accept="image/*" class="image-input">
                         <img class="image-preview" alt="Preview">
                     </label>
-                    <div class="error-message text-danger"></div>
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                     <button type="button" class="btn btn-remove-variant w-100">
