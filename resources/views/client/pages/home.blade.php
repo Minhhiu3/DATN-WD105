@@ -259,7 +259,7 @@
                 @foreach ($brands as $brand)
                     <div class="swiper-slide" style="margin-bottom: 10px;">
                         <div class="category-item">
-                            <a href="{{ $brand->id_brand }}" {{ $brand == request('brand') ? 'selected' : '' }}">
+                            <a href="{{ route('products', ['brand' => $brand->id_brand]) }}">
                                 @if($brand->logo)
                                     <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}" class="img-fluid">
                                 @else
