@@ -26,7 +26,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
         #mini-cart {
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -115,7 +115,7 @@
     <script src="<?php echo e(asset('assets/js/countdown.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/jquery.magnific-popup.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/owl.carousel.min.js')); ?>"></script>
-
+    
     <!-- Google Maps -->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
     <script src="<?php echo e(asset('assets/js/gmaps.min.js')); ?>"></script>

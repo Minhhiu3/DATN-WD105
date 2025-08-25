@@ -50,7 +50,7 @@ class BrandController extends Controller
             'name' => $request->name,
             'logo' => $logoPath,
         ]);
-
+// dd($logoPath);
         return redirect()->route('admin.brands.index')->with('success', 'Thêm thương hiệu mới thành công.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
