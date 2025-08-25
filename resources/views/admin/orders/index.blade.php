@@ -296,7 +296,7 @@
                                                             @break
 
                                                             @case('processing')
-                                                                🔵 Đẫ xác nhận
+                                                                🔵 Đã xác nhận
                                                             @break
 
                                                             @case('shipping')

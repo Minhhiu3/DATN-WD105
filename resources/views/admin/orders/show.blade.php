@@ -89,10 +89,11 @@
                 <table class="table table-bordered">
                     <thead class="table-secondary">
                         <tr>
-                            <th></th>
+
+                            <th>Ảnh</th>
                             <th>Sản phẩm</th>
                             <th>Size</th>
-                            <th>color</th>
+                            <th>Màu</th>
                             <th>Số Lượng</th>
                             <th>Giá</th>
                             <th>Tổng tiền đơn hàng</th>
@@ -110,13 +111,16 @@
                                 $shippingFee = 30000
                             @endphp
                             <tr>
-                                <td>{{ $item->variant->id_variant ?? 'Không rõ' }}</td>
-                                <td>{{ $item->variant->product->name_product ?? 'Không rõ' }}</td>
-                                <td>{{ $item->variant->size->name ?? 'Không rõ' }}</td>
-                                <td>{{ $item->variant->color->name ?? 'không rõ' }}</td>
+                                <td> <img src="{{ asset('storage/' . ($item->image ?? 'default.jpg')) }}"
+                         alt="{{ $item->product_name }}"
+                         style="width: 70px; height: 80px; object-fit: cover;"></td>
+                                {{-- <td>{{ $item->variant->id_variant ?? 'Không rõ' }}</td> --}}
+                                <td>{{ $item->product_name ?? 'Không có tên sản phẩm' }}</td>
+                                <td>{{ $item->size_name }}</td>
+                                <td>{{ $item->color_name }}</td>
                                 <td>{{ $item->quantity ?? 'Không rõ' }}</td>
-                                <td>{{ number_format($price, 0, ',', '.') }} VND</td>
-                                <td>{{ number_format($thanhTien, 0, ',', '.') }} VND</td>
+                                <td>{{ number_format($item->price) }} VNĐ</td>
+                                <td>{{ number_format($item->quantity * $item->price) }} VNĐ</td>
                                 <td>{{ number_format($shippingFee, 0, ', ', '.') }} VND</td>
                             </tr>
                         @endforeach
