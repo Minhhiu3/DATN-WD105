@@ -5,10 +5,10 @@
 			<div class="container">
 				<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 					<div class="col-first">
-						<h1>Login/Register</h1>
+						<h1>Đăng nhập</h1>
 						<nav class="d-flex align-items-center">
-							<a href="<?php echo e(route('home')); ?>">Home<span class="lnr lnr-arrow-right"></span></a>
-							<a href="<?php echo e(route('login')); ?>">Login/Register</a>
+							<a href="<?php echo e(route('home')); ?>">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
+							<a href="<?php echo e(route('login')); ?>">Đăng nhập</a>
 						</nav>
 					</div>
 				</div>
@@ -24,16 +24,16 @@
 						<div class="login_box_img">
 							<img class="img-fluid" src="<?php echo e(asset('assets/img/login.jpg')); ?>" alt="">
 							<div class="hover">
-								<h4>New to our website?</h4>
-								<p>There are advances being made in science and technology everyday, and a good example of this is the</p>
-								<a class="primary-btn" href="<?php echo e(route('register')); ?>">Create an Account</a>
+								
+								<p>Mỗi ngày chúng tôi đều mang đến những mẫu giày mới nhất cho bạn.</p>
+								<a class="primary-btn" href="<?php echo e(route('register')); ?>">Tạo tài khoản ngay</a>
 							</div>
 						</div>
 					</div>
 					<div class="col-lg-6">
 						<div class="login_form_inner">
-							<h3>Log in to enter</h3>
-							
+							<h3>Đăng nhập ngay</h3>
+
 							<?php if(session('success')): ?>
 								<div class="alert alert-success alert-dismissible fade show" role="alert">
 									<?php echo e(session('success')); ?>
@@ -60,8 +60,8 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-										   id="email" name="email" value="<?php echo e(old('email')); ?>" 
+unset($__errorArgs, $__bag); ?>"
+										   id="email" name="email" value="<?php echo e(old('email')); ?>"
 										   placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
 									<?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -82,9 +82,9 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-										   id="password" name="password" 
-										   placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+unset($__errorArgs, $__bag); ?>"
+										   id="password" name="password"
+										   placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Mật khẩu'">
 									<?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -99,12 +99,12 @@ unset($__errorArgs, $__bag); ?>
 								<div class="col-md-12 form-group">
 									<div class="creat_account">
 										<input type="checkbox" id="remember" name="remember">
-										<label for="remember">Keep me logged in</label>
+										<label for="remember">Lưu thông tin</label>
 									</div>
 								</div>
 								<div class="col-md-12 form-group">
-									<button type="submit" value="submit" class="primary-btn">Log In</button>
-									<a href="<?php echo e(route('register')); ?>">Don't have an account? Register</a>
+									<button type="submit" value="submit" class="primary-btn">Đăng nhập</button>
+									<a href="<?php echo e(route('register')); ?>">Chưa có tài khoản? Đăng ký ngay</a>
 								</div>
 							</form>
 						</div>
@@ -115,11 +115,12 @@ unset($__errorArgs, $__bag); ?>
 		<!--================End Login Box Area =================-->
 
 		<!-- start footer Area -->
-		
 
 
-		
+
+
 
 	</html>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH E:\xampp\htdocs\DATN-WD105\resources\views/client/pages/login.blade.php ENDPATH**/ ?>

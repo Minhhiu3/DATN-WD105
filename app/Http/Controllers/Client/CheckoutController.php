@@ -331,23 +331,6 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
 $emailSend = $request->email;
 Mail::to($emailSend)->send(new OrderPlacedMail($order));
 Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $emailSend);
-
-
-
-<<<<<<< HEAD
-        foreach ($cartItems as $item) {
-            OrderItem::create([
-                'order_id'   => $order->id_order,
-                'variant_id' => $item->variant_id,
-                'quantity'   => $item->quantity,
-                'created_at' => now(),
-            ]);
-        }
-
-        DB::commit();
-        return redirect()->route('home')->with('success', 'Đặt hàng thành công!');
-
-=======
             foreach ($cartItems as $item) {
                 OrderItem::create([
                     'order_id'   => $order->id_order,
@@ -583,8 +566,6 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
             'discount' => $discount,
             'final_total' => $finalTotalShip
         ]);
-
->>>>>>> 1435f1503369b9015609a78b3a7227a851c86f11
     } catch (\Exception $e) {
         Log::error('Lỗi áp mã giảm giá', [
             'message' => $e->getMessage(),

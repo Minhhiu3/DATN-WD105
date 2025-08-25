@@ -22,7 +22,13 @@
                 <p>Quản lý danh mục</p>
             </a>
         </li>
-
+        <!-- ql thương hiệu -->
+        <li class="nav-item">
+            <a href="<?php echo e(url('/admin/brands')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+                <i class="fa-solid fa-layer-group"></i>
+                <p>Quản lý Thương Hiệu</p>
+            </a>
+        </li>
         <!-- ql size -->
         <li class="nav-item">
             <a href="<?php echo e(url('/admin/sizes')); ?>"
@@ -51,7 +57,7 @@
 
         <!-- ql đơn hànghàng -->
         <li class="nav-item">
-            <a href="<?php echo e(url('#')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+            <a href="<?php echo e(url('/admin/orders')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                 <i class="fa-solid fa-truck"></i>
                 <p>Quản lý đơn hàng</p>
             </a>
@@ -65,19 +71,19 @@
         </li>
         <!-- ql đánh giá -->
         <li class="nav-item">
-            <a href="<?php echo e(url('/#')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
+            <a href="<?php echo e(url('/admin/reviews')); ?>" class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>">
                 <i class="fa-solid fa-comment-slash"></i>
                 <p>Quản lý đánh giá</p>
             </a>
         </li>
 
 
-            <li class="nav-item">
-                <a href="<?php echo e(url('/settings')); ?>" class="nav-link <?php echo e(request()->is('settings') ? 'active' : ''); ?>">
-                    <i class="nav-icon fas fa-cog"></i>
-                    <p>Settings</p>
-                </a>
-            </li>
+        <li class="nav-item">
+            <a href="<?php echo e(url('/settings')); ?>" class="nav-link <?php echo e(request()->is('settings') ? 'active' : ''); ?>">
+                <i class="nav-icon fas fa-cog"></i>
+                <p>Settings</p>
+            </a>
+        </li>
     </ul>
 </nav>
 <!-- /.sidebar-menu -->

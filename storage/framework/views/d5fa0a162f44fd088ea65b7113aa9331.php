@@ -77,65 +77,95 @@
                                                     <td><?php echo e($order->order_code); ?></td>
                                                     <td><?php echo e($order->created_at?->format('d/m/Y H:i') ?? 'N/A'); ?></td>
                                                     <?php
-                                                        $shippingFee = $order->shipping_fee ; // Mặc định 30,000 nếu null
+                                                        $shippingFee = $order->shipping_fee; // Mặc định 30,000 nếu null
                                                         $grandTotal = $order->total_amount + $shippingFee;
                                                     ?>
 
-                                                    <td><?php echo e(number_format($grandTotal, 0, ',', '.')); ?> VNĐ</td>
+                                                    <td><?php echo e(number_format($order->grand_total ?? $order->total_amount + ($order->shipping_fee ?? 30000), 0, ',', '.')); ?>
+
+                                                        VNĐ</td>
 
                                                     </td>
                                                     <td>
-                                                        <?php $status = $order->status; ?>
+                                                        <?php $status = $order->status;
+                                                        $reason = $order->cancel_reason ?? 'Chưa có lý do hủy';
+                                                         ?>
                                                         <?php if($status == 'pending'): ?>
-                                                            <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                                            <span class="btn btn-sm btn-warning text-black">Chờ xác
+                                                                nhận</span>
                                                         <?php elseif($status == 'processing'): ?>
-                                                            <span class="badge bg-success text-white">Đã xác nhận</span>
+                                                            <span class="btn btn-sm btn-primary text-white">Đã xác
+                                                                nhận</span>
                                                         <?php elseif($status == 'shipping'): ?>
-                                                            <span class="badge bg-primary text-white">Đang giao</span>
+                                                            <span class="btn btn-sm btn-info text-white">Đang giao</span>
+                                                        <?php elseif($status == 'delivered'): ?>
+                                                            <span class="btn btn-sm btn-success text-white">Đã giao
+                                                                hàng</span>
+                                                        <?php elseif($status == 'received'): ?>
+                                                            <span class="btn btn-sm btn-success text-white">Đã nhận
+                                                                hàng</span>
                                                         <?php elseif($status == 'completed'): ?>
-                                                            <span class="badge bg-success text-white">Đã giao</span>
+                                                            <span class="btn btn-sm btn-success text-white">Hoàn
+                                                                thành</span>
                                                         <?php elseif($status == 'canceled'): ?>
-                                                            <span class="badge bg-danger text-white">Đã hủy</span>
+                                                            <span class="btn btn-sm btn-danger text-white">Đã Hủy</span>
+                                                           <p class="btn btn-sm btn-danger text-white  mt-2"> Lý do hủy: <span ><?php echo e($reason); ?></span></p>
                                                         <?php else: ?>
-                                                            <span class="badge "><?php echo e($status); ?></span>
+                                                            <span
+                                                                class="btn btn-sm btn-light text-black"><?php echo e($status); ?></span>
                                                         <?php endif; ?>
                                                     </td>
                                                     <td>
-                                                         <?php $payment_status = $order->payment_status; ?>
+                                                        <?php $payment_status = $order->payment_status; ?>
                                                         <?php if($payment_status == 'unpaid'): ?>
-                                                            <span class="badge bg-warning text-dark">Chưa thanh toán</span>
+                                                            <span class="btn btn-sm btn-warning text-black">Chưa thanh
+                                                                toán</span>
                                                         <?php elseif($payment_status == 'paid'): ?>
-                                                            <span class="badge bg-success text-white">Đã thanh toán</span>
-                                                             <?php else: ?>
-                                                            <span class="badge "><?php echo e($payment_status); ?></span>
+                                                            <span class="btn btn-sm btn-success text-white">Đã thanh
+                                                                toán</span>
+                                                        <?php elseif($payment_status == 'canceled'): ?>
+                                                            <span class="btn btn-sm btn-danger text-white">Đã hoàn
+                                                                tiền</span>
+                                                        <?php else: ?>
+                                                            <span
+                                                                class="btn btn-sm btn-light text-black"><?php echo e($payment_status); ?></span>
                                                         <?php endif; ?>
 
 
 
                                                     </td>
                                                     <td>
-                                                        <a href="<?php echo e(route('account.orderDetail', $order->id_order)); ?>"
-                                                            class="btn btn-sm btn-info">
-                                                            <i class="fa fa-eye"></i> Xem chi tiết
-                                                        </a>
-                                                        <?php if($order->status == 'pending'): ?>
-                                                            <form
-                                                                action="<?php echo e(route('account.cancelOrder', $order->id_order)); ?>"
-                                                                method="POST"
-                                                                onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?')">
-                                                                <?php echo csrf_field(); ?>
-                                                                <?php echo method_field('PUT'); ?>
-                                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                                    <i class="fa fa-recycle"></i> Hủy đơn hàng
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <a href="<?php echo e(route('account.orderDetail', $order->id_order)); ?>"
+                                                                class="btn btn-sm btn-info">
+                                                                <i class="fa fa-eye"></i> Xem chi tiết
+                                                            </a>
+
+                                                            <?php if($order->status == 'pending' || $order->status == 'processing'): ?>
+                                                                <button type="button" class="btn btn-sm btn-danger"
+                                                                    onclick="showCancelModal(<?php echo e($order->id_order); ?>)">
+                                                                    <i class="fa fa-recycle"></i> Hủy
                                                                 </button>
-                                                            </form>
-                                                        <?php endif; ?>
+                                                            <?php endif; ?>
+                                                            <?php if($order->status == 'delivered'): ?>
+                                                                <form
+                                                                    action="<?php echo e(route('account.confirmReceive', $order->id_order)); ?>"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('Xác nhận bạn đã nhận được hàng này?')">
+                                                                    <?php echo csrf_field(); ?>
+                                                                    <?php echo method_field('PUT'); ?>
+                                                                    <button type="submit" class="btn btn-sm btn-success">
+                                                                        <i class="fa fa-check"></i> Xác nhận đã nhận hàng
+                                                                    </button>
+                                                                </form>
+                                                            <?php endif; ?>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </tbody>
                                     </table>
-                                    <div class="mt-3">
+                                    <div class="pagination-wrapper">
                                         <?php echo e($orders->links()); ?>
 
                                     </div>
@@ -157,6 +187,40 @@
         </div>
     </section>
     <!-- End Orders Area -->
+    <!-- Modal nhập lý do hủy -->
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Nhập lý do hủy đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="cancelOrderForm" method="POST">
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('PUT'); ?>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="cancel_reason" class="form-label">Lý do hủy</label>
+                            <textarea name="cancel_reason" class="form-control" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showCancelModal(orderId) {
+            let form = document.getElementById('cancelOrderForm');
+            form.action = "/account/orders/" + orderId + "/cancel";
+            var modal = new bootstrap.Modal(document.getElementById('cancelOrderModal'));
+            modal.show();
+        }
+    </script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.client_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH E:\xampp\htdocs\DATN-WD105\resources\views/auth/orders.blade.php ENDPATH**/ ?>

@@ -6,11 +6,11 @@
         <div class="container">
             <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
                 <div class="col-first">
-                    <h1>Shop Category page</h1>
+                    <h1>Cửa Hàng</h1>
                     <nav class="d-flex align-items-center">
-                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="category.html">Fashon Category</a>
+                        <a href="#">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="#">Cửa hàng</a>
+
                     </nav>
                 </div>
             </div>
@@ -23,28 +23,29 @@
                 <div class="sidebar-categories">
                     <div class="head">Danh mục sản phẩm</div>
 
-                    <ul class="main-categories">
-                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <li class="main-nav-list"><a data-toggle="collapse" aria-expanded="false"
-                                    aria-controls="fruitsVegetable"></span><?php echo e($category->name_category); ?></a>
+                   <ul class="main-categories">
+    <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <li class="main-nav-list">
+            <a href="<?php echo e(route('products', ['category' => $category->id_category])); ?>">
+                <?php echo e($category->name_category); ?>
 
-                            </li>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
-                    </ul>
+            </a>
+        </li>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+</ul>
                 </div>
                 <div class="sidebar-filter mt-50 ">
                     <div class="top-filter-head ">Lọc</div>
 
-                 <div class="common-filter">
+      <div class="common-filter">
     <div class="head">Size</div>
-
     <div class="d-flex flex-wrap gap-2">
         <?php $__currentLoopData = $sizes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <button type="button" class="btn btn-outline-dark size-square">
+            <a href="<?php echo e(route('products', ['size' => $size->name])); ?>"
+               class="btn btn-outline-dark size-square <?php echo e(request('size') == $size->name ? 'active' : ''); ?>">
                 <?php echo e($size->name); ?>
 
-            </button>
+            </a>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
 </div>
@@ -64,15 +65,13 @@
             <div class="col-xl-9 col-lg-8 col-md-7">
                 <!-- Start Filter Bar -->
                 <div class="filter-bar d-flex flex-wrap align-items-center">
-                    <div class="sorting">
-                        <select>
+                    
                             
-                        </select>
-                    </div>
+                        
                     <div class="sorting mr-auto">
-                        <select>
+                        
                             
-                        </select>
+                        
                     </div>
 
                 </div>
@@ -83,9 +82,11 @@
                         <!-- single product -->
                          <?php $__empty_1 = true; $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <div class="col-lg-4 col-md-6">
-                                <div class="single-product">
-                                    <img src="<?php echo e(asset('/storage/' . $product->image)); ?>" alt="<?php echo e($product->image); ?>">
-                                    <div class="product-details">
+                                <figure class="single-product">
+                                    <div style="overflow: hidden; display: flex; justify-content: center; align-items: center; height: 250px;">
+                                        <img style="height: 100%; width: auto" src="<?php echo e(asset('/storage/' . $product->image)); ?>" alt="<?php echo e($product->image); ?>">
+                                    </div>
+                                    <figcaption class="product-details" stype="">
                                         <h6><?php echo e($product->name_product); ?></h6>
                                        <?php
     $minPrice = $product->variants->min('price');
@@ -103,27 +104,15 @@
 </div>
                                         <div class="prd-bottom">
 
-                                            <a href="" class="social-info">
-                                                <span class="ti-bag"></span>
-                                                <p class="hover-text">add to bag</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-heart"></span>
-                                                <p class="hover-text">Wishlist</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="ti-shopping-cart"></span>
-                                                <p class="hover-text" type="submit">Add to cart</p>
-                                            </a>
                                             <a href="<?php echo e(route('client.product.show', $product->id_product)); ?>"
                                                 class="social-info">
                                                 <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">view more</p>
+                                                <p class="hover-text">Xem chi tiết</p>
                                             </a>
 
                                         </div>
-                                    </div>
-                                </div>
+                                    </figcaption>
+                                </figure>
                             </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <div class="col-12">
