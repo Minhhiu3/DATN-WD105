@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
-     protected $table = 'products';
+
+    protected $table = 'products';
 
     /**
      * The primary key associated with the table.
@@ -28,16 +29,9 @@ class Product extends Model
         'price',
         'description',
         'category_id',
-        'brand_id',
+        'brand_id', // Giữ lại để lưu khóa ngoại
         'image',
     ];
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    // public $timestamps = false; // Uncomment if you don't have timestamps
 
     /**
      * Get the category that owns the product.
@@ -46,34 +40,42 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, 'category_id', 'id_category');
     }
+
+    /**
+     * Get the brand that owns the product.
+     */
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class, 'brand_id', 'id_brand');
     }
+
     public function albumProducts(): HasMany
     {
         return $this->hasMany(AlbumProduct::class, 'product_id', 'id_product');
     }
+
     public function variants()
     {
         return $this->hasMany(Variant::class, 'product_id', 'id_product');
     }
+
     public function albums()
     {
         return $this->hasMany(AlbumProduct::class, 'product_id', 'id_product');
     }
+
     public function advice_product()
     {
         return $this->hasOne(AdviceProduct::class, 'product_id', 'id_product');
     }
+
     public function productReviews()
-{
-    return $this->hasMany(ProductReview::class, 'product_id', 'id_product');
-}
-public function adviceProduct()
-{
-    return $this->hasOne(AdviceProduct::class, 'product_id');
-}
+    {
+        return $this->hasMany(ProductReview::class, 'product_id', 'id_product');
+    }
 
-
+    public function adviceProduct()
+    {
+        return $this->hasOne(AdviceProduct::class, 'product_id');
+    }
 }

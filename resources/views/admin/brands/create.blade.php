@@ -187,9 +187,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('brand-form');
 
     const rules = {
-        name: { required: true, string: true, max: 255 },
-        logo: { required: true, image: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 },
-    };
+    name: { required: true, max: 255 },
+    logo: { required: true, mimes: ['jpeg','jpg','png'], maxSize: 2048 },
+};
+
 
     const messages = {
         name: {
@@ -292,10 +293,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     form.addEventListener('submit', function(e) {
-        let isValid = true;
-        inputs.forEach(input => { if (!validateField(input)) isValid = false; });
-        if (!isValid) e.preventDefault();
+    let isValid = true;
+    inputs.forEach(input => {
+        if (!validateField(input)) isValid = false;
     });
+    if (!isValid) {
+        e.preventDefault();
+    }
+});
+
 });
 </script>
 @endsection

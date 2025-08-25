@@ -1,107 +1,154 @@
 @extends('layouts.client_home')
-@section('title', 'Trang Chủ') <style>
-.owl-nav-custom .btn {
-    margin: 0 5px;
-    padding: 6px 12px;
-    font-weight: bold;
-}
+@section('title', 'Trang Chủ')
+<style>
+    .owl-nav-custom .btn {
+        margin: 0 5px;
+        padding: 6px 12px;
+        font-weight: bold;
+    }
 </style>
 @push('styles')
 <style>
-.custom-banner-slider-wrapper {
-    position: relative;
-    overflow: hidden;
-    height: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+    .custom-banner-slider-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-.custom-banner-slider {
-    display: flex;
-    transition: transform 0.6s ease-in-out;
-    width: 100%;
-    height: 100%;
-}
+    .custom-banner-slider {
+        display: flex;
+        transition: transform 0.6s ease-in-out;
+        width: 100%;
+        height: 100%;
+    }
 
-.single-slide {
-    min-width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;  /*  Căn giữa nội dung */
-    padding: 0;
-}
-.banner-content {
-    flex: 1;
-    padding-right: 20px;
-}
+    .single-slide {
+        min-width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
 
-.banner-img {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.banner-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); */
-}
+    .banner-content {
+        flex: 1;
+        padding-right: 20px;
+    }
 
+    .banner-img {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-/* Nút điều hướng */
-.custom-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.4);
-    color: white;
-    border: none;
-    font-size: 2rem;
-    padding: 0 15px;
-    cursor: pointer;
-    z-index: 99;
-}
+    .banner-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-.custom-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;       /* 👉 không có nền */
-    border: none;
-    color: #111;                   /* Màu icon */
-    font-size: 3rem;               /* Lớn hơn */
-    padding: 0 10px;
-    cursor: pointer;
-    z-index: 10;
-    transition: color 0.3s ease, transform 0.3s ease;
-    opacity: 0.6;
-}
+    /* Nút điều hướng */
+    .custom-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: #111;
+        font-size: 3rem;
+        padding: 0 10px;
+        cursor: pointer;
+        z-index: 10;
+        transition: color 0.3s ease, transform 0.3s ease;
+        opacity: 0.6;
+    }
 
-.custom-nav:hover {
-    color: #f97316;               /* Màu cam khi hover (hoặc màu thương hiệu của bạn) */
-    transform: scale(1.2);        /* Phóng to nhẹ khi hover */
-    opacity: 1;
-}
+    .custom-nav:hover {
+        color: #f97316;
+        transform: scale(1.2);
+        opacity: 1;
+    }
 
-.custom-nav.prev {
-    left: 10px;
-}
+    .custom-nav.prev {
+        left: 10px;
+    }
 
-.custom-nav.next {
-    right: 10px;
-}
+    .custom-nav.next {
+        right: 10px;
+    }
 
+    /* CSS cho Category Area với Swiper */
+    .category-area {
+        padding: 20px 0;
+    }
 
+    .mySwiper {
+        width: 100%;
+        height: 250px;
+    }
+
+    .swiper-slide {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: #fff;
+    }
+
+    .category-item img {
+        width: 220px;
+        height: 220px;
+        object-fit: contain;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .wiper-pagination{
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+    }
+    .category-item img:hover {
+        transform: scale(1.1);
+    }
+
+    .category-item h5 {
+        font-size: 16px;
+        font-weight: 500;
+        margin-top: 10px;
+        color: #333;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .mySwiper {
+            --swiper-slides-per-view: 1;
+        }
+        .category-item img {
+            width: 80px;
+            height: 80px;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .mySwiper {
+            --swiper-slides-per-view: 2;
+        }
+    }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 @endpush
 @section('content')
-<!-- start banner Area -->
-
+<!-- Start banner Area -->
 <section class="banner-area" style="margin-top: 80px">
     <div class="container">
         <div class="row fullscreen align-items-center justify-content-start">
@@ -145,7 +192,6 @@
                             </div>
                         @endforelse
                     </div>
-
                     <!-- Navigation -->
                     <button class="custom-nav prev">&#10094;</button>
                     <button class="custom-nav next">&#10095;</button>
@@ -154,51 +200,47 @@
         </div>
     </div>
 </section>
-
-
-<!-- End banner Area -->
 <!-- End banner Area -->
 
-
-<!-- start features Area -->
+<!-- Start features Area -->
 <section class="features-area section_gap">
     <div class="container">
         <div class="row features-inner">
-            <!-- single features -->
+            <!-- Single features -->
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{asset('assets/img/features/f-icon1.png')}}" alt="">
+                        <img src="{{ asset('assets/img/features/f-icon1.png') }}" alt="">
                     </div>
                     <h6>Giao hàng nhanh chóng</h6>
                     <p>Giao vận trong 3 ngày cho tất cả đơn hàng</p>
                 </div>
             </div>
-            <!-- single features -->
+            <!-- Single features -->
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{asset('assets/img/features/f-icon2.png')}}" alt="">
+                        <img src="{{ asset('assets/img/features/f-icon2.png') }}" alt="">
                     </div>
                     <h6>Chính sách đổi trả</h6>
                     <p>Đổi trả dễ dàng trong 30 ngày</p>
                 </div>
             </div>
-            <!-- single features -->
+            <!-- Single features -->
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{asset('assets/img/features/f-icon3.png')}}" alt="">
+                        <img src="{{ asset('assets/img/features/f-icon3.png') }}" alt="">
                     </div>
                     <h6>Hỗ trợ 24/7</h6>
                     <p>Luôn sẵn sàng hỗ trợ bạn bất cứ lúc nào</p>
                 </div>
             </div>
-            <!-- single features -->
+            <!-- Single features -->
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="single-features">
                     <div class="f-icon">
-                        <img src="{{asset('assets/img/features/f-icon4.png')}}" alt="">
+                        <img src="{{ asset('assets/img/features/f-icon4.png') }}" alt="">
                     </div>
                     <h6>Thanh toán an toàn</h6>
                     <p>Bảo mật tuyệt đối cho mọi giao dịch</p>
@@ -207,88 +249,46 @@
         </div>
     </div>
 </section>
-<!-- end features Area -->
+<!-- End features Area -->
 
 <!-- Start category Area -->
 <section class="category-area">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-7 col-md-12">
-                <div class="row">
-                    <div class="col-lg-8 col-md-8">
-                        <div class="single-deal">
-                            <div class="overlay"></div>
-                            <img class="img-fluid w-100" src="{{asset('assets/img/category/c1.jpg')}}" alt="">
-                            <a href="{{asset('assets/img/category/c1.jpg')}}" class="img-pop-up" target="_blank">
-                                {{-- <div class="deal-details">
-                                    <h6 class="deal-title">Giày thể thao</h6>
-                                </div> --}}
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                @foreach ($brands as $brand)
+                    <div class="swiper-slide" style="margin-bottom: 10px;">
+                        <div class="category-item">
+                            <a href="{{ route('products', ['brand' => $brand->id_brand]) }}">
+                                @if($brand->logo)
+                                    <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}" class="img-fluid">
+                                @else
+                                    <img src="{{ asset('assets/img/brands/default-logo.png') }}" alt="Default Logo" class="img-fluid">
+                                @endif
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4">
-                        <div class="single-deal">
-                            <div class="overlay"></div>
-                            <img class="img-fluid w-100" src="{{asset('assets/img/category/c2.jpg')}}" alt="">
-                            <a href="{{asset('assets/img/category/c2.jpg')}}" class="img-pop-up" target="_blank">
-                                {{-- <div class="deal-details">
-                                    <h6 class="deal-title">Giày thể thao</h6>
-                                </div> --}}
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4">
-                        <div class="single-deal">
-                            <div class="overlay"></div>
-                            <img class="img-fluid w-100" src="{{asset('assets/img/category/c3.jpg')}}" alt="">
-                            <a href="{{asset('assets/img/category/c3.jpg')}}" class="img-pop-up" target="_blank">
-                                {{-- <div class="deal-details">
-                                    <h6 class="deal-title">Sản phẩm dành cho cặp đôi</h6>
-                                </div> --}}
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-8 col-md-8">
-                        <div class="single-deal">
-                            <div class="overlay"></div>
-                            <img class="img-fluid w-100" src="{{asset('assets/img/category/c4.jpg')}}" alt="">
-                            <a href="{{asset('assets/img/category/c4.jpg')}}" class="img-pop-up" target="_blank">
-                                {{-- <div class="deal-details">
-                                    <h6 class="deal-title">Giày thể thao</h6>
-                                </div> --}}
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
-            <div class="col-lg-5 col-md-6">
-                <div class="single-deal">
-                    <div class="overlay"></div>
-                    <img class="img-fluid w-100" src="{{asset('assets/img/category/c5.jpg')}}" alt="">
-                    <a href="{{asset('assets/img/category/c5.jpg')}}" class="img-pop-up" target="_blank">
-                        {{-- <div class="deal-details">
-                            <h6 class="deal-title">Giày thể thao</h6>
-                        </div> --}}
-                    </a>
-                </div>
-            </div>
+            <br>
+            <div class="swiper-pagination" style=""></div>
+            <!-- Thêm nút điều hướng (tùy chọn) -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
         </div>
     </div>
 </section>
 <!-- End category Area -->
 
-<!-- start product Area -->
-<section class=" active-product-area section_gap">
-    <!-- single product slide -->
+<!-- Start product Area -->
+<section class="active-product-area section_gap">
     <div class="single-product-slider">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-6 text-center">
                     <div class="section-title">
                         <h1>Sản phẩm mới nhất</h1>
-                        <p>Khám phá những mẫu giày mới nhất, được thiết kế để mang lại sự thoải mái và phong cách
-                            tối ưu
-                            cho bạn.</p>
+                        <p>Khám phá những mẫu giày mới nhất, được thiết kế để mang lại sự thoải mái và phong cách tối ưu cho bạn.</p>
                     </div>
                 </div>
             </div>
@@ -442,10 +442,16 @@
         </div>
     </div>
 </section>
+<!-- End product Area -->
 @endsection
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+@endpush
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Banner Slider
         const slider = document.querySelector('.custom-banner-slider');
         const slides = document.querySelectorAll('.single-slide');
         const totalSlides = slides.length;
@@ -482,11 +488,38 @@
             clearInterval(interval);
         }
 
-        // Tự động chạy và dừng khi hover
         slider.parentElement.addEventListener('mouseenter', stopAutoSlide);
         slider.parentElement.addEventListener('mouseleave', startAutoSlide);
 
         startAutoSlide();
+
+        // Category Slider
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: 3,
+            spaceBetween: 30,
+            grabCursor: true, // Cho phép kéo bằng chuột
+            allowTouchMove: true, // Cho phép kéo trên cảm ứng
+            loop:true,
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            breakpoints: {
+                320: {
+                    slidesPerView: 1,
+                },
+                768: {
+                    slidesPerView: 2,
+                },
+                1024: {
+                    slidesPerView: 3,
+                },
+            },
+        });
     });
 </script>
 @endpush

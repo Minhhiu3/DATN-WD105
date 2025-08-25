@@ -554,7 +554,7 @@ function showCouponMessage(message, type = 'success') {
                     </ul>
 
     <div class="form-check my-3">
-        <input class="form-check-input" type="checkbox" id="agreePolicy" required oninvalid="this.setCustomValidity('Bạn cần đồng ý với chính sách mua hàng')" oninput="this.setCustomValidity('')">
+        <input class="form-check-input" type="checkbox" id="agreePolicy" name="terms" required oninvalid="this.setCustomValidity('Bạn cần đồng ý với chính sách mua hàng')" oninput="this.setCustomValidity('')">
         <label class="form-check-label" for="agreePolicy">
             Tôi đã đọc và đồng ý với 
             <a href="{{ route('polyc') }}" target="_blank">Chính sách mua hàng</a>
