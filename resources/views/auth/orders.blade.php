@@ -109,7 +109,7 @@
                                                                 thành</span>
                                                         @elseif ($status == 'canceled')
                                                             <span class="btn btn-sm btn-danger text-white">Đã Hủy</span>
-                                                           <p class="btn btn-sm btn-danger text-white  mt-2"> Lý do hủy: <span >{{$reason}}</span></p>
+                                                           <!-- <p class="btn btn-sm btn-danger text-white  mt-2"> Lý do hủy: <span >{{$reason}}</span></p> -->
                                                         @else
                                                             <span
                                                                 class="btn btn-sm btn-light text-black">{{ $status }}</span>

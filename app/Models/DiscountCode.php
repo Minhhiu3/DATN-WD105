@@ -18,9 +18,16 @@ class DiscountCode extends Model
         'type',
         'value',
         'min_order_value',
+        'max_order_value',
+        'quantity',
         'user_specific',
         'start_date',
         'end_date',
         'is_active',
+        'program_type',
     ];
+        public function userVouchers()
+{
+    return $this->hasMany(UserVoucher::class, 'discount_id', 'discount_id');
+}
 }

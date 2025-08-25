@@ -29,6 +29,7 @@ class ProductReview extends Model
         'rating',
         'comment',
         'image_url',
+        'status',
     ];
 
 

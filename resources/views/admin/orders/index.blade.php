@@ -267,7 +267,7 @@
                                             @endswitch
                                         </span>
                                        @if ($currentStatus == 'canceled')
-                                            <p class="btn btn-sm btn-danger text-white"> Lý do hủy: <span >{{$reason}}</span></p>
+                                            <!-- <p class="btn btn-sm btn-danger text-white"> Lý do hủy: <span >{{$reason}}</span></p> -->
                                               @endif
                                     @else
                                         {{-- Dropdown thay đổi trạng thái --}}
@@ -296,7 +296,7 @@
                                                             @break
 
                                                             @case('processing')
-                                                                🔵 Đẫ xác nhận
+                                                                🔵 Đã xác nhận
                                                             @break
 
                                                             @case('shipping')
@@ -357,7 +357,7 @@
                             </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center text-muted">Không có đơn hàng nào.</td>
+                                    <td colspan="9" class="text-center text-muted">Không có đơn hàng nào.</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -83,15 +83,20 @@
 <div class="card-clean">
     <h3><i class="bi bi-pencil-square"></i> Sửa Danh mục</h3>
 
-    <form action="{{ route('admin.categories.update', $category->id_category) }}" method="POST">
+    <form action="{{ route('admin.categories.update', $category->id_category) }}" method="POST" id="categori-form">
         @csrf
         @method('PUT')
         <div class="mb-3">
             <label for="name_category" class="form-label">Tên danh mục</label>
             <input type="text" name="name_category" id="name_category" 
-                   class="form-control" 
+                   class="form-control  @error('name_category') is-invalid @enderror" 
                    value="{{ old('name_category', $category->name_category) }}" 
-                   placeholder="Nhập tên danh mục" required>
+                   placeholder="Nhập tên danh mục" >
+            <div class="error-message text-danger">
+                @error('name_category')
+                    <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                @enderror
+            </div>
         </div>
         <div class="d-flex justify-content-between mt-4">
             <button type="submit" class="btn-primary-custom">
@@ -103,4 +108,102 @@
         </div>
     </form>
 </div>
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('categori-form');
+
+    const rules = {
+        name_category: { required: true, string: true, max: 255 },
+    };
+
+    const messages = {
+        name_category: {
+            required: 'Vui lòng nhập danh mục sản phẩm.',
+            string: 'Tên danh mục không hợp lệ.',
+            max: 'Tên danh mục không được vượt quá 255 ký tự.',
+        },
+    };
+
+    function getGroup(input){
+        return input.closest('.mb-3, .mb-4') || input.parentNode;
+    }
+
+    function showError(input, message) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        input.classList.add('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.add('border-danger');
+    }
+
+    function clearError(input) {
+        const group = getGroup(input);
+        const errorDiv = group.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = '';
+        input.classList.remove('is-invalid');
+        const fileBox = group.querySelector('.file-upload');
+        if (fileBox) fileBox.classList.remove('border-danger');
+    }
+
+    function validateField(input) {
+        const name = input.name.replace('[]', ''); // album[]
+        const rule = rules[name];
+        if (!rule) return true;
+
+        const isFile = input.type === 'file';
+        const value = isFile ? '' : (input.value || '').trim();
+
+        // required
+        if (rule.required) {
+            if (isFile) {
+                if (input.files.length === 0) {
+                    showError(input, messages[name].required);
+                    return false;
+                }
+            } else if (!value) {
+                showError(input, messages[name].required);
+                return false;
+            }
+        }
+    
+        // string
+        if (rule.string && !isFile && value && typeof value !== 'string') {
+            showError(input, messages[name].string);
+            return false;
+        }
+
+        // numeric/min/max
+        if (rule.numeric && value && isNaN(value)) {
+            showError(input, messages[name].numeric); return false;
+        }
+        if (rule.min && value && Number(value) < rule.min) {
+            showError(input, messages[name].min); return false;
+        }
+        if (rule.max && value && Number(value) > rule.max) {
+            showError(input, messages[name].max); return false;
+        }
+
+        clearError(input);
+        return true;
+    }
+
+    // Bắt sự kiện
+    const inputs = form.querySelectorAll('input');
+
+    inputs.forEach(input => {
+        const h = () => validateField(input);
+        input.addEventListener('input', h);
+        input.addEventListener('blur', h);
+        if (input.type === 'file') input.addEventListener('change', h);
+    });
+
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        inputs.forEach(input => { if (!validateField(input)) isValid = false; });
+        if (!isValid) e.preventDefault();
+    });
+});
+</script>
 @endsection

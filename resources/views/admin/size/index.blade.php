@@ -129,8 +129,8 @@
 
     <div class="card-body">
         @if (session('error'))
-            <div class="alert alert-danger-modern">
-                <i class="bi bi-x-circle-fill"></i> {{ session('error') }}
+            <div class="alert alert-danger">
+                {{ session('error') }}
             </div>
         @endif
 
@@ -168,9 +168,22 @@
                             </td>
                         </tr>
                     @endforeach
+                        <tr>
+                            <td colspan="2" class="text-center text-muted"></td>
+                            <td colspan="1" class="text-center text-muted">        
+                                <a href="{{ route('admin.sizes.trash') }}" class="btn ">
+                                        <i class="bi bi-trash3-fill"></i> Thùng Rác
+                                </a>
+                            </td>
+                        </tr>
                 </tbody>
             </table>
         </div>
+        @if ($sizes->hasPages())
+            <div class="d-flex justify-content-center mt-4">
+                {!! $sizes->links('pagination::bootstrap-5') !!}
+            </div>
+        @endif
     </div>
 </div>
 @endsection

@@ -141,7 +141,7 @@
 <div class="card card-modern">
     <div class="card-modern-header">
         <span><i class="bi bi-trash3-fill"></i> Thùng Rác - Biến Thể</span>
-        <a href="{{ route('admin.variants.index') }}" class="btn btn-add-modern">
+        <a href="{{ route('admin.variants.show', $product_id) }}" class="btn btn-add-modern">
             <i class="bi bi-arrow-left"></i> Quay lại danh sách
         </a>
     </div>
@@ -169,6 +169,22 @@
                                 <span>ID: {{ $color->id_color }}</span>
                             </div>
                         </div>
+                        <div class="color-info">
+                            <form action="{{ route('admin.variants.restore-color', $color->id_color) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button onclick="return confirm('Bạn có chắc muốn khôi phục?')" class="btn btn-action btn-restore">
+                                    <i class="bi bi-arrow-counterclockwise"></i> 
+                                </button>
+                            </form>
+                            <form action="{{ route('admin.variants.forceDelete-color', $color->id_color) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button onclick="return confirm('Bạn có chắc muốn xóa vĩnh viễn?')" class="btn btn-action btn-force-delete">
+                                    <i class="bi bi-trash3-fill"></i> 
+                                </button>
+                            </form>
+                        </div>
+                                                            
                     @else
                         <span class="text-danger">Màu sắc không tồn tại hoặc bị lỗi.</span>
                     @endif

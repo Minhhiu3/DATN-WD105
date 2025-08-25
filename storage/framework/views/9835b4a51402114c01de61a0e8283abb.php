@@ -20,10 +20,13 @@
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/ion.rangeSlider.skinFlat.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/magnific-popup.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/main.css')); ?>">
-    
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+
     <!-- Google Font: Roboto -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
         #mini-cart {
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -67,16 +70,34 @@
 
     
     <?php echo $__env->make('client.partials.footer_home', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+});
+
         <?php if(session('success')): ?>
         window.addEventListener('DOMContentLoaded', function () {
             Swal.fire({
                 title: 'Thành công!',
                 text: "<?php echo e(session('success')); ?>",
                 icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        });
+        <?php endif; ?>
+        <?php if(session('error')): ?>
+        window.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Thất bại!',
+                    html: <?php echo json_encode(nl2br(session('error'))); ?>,
+                icon: 'error',
                 confirmButtonText: 'OK'
             });
         });
@@ -94,7 +115,7 @@
     <script src="<?php echo e(asset('assets/js/countdown.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/jquery.magnific-popup.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/owl.carousel.min.js')); ?>"></script>
-
+    
     <!-- Google Maps -->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
     <script src="<?php echo e(asset('assets/js/gmaps.min.js')); ?>"></script>

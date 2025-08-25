@@ -160,9 +160,22 @@
                             <td colspan="5" class="text-center">Không có banner nào.</td>
                         </tr>
                     @endforelse
+                        <tr>
+                        <td colspan="4" class="text-center text-muted"></td>
+                        <td colspan="1" class="text-center text-muted">        
+                            <a href="{{ route('admin.banner.trash') }}" class="btn ">
+                                    <i class="bi bi-trash3-fill"></i> Thùng Rác
+                            </a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+        @if ($banners->hasPages())
+            <div class="d-flex justify-content-center mt-4">
+                {!! $banners->links('pagination::bootstrap-5') !!}
+            </div>
+        @endif
     </div>
 </div>
 @endsection

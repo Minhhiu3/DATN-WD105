@@ -32,4 +32,9 @@ class AdviceProduct extends Model
     {
         return $this->belongsTo(Product::class, 'product_id', 'id_product');
     }
+    public function adviceProduct()
+{
+    return $this->hasOne(AdviceProduct::class, 'product_id', 'product_id');
+}
+
 }

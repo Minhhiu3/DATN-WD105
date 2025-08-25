@@ -138,26 +138,29 @@
         @endif
 
         <!-- Form tìm kiếm và lọc -->
-        <form method="GET" action="{{ route('admin.products.trash') }}" class="mb-4">
+       <form method="GET" action="{{ route('admin.products.trash') }}" class="mb-4">
             <div class="row g-3">
-                <div class="col-md-4">
-                    <input type="text" name="keyword" class="form-control" placeholder="Tìm kiếm sản phẩm..." value="{{ request('keyword') }}">
+                <div class="col-12 col-md-7">
+                    <input type="text" name="keyword" class="form-control w-100" 
+                        placeholder="Tìm kiếm sản phẩm..." value="{{ request('keyword') }}">
                 </div>
-                <div class="col-md-4">
-                    <select name="category" class="form-select">
+                <div class="col-12 col-md-4">
+                    <select name="category" class="form-select form-control w-100">
                         <option value="">Tất cả danh mục</option>
                         @foreach ($categoris as $category)
-                            <option value="{{ $category->id_category }}" {{ request('category') == $category->id_category ? 'selected' : '' }}>
+                            <option value="{{ $category->id_category }}" 
+                                {{ request('category') == $category->id_category ? 'selected' : '' }}>
                                 {{ $category->name_category }}
                             </option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-add-modern">Lọc</button>
+                <div class="col-12 col-md-1 d-grid">
+                    <button type="submit" class="btn btn-add-modern w-100">Lọc</button>
                 </div>
             </div>
         </form>
+
 
         <div class="table-responsive">
             @forelse ($products as $product)

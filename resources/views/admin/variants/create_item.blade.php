@@ -199,28 +199,32 @@
             </div>
 
 
-            <form action="{{ route('admin.variants.store_item') }}" method="POST">
+           <form action="{{ route('admin.variants.store_item') }}" method="POST" id="variantForm">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $productId }}">
                 <input type="hidden" name="variants[0][color_id]" value="{{ $colorId }}">
+
                 <div id="variant-container">
-                    <div class="variant-item row g-3 align-items-end mb-3" >
+                    <div class="variant-item row g-3 align-items-end mb-3">
                         <div class="col-md-4">
                             <label class="fw-semibold">Kích Cỡ (Size):</label>
-                            <select name="variants[0][children][0][size_id]" class="form-control form-select" required>
+                            <select name="variants[0][children][0][size_id]" class="form-control form-select" >
                                 <option value="">-- Chọn Size --</option>
                                 @foreach ($sizes as $size)
                                     <option value="{{ $size->id_size }}">{{ $size->name }}</option>
                                 @endforeach
                             </select>
+                            <div class="error-message text-danger mt-1"></div>
                         </div>
                         <div class="col-md-3">
                             <label class="fw-semibold">Giá:</label>
-                            <input type="number" name="variants[0][children][0][price]" class="form-control" placeholder="VNĐ" required>
+                            <input type="number" name="variants[0][children][0][price]" class="form-control" placeholder="VNĐ" min="0">
+                            <div class="error-message text-danger mt-1"></div>
                         </div>
                         <div class="col-md-3">
                             <label class="fw-semibold">Số lượng:</label>
-                            <input type="number" name="variants[0][children][0][quantity]" class="form-control" placeholder="0" required>
+                            <input type="number" name="variants[0][children][0][quantity]" class="form-control" placeholder="0" min="0">
+                            <div class="error-message text-danger mt-1"></div>
                         </div>
                         <div class="col-md-2 ">
                             <button type="button" class="btn btn-remove-variant w-100">
@@ -229,8 +233,6 @@
                         </div>
                     </div>
                 </div>
-                
-
 
                 <div class="text-center">
                     <button type="button" id="add-variant" class="btn btn-add-variant mb-3">+ Thêm size khác</button>
@@ -247,9 +249,12 @@
     </div>
 </div>
 <script>
+document.addEventListener('DOMContentLoaded', function () {
     let variantIndex = 1;
-    const sizesOptions = @json($sizes); // từ Controller trả về danh sách Size
+    const sizesOptions = @json($sizes); // danh sách size từ Controller
+    const form = document.getElementById('variantForm');
 
+    // quản lý size
     function getUsedSizeIds() {
         const selects = document.querySelectorAll('select[name^="variants[0][children]"][name$="[size_id]"]');
         return Array.from(selects)
@@ -273,7 +278,6 @@
     function refreshAllSizeSelects() {
         const selects = document.querySelectorAll('select[name^="variants[0][children]"][name$="[size_id]"]');
         const used = getUsedSizeIds();
-
         selects.forEach(select => {
             const currentValue = select.value;
             select.innerHTML = createSizeOptionsHTML(used.filter(id => id !== currentValue), currentValue);
@@ -289,17 +293,20 @@
         row.innerHTML = `
             <div class="col-md-4">
                 <label class="fw-semibold">Kích Cỡ (Size):</label>
-                <select name="variants[0][children][${variantIndex}][size_id]" class="form-control form-select" required>
+                <select name="variants[0][children][${variantIndex}][size_id]" class="form-control form-select">
                     ${createSizeOptionsHTML(getUsedSizeIds())}
                 </select>
+                <div class="error-message text-danger"></div>
             </div>
             <div class="col-md-3">
                 <label class="fw-semibold">Giá:</label>
-                <input type="number" name="variants[0][children][${variantIndex}][price]" class="form-control" placeholder="VNĐ" required>
+                <input type="number" name="variants[0][children][${variantIndex}][price]" class="form-control" placeholder="VNĐ" min="0">
+                <div class="error-message text-danger"></div>
             </div>
             <div class="col-md-3">
                 <label class="fw-semibold">Số lượng:</label>
-                <input type="number" name="variants[0][children][${variantIndex}][quantity]" class="form-control" placeholder="0" required>
+                <input type="number" name="variants[0][children][${variantIndex}][quantity]" class="form-control" placeholder="0" min="0">
+                <div class="error-message text-danger"></div>
             </div>
             <div class="col-md-2">
                 <button type="button" class="btn btn-remove-variant w-100">
@@ -327,7 +334,73 @@
     });
 
     window.addEventListener('DOMContentLoaded', refreshAllSizeSelects);
+
+    // validate
+    const rules = {
+        size_id: { required: true },
+        price: { required: true, numeric: true, min: 1000 },
+        quantity: { required: true, numeric: true, min: 1 }
+    };
+
+    const messages = {
+        size_id: { required: 'Vui lòng chọn size.' },
+        price: {
+            required: 'Vui lòng nhập giá.',
+            numeric: 'Giá phải là số.',
+            min: 'Giá phải >= 1000.'
+        },
+        quantity: {
+            required: 'Vui lòng nhập số lượng.',
+            numeric: 'Số lượng phải là số.',
+            min: 'Số lượng tối thiểu là 1.'
+        }
+    };
+
+    function showError(input, message) {
+        const errorDiv = input.closest('.col-md-4, .col-md-3')?.querySelector('.error-message');
+        if (errorDiv) errorDiv.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        input.classList.add('is-invalid');
+    }
+
+    function clearError(input) {
+        const errorDiv = input.closest('.col-md-4, .col-md-3')?.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = '';
+        input.classList.remove('is-invalid');
+    }
+
+    function validateField(input) {
+        const name = input.name.match(/\[(\w+)\]$/)?.[1] || input.name;
+        const rule = rules[name];
+        if (!rule) return true;
+
+        const value = (input.value || '').trim();
+
+        if (rule.required && !value) {
+            showError(input, messages[name].required); return false;
+        }
+        if (rule.numeric && value && isNaN(value)) {
+            showError(input, messages[name].numeric); return false;
+        }
+        if (rule.min && value && Number(value) < rule.min) {
+            showError(input, messages[name].min); return false;
+        }
+
+        clearError(input);
+        return true;
+    }
+
+    form.addEventListener('input', e => validateField(e.target));
+    form.addEventListener('change', e => validateField(e.target));
+    form.addEventListener('submit', e => {
+        let isValid = true;
+        form.querySelectorAll('input, select').forEach(input => {
+            if (!validateField(input)) isValid = false;
+        });
+        if (!isValid) e.preventDefault();
+    });
+});
 </script>
+
 
 
 @endsection

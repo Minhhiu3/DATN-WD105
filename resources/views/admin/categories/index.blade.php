@@ -120,7 +120,7 @@
 
 <div class="card card-modern">
     <div class="card-modern-header">
-        <span><i class="fas fa-list"></i> Danh sách Danh mục</span>
+        <span><i class="fas fa-list"></i> Danh sách </span>
         <a href="{{ route('admin.categories.create') }}" class="btn btn-add-modern">
             <i class="fas fa-plus-circle"></i> Thêm mới
         </a>
@@ -169,9 +169,22 @@
                             </td>
                         </tr>
                     @endforeach
+                        <tr>
+                            <td colspan="2" class="text-center text-muted"></td>
+                            <td colspan="1" class="text-center text-muted">        
+                                <a href="{{ route('admin.categories.trash') }}" class="btn ">
+                                        <i class="bi bi-trash3-fill"></i> Thùng Rác
+                                </a>
+                            </td>
+                        </tr>
                 </tbody>
             </table>
         </div>
+        @if ($categories->hasPages())
+            <div class="d-flex justify-content-center mt-4">
+                {!! $categories->links('pagination::bootstrap-5') !!}
+            </div>
+        @endif
     </div>
 </div>
 @endsection

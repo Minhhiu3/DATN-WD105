@@ -8,7 +8,7 @@
                 <div class="col-first">
                     <h1>Giỏ hàng</h1>
                     <nav class="d-flex align-items-center">
-                        <a href="{{ route('home') }}">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="{{ route('home') }}">Trang thôi<span class="lnr lnr-arrow-right"></span></a>
                         <a href="{{ route('cart') }}">Giỏ hàng</a>
                     </nav>
                 </div>
@@ -19,159 +19,192 @@
 
     <!--================Cart Area =================-->
     <section class="cart_area">
-    <div class="container">
-        <div class="cart_inner">
-            @if($cartItems->count() > 0)
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Sản phẩm</th>
-                                <th scope="col">Giá</th>
-                                <th scope="col">Số lượng</th>
-                                <th scope="col">Tổng</th>
-                                <th scope="col">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-@foreach($cartItems as $item)
+        <div class="container">
+            <div class="cart_inner">
+                @if($cartItems->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col"><input type="checkbox" id="select-all" checked> Chọn tất cả</th>
+                                    <th scope="col">Sản phẩm</th>
+                                    <th scope="col">Giá</th>
+                                    <th scope="col">Số lượng</th>
+                                    <th scope="col">Tổng</th>
+                                    <th scope="col">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($cartItems as $item)
+                                    @php
+                                        $variant = $item->variant ?? $item['variant'] ?? null;
+                                        $product = $variant?->product ?? null;
+                                        $color = $variant?->color ?? null;
+                                        $size = $variant?->size ?? null;
+                                        $quantity = $item->quantity ?? $item['quantity'] ?? 1;
+                                        $price = $variant->price ?? 0;
+                                        // $total = $price * $quantity;
+                                        $img = $color->image ?? 'default.jpg';
+                                    @endphp
 
-    @php
-        $variant = $item->variant ?? $item['variant'] ?? null;
-        $product = $variant?->product ?? null;
-        $color = $variant?->color ?? null;
-        $size = $variant?->size ?? null;
-        $quantity = $item->quantity ?? $item['quantity'] ?? 1;
-        $price = $variant->price ?? 0;
-        $total = $price * $quantity;
-        $img = $color->image ?? 'k tim thay img';
+                                    @if ($variant && $product)
+                                        <tr data-variant-id="{{ $variant->id_variant }}">
+                                            <td>
+                                                <input type="checkbox" class="select-item" checked
+                                                       data-variant-id="{{ $variant->id_variant }}"
+                                                       onchange="updateCartTotals()">
+                                            </td>
+                                            <td>
+                                                <div class="media">
+                                                    <div class="d-flex">
+                                                        <img src="{{ asset('storage/' . $img) }}"
+                                                             alt="{{ $product->name_product }}"
+                                                             style="width: 100px; height: 100px; object-fit: cover;">
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <h4>{{ $product->name_product }}</h4>
+                                                        <p>Size: {{ $size->name ?? 'Không xác định' }}</p>
+                                                        <p>Màu: {{ $color->name_color ?? 'Không xác định' }}</p>
+                                                        <small class="text-muted">Còn lại: {{ $variant->quantity }} sản phẩm</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                               @php 
+    $sale = $item->variant->product->adviceProduct; 
+    $price = $item->variant->price; // Giá gốc variant
 
-    @endphp
+    $sale_price = $price; // Mặc định = giá gốc
 
-    @if ($variant && $product)
-        <tr data-variant-id="{{ $variant->id_variant }}">
-            <td>
-                <div class="media">
-                    <div class="d-flex">
-                        <img src="{{ asset('storage/' . ($img ?? 'default.jpg')) }}"
-                             alt="{{ $product->name_product }}"
-                             style="width: 100px; height: 100px; object-fit: cover;">
+    if (
+        $sale &&
+        $sale->status === "on" &&
+        !empty($sale->start_date) &&
+        !empty($sale->end_date) &&
+        now()->between(
+            \Carbon\Carbon::parse($sale->start_date)->startOfDay(),
+            \Carbon\Carbon::parse($sale->end_date)->endOfDay()
+        )
+    ) {
+        $discountAmount = ($sale->value / 100) * $price;
+        $sale_price = $price - $discountAmount;
+    }
+    $sale_price_total=$sale_price * $quantity;
+@endphp
+
+{{-- Giá sau khi giảm --}}
+<h5 class="item-price">{{ number_format($sale_price, 0, ',', '.') }} VNĐ</h5>
+
+{{-- Nếu có giảm giá thì hiển thị giá gốc bị gạch --}}
+@if ($sale_price < $price)
+    <h5 class="item-price" style="
+        text-decoration: line-through; 
+        color: #888; 
+        opacity: 0.7;
+    ">{{ number_format($price, 0, ',', '.') }} VNĐ</h5>
+@endif
+
+
+                                            </td>
+                                            <td>
+                                                <div class="product_count">
+                                                    <input type="number" name="qty" value="{{ $quantity }}" class="input-text qty"
+                                                           min="1" max="{{ $variant->quantity }}"
+                                                           data-variant-id="{{ $variant->id_variant }}"
+                                                           data-price="{{ $price }}"
+                                                           onchange="updateQuantity({{ $variant->id_variant }}, this.value, {{ $variant->quantity }})">
+                                                 
+                                                </div>
+                                                <div class="quantity-error text-danger" style="display: none; font-size: 12px;"></div>
+                                            </td>
+                                            <td><h5 class="item-total">{{ number_format($sale_price_total, 0, ',', '.') }} VNĐ</h5></td>
+                                            <td>
+                                                <button class="btn btn-danger btn-sm" onclick="removeFromCart({{ $variant->id_variant }})">
+                                                    <i class="fa fa-trash"></i> Xóa
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @else
+                                        <tr class="text-danger">
+                                            <td colspan="6">
+                                                Sản phẩm này không còn tồn tại hoặc đã bị xóa.
+                                                <button class="btn btn-sm btn-danger"
+                                                        onclick="removeFromCart({{ $item->variant_id ?? $item['variant_id'] ?? 0 }})">
+                                                    Xóa khỏi giỏ hàng
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="media-body">
-                        <h4>{{ $product->name_product }}</h4>
-                        <p>Size: {{ $size->name ?? 'Không xác định' }}</p>
-                        <p>Màu: {{ $color->name_color ?? 'Không xác định' }}</p>
-                        <small class="text-muted">Còn lại: {{ $variant->quantity }} sản phẩm</small>
-                    </div>
-                </div>
-            </td>
-            <td><h5 class="item-price">{{ number_format($price, 0, ',', '.') }} VNĐ</h5></td>
-            <td>
-                <div class="product_count">
-                    <input type="number" name="qty" value="{{ $quantity }}" class="input-text qty"
-                           min="1" max="{{ $variant->quantity }}"
-                           data-variant-id="{{ $variant->id_variant }}"
-                           data-price="{{ $price }}"
-                           onchange="updateQuantity({{ $variant->id_variant }}, this.value, {{ $variant->quantity }})">
-                    <button onclick="changeQuantity({{ $variant->id_variant }}, 1, {{ $variant->quantity }})"
-                            class="increase items-count" type="button">
-                        <i class="lnr lnr-chevron-up"></i>
-                    </button>
-                    <button onclick="changeQuantity({{ $variant->id_variant }}, -1, {{ $variant->quantity }})"
-                            class="reduced items-count" type="button">
-                        <i class="lnr lnr-chevron-down"></i>
-                    </button>
-                </div>
-                <div class="quantity-error text-danger" style="display: none; font-size: 12px;"></div>
-            </td>
-            <td><h5 class="item-total">{{ number_format($total, 0, ',', '.') }} VNĐ</h5></td>
-            <td>
-                <button class="btn btn-danger btn-sm" onclick="removeFromCart({{ $variant->id_variant }})">
-                    <i class="fa fa-trash"></i> Xóa
-                </button>
-            </td>
-        </tr>
-    @else
-        <tr class="text-danger">
-            <td colspan="5">
-                Sản phẩm này không còn tồn tại hoặc đã bị xóa.
-                <button class="btn btn-sm btn-danger"
-                        onclick="removeFromCart({{ $item->variant_id ?? $item['variant_id'] ?? 0 }})">
-                    Xóa khỏi giỏ hàng
-                </button>
-            </td>
-        </tr>
-    @endif
-@endforeach
 
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="row justify-content-end">
-                    <div class="col-lg-4">
-                        <div class="card_area">
-                            <div class="cart-summary">
-                                <h4>Tổng cộng giỏ hàng</h4>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Tổng tiền hàng:</span>
-                                    <span id="subtotal">
-                                        {{ number_format($cartItems->sum(function($item) {
+                    <div class="row justify-content-end">
+                        <div class="col-lg-4">
+                            <div class="card_area">
+                                <div class="cart-summary">
+                                    <h4>Tổng cộng giỏ hàng</h4>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Tổng tiền hàng:</span>
+                                        <span id="subtotal">
+                                            {{ number_format($cartItems->sum(function($item) {
+                                                $variant = $item->variant ?? $item['variant'] ?? null;
+                                                $product = $variant?->product ?? null;
+                                                if (!$variant || !$product) return 0;
+                                                $quantity = $item->quantity ?? $item['quantity'];
+                                                return $variant->price * $quantity;
+                                            }), 0, ',', '.') }} VNĐ
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Phí vận chuyển:</span>
+                                        <span id="shipping">30.000 VNĐ</span>
+                                    </div>
+                                    <hr>
+                                    @php
+                                        $totalAmount = $cartItems->sum(function($item) {
                                             $variant = $item->variant ?? $item['variant'] ?? null;
                                             $product = $variant?->product ?? null;
                                             if (!$variant || !$product) return 0;
                                             $quantity = $item->quantity ?? $item['quantity'];
                                             return $variant->price * $quantity;
-                                        }), 0, ',', '.') }} VNĐ
-                                    </span>
+                                        });
+                                        $shippingFee = 30000;
+                                        $finalTotal = $totalAmount + $shippingFee;
+                                    @endphp
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <strong>Tổng thanh toán:</strong>
+                                        <strong id="total">{{ number_format($finalTotal, 0, ',', '.') }} VNĐ</strong>
+                                    </div>
                                 </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Phí vận chuyển:</span>
-                                    <span id="shipping">30.000 VNĐ</span>
+                                <div class="checkout_btn_inner d-flex align-items-center">
+                                    <a class="primary-btn" href="{{ route('products') }}">Tiếp tục mua</a>
+                                    <form id="checkout-form" action="{{ route('account.checkout.cart') }}" method="POST" class="d-inline-block">
+                                        @csrf
+                                        <input type="hidden" name="selected_variants" id="selected-variants">
+                                        <button type="submit" class="btn primary-btn">Thanh toán</button>
+                                    </form>
                                 </div>
-                                <hr>
-                                @php
-                                    $totalAmount = $cartItems->sum(function($item) {
-                                        $variant = $item->variant ?? $item['variant'] ?? null;
-                                        $product = $variant?->product ?? null;
-                                        if (!$variant || !$product) return 0;
-                                        $quantity = $item->quantity ?? $item['quantity'];
-                                        return $variant->price * $quantity;
-                                    });
-
-                                    $shippingFee = 30000;
-                                    $finalTotal = $totalAmount + $shippingFee;
-                                @endphp
-                                <div class="d-flex justify-content-between mb-3">
-                                    <strong>Tổng thanh toán:</strong>
-                                    <strong id="total">{{ number_format($finalTotal, 0, ',', '.') }} VNĐ</strong>
+                                <div class="text-center mt-3">
+                                    <button class="btn btn-outline-danger btn-sm" onclick="clearCart()">
+                                        <i class="fa fa-trash"></i> Xóa tất cả
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="checkout_btn_inner d-flex align-items-center">
-                                <a class="primary-btn" href="{{ route('products') }}">Tiếp tục mua</a>
-                                <form action="{{ route('account.checkout.cart') }}" method="GET" class="d-inline-block">
-                                    <button type="submit" class="btn primary-btn">Thanh toán</button>
-                                </form>
-                            </div>
-                            <div class="text-center mt-3">
-                                <button class="btn btn-outline-danger btn-sm" onclick="clearCart()">
-                                    <i class="fa fa-trash"></i> Xóa tất cả
-                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
-            @else
-                <div class="text-center py-5">
-                    <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
-                    <h3>Giỏ hàng trống</h3>
-                    <p>Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
-                    <a href="{{ route('products') }}" class="primary-btn">Mua sắm ngay</a>
-                </div>
-            @endif
+                @else
+                    <div class="text-center py-5">
+                        <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
+                        <h3>Giỏ hàng trống</h3>
+                        <p>Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
+                        <a href="{{ route('products') }}" class="primary-btn">Mua sắm ngay</a>
+                    </div>
+                @endif
+            </div>
         </div>
-    </div>
-</section>
+    </section>
     <!--================End Cart Area =================-->
 @endsection
 
@@ -230,12 +263,22 @@ function updateQuantity(variantId, quantity, maxQuantity) {
             // Update cart totals
             updateCartTotals();
         } else {
-            alert(data.message || 'Có lỗi xảy ra khi cập nhật số lượng!');
+            // alert(data.message || 'Có lỗi xảy ra khi cập nhật số lượng!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: data.message || 'Có lỗi xảy ra khi cập nhật số lượng!'
+            });
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Có lỗi xảy ra khi cập nhật số lượng!');
+        // alert('Có lỗi xảy ra khi cập nhật số lượng!');
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Có lỗi xảy ra khi cập nhật số lượng!'
+        });
     })
     .finally(() => {
         input.disabled = false;
@@ -248,24 +291,26 @@ function updateItemTotal(variantId, quantity) {
     const totalElement = row.querySelector('.item-total');
 
     const price = parseFloat(priceElement.textContent.replace(/[^\d]/g, ''));
-
-    const total = (price * quantity);
+    const total = price * quantity;
 
     totalElement.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
 }
 
 function updateCartTotals() {
     let subtotal = 0;
-        const shippingFee = 30000;
+    const shippingFee = 30000;
     const rows = document.querySelectorAll('tbody tr');
 
     rows.forEach(row => {
-        const totalElement = row.querySelector('.item-total');
-        const total = parseFloat(totalElement.textContent.replace(/[^\d]/g, ''));
-        // const shippingFee =30000;
-        subtotal += total ;
+        const checkbox = row.querySelector('.select-item');
+        if (checkbox && checkbox.checked) {
+            const totalElement = row.querySelector('.item-total');
+            const total = parseFloat(totalElement.textContent.replace(/[^\d]/g, ''));
+            subtotal += total;
+        }
     });
- const finalTotal = subtotal + shippingFee;
+
+    const finalTotal = subtotal + shippingFee;
     document.getElementById('subtotal').textContent = subtotal.toLocaleString('vi-VN') + ' VNĐ';
     document.getElementById('total').textContent = finalTotal.toLocaleString('vi-VN') + ' VNĐ';
 }
@@ -311,36 +356,26 @@ function removeFromCart(variantId) {
                 }
             } else {
                 row.style.opacity = '1';
-                alert(data.message || 'Có lỗi xảy ra khi xóa sản phẩm!');
+                // alert(data.message || 'Có lỗi xảy ra khi xóa sản phẩm!');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: data.message || 'Có lỗi xảy ra khi xóa sản phẩm!'
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
             row.style.opacity = '1';
-            alert('Có lỗi xảy ra khi xóa sản phẩm!');
+            // alert('Có lỗi xảy ra khi xóa sản phẩm!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Có lỗi xảy ra khi xóa sản phẩm!'
+            });
         });
     }
 }
-
-// Add input validation on blur
-document.addEventListener('DOMContentLoaded', function() {
-    const quantityInputs = document.querySelectorAll('.qty');
-    quantityInputs.forEach(input => {
-        input.addEventListener('blur', function() {
-            const variantId = this.dataset.variantId;
-            const quantity = parseInt(this.value);
-            const maxQuantity = parseInt(this.max);
-
-            if (quantity < 1) {
-                this.value = 1;
-                updateQuantity(variantId, 1, maxQuantity);
-            } else if (quantity > maxQuantity) {
-                this.value = maxQuantity;
-                updateQuantity(variantId, maxQuantity, maxQuantity);
-            }
-        });
-    });
-});
 
 function clearCart() {
     if (confirm('Bạn có chắc muốn xóa tất cả sản phẩm khỏi giỏ hàng?')) {
@@ -356,15 +391,100 @@ function clearCart() {
             if (data.success) {
                 location.reload(); // Reload to show empty cart message
             } else {
-                alert(data.message || 'Có lỗi xảy ra khi xóa giỏ hàng!');
+                // alert(data.message || 'Có lỗi xảy ra khi xóa giỏ hàng!');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: data.message || 'Có lỗi xảy ra khi xóa giỏ hàng!'
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Có lỗi xảy ra khi xóa giỏ hàng!');
+            // alert('Có lỗi xảy ra khi xóa giỏ hàng!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Có lỗi xảy ra khi xóa giỏ hàng!'
+            });
         });
     }
 }
+
+// Xử lý checkbox "Chọn tất cả"
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAllCheckbox = document.getElementById('select-all');
+    const itemCheckboxes = document.querySelectorAll('.select-item');
+    const quantityInputs = document.querySelectorAll('.qty');
+    const checkoutForm = document.getElementById('checkout-form');
+
+    // Xử lý sự kiện checkbox "Chọn tất cả"
+    selectAllCheckbox.addEventListener('change', function() {
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateCartTotals();
+    });
+
+    // Xử lý sự kiện thay đổi checkbox từng sản phẩm
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            // Nếu bỏ chọn một checkbox, bỏ chọn "Chọn tất cả"
+            if (!this.checked) {
+                selectAllCheckbox.checked = false;
+            }
+            // Nếu tất cả checkbox được chọn, bật "Chọn tất cả"
+            const allChecked = Array.from(itemCheckboxes).every(checkbox => checkbox.checked);
+            if (allChecked) {
+                selectAllCheckbox.checked = true;
+            }
+            updateCartTotals();
+        });
+    });
+
+    // Xử lý sự kiện submit form thanh toán
+    checkoutForm.addEventListener('submit', function(e) {
+        const selectedVariants = [];
+        const checkboxes = document.querySelectorAll('.select-item:checked');
+
+        if (checkboxes.length === 0) {
+            e.preventDefault();
+            // alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Cảnh báo',
+                text: 'Vui lòng chọn ít nhất một sản phẩm để thanh toán!'
+            });
+            return;
+        }
+
+        checkboxes.forEach(checkbox => {
+            selectedVariants.push(checkbox.dataset.variantId);
+        });
+
+        document.getElementById('selected-variants').value = JSON.stringify(selectedVariants);
+    });
+
+    // Xử lý input số lượng khi blur
+    quantityInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            const variantId = this.dataset.variantId;
+            const quantity = parseInt(this.value);
+            const maxQuantity = parseInt(this.max);
+
+            if (quantity < 1) {
+                this.value = 1;
+                updateQuantity(variantId, 1, maxQuantity);
+            } else if (quantity > maxQuantity) {
+                this.value = maxQuantity;
+                updateQuantity(variantId, maxQuantity, maxQuantity);
+            }
+        });
+    });
+
+    // Cập nhật tổng tiền khi tải trang
+    updateCartTotals();
+});
 </script>
 @endpush
 
