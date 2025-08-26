@@ -6,6 +6,53 @@
 
 @section('content')
 <div class="row g-4">
+    {{-- Bộ lọc thống kê --}}
+    <div class="col-12">
+        <div class="card border-0 shadow rounded-lg mb-2">
+            <div class="card-body">
+                <form method="GET" action="{{ route('admin.dashboard') }}" class="row gy-2 gx-2 align-items-end">
+                    <div class="col-md-2">
+                        <label for="filter_type" class="form-label">Kiểu lọc</label>
+                        <select name="filter_type" id="filter_type" class="form-select">
+                            <option value="day" {{ (request('filter_type', $filterType ?? 'month') == 'day') ? 'selected' : '' }}>Theo ngày</option>
+                            <option value="month" {{ (request('filter_type', $filterType ?? 'month') == 'month') ? 'selected' : '' }}>Theo tháng</option>
+                            <option value="year" {{ (request('filter_type', $filterType ?? 'month') == 'year') ? 'selected' : '' }}>Theo năm</option>
+                            <option value="range" {{ (request('filter_type', $filterType ?? 'month') == 'range') ? 'selected' : '' }}>Khoảng ngày</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 filter-field filter-day" style="display:none;">
+                        <label for="date" class="form-label">Ngày</label>
+                        <input type="date" class="form-control" id="date" name="date" value="{{ request('date', now()->toDateString()) }}">
+                    </div>
+
+                    <div class="col-md-2 filter-field filter-month" style="display:none;">
+                        <label for="month" class="form-label">Tháng</label>
+                        <input type="month" class="form-control" id="month" name="month" value="{{ request('month', now()->format('Y-m')) }}">
+                    </div>
+
+                    <div class="col-md-2 filter-field filter-year" style="display:none;">
+                        <label for="year" class="form-label">Năm</label>
+                        <input type="number" min="2000" max="2100" class="form-control" id="year" name="year" value="{{ request('year', now()->year) }}">
+                    </div>
+
+                    <div class="col-md-3 filter-field filter-range" style="display:none;">
+                        <label for="start_date" class="form-label">Từ ngày</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date', now()->subDays(6)->toDateString()) }}">
+                    </div>
+                    <div class="col-md-3 filter-field filter-range" style="display:none;">
+                        <label for="end_date" class="form-label">Đến ngày</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ request('end_date', now()->toDateString()) }}">
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-1"></i> Lọc</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     {{-- Cards Section --}}
     <div class="col-md-3">
         <div class="card shadow border-0 rounded-lg p-3 d-flex flex-row align-items-center" style="background-color: #f0f4f8;">
@@ -284,6 +331,23 @@
             }
         });
     });
+
+    // Hiển thị các trường tương ứng với kiểu lọc
+    function updateFilterFields() {
+        const type = document.getElementById('filter_type').value;
+        document.querySelectorAll('.filter-field').forEach(el => el.style.display = 'none');
+        if (type === 'day') {
+            document.querySelectorAll('.filter-day').forEach(el => el.style.display = 'block');
+        } else if (type === 'month') {
+            document.querySelectorAll('.filter-month').forEach(el => el.style.display = 'block');
+        } else if (type === 'year') {
+            document.querySelectorAll('.filter-year').forEach(el => el.style.display = 'block');
+        } else if (type === 'range') {
+            document.querySelectorAll('.filter-range').forEach(el => el.style.display = 'block');
+        }
+    }
+    document.getElementById('filter_type')?.addEventListener('change', updateFilterFields);
+    document.addEventListener('DOMContentLoaded', updateFilterFields);
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -292,7 +356,7 @@
 <div class="card mt-4 border-0 shadow rounded-lg">
     <div class="card-body">
         <h5 class="fw-bold text-center mb-3">
-            📊 Biểu đồ Doanh thu tháng {{ now()->format('m/Y') }}
+            📊 Biểu đồ Doanh thu {{ $filterTitle ?? ('tháng ' . now()->format('m/Y')) }}
         </h5>
         <div style=" margin: 0 auto;">
             <canvas id="revenueChart" height="300"></canvas>
@@ -305,8 +369,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     const ctx = document.getElementById('revenueChart').getContext('2d');
     const chartData = @json($chartData);
-
-    const chartLabels = chartData.map((_, index) => `Ngày ${index + 1}`);
+    const serverLabels = @json($chartLabels ?? []);
+    const labels = (serverLabels && serverLabels.length) ? serverLabels : chartData.map((_, index) => `Ngày ${index + 1}`);
 
     // Gradient đẹp
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
@@ -316,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: chartLabels, // Ngày trong tháng hiện tại
+            labels: labels,
             datasets: [{
                 label: 'Doanh thu (₫)',
                 data: chartData,
@@ -334,7 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
             plugins: {
                 tooltip: {
                     callbacks: {
-                        label: context => `Doanh thu: ${context.raw.toLocaleString('vi-VN')} ₫`
+                        label: context => `Doanh thu: ${Number(context.raw).toLocaleString('vi-VN')} ₫`
                     },
                     backgroundColor: '#111827',
                     titleColor: '#fff',
@@ -348,13 +412,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        callback: value => value.toLocaleString('vi-VN') + ' ₫'
+                        callback: value => Number(value).toLocaleString('vi-VN') + ' ₫'
                     }
                 },
                 x: {
                     title: {
                         display: true,
-                        text: 'Ngày trong tháng',
+                        text: '{{ $xAxisTitle ?? 'Ngày trong tháng' }}',
                         font: { size: 14, weight: 'bold' },
                         color: '#6b7280'
                     }

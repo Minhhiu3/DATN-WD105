@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
 
         $today = Carbon::createFromFormat('d/m/Y', now()->format('d/m/Y'));
@@ -38,18 +38,67 @@ class DashboardController extends Controller
             ->where('status', 'completed') // chỉ tính đơn đã hoàn thành
             ->sum('total_amount');
 
-        // Top 5 khách hàng mua nhiều nhất (theo tổng tiền)
+        // ============== Bộ lọc thời gian ==============
+        $filterType = $request->query('filter_type', 'month'); // day | month | year | range
+        $startDate = null;
+        $endDate = null;
+        $filterTitle = '';
+        $xAxisTitle = '';
+
+        switch ($filterType) {
+            case 'day':
+                $dateStr = $request->query('date', now()->toDateString());
+                $day = Carbon::parse($dateStr);
+                $startDate = $day->copy()->startOfDay();
+                $endDate = $day->copy()->endOfDay();
+                $filterTitle = 'Ngày ' . $day->format('d/m/Y');
+                $xAxisTitle = 'Giờ trong ngày';
+                break;
+            case 'year':
+                $year = (int) $request->query('year', now()->year);
+                $startDate = Carbon::create($year, 1, 1, 0, 0, 0);
+                $endDate = Carbon::create($year, 12, 31, 23, 59, 59);
+                $filterTitle = 'Năm ' . $year;
+                $xAxisTitle = 'Tháng trong năm';
+                break;
+            case 'range':
+                $startStr = $request->query('start_date');
+                $endStr = $request->query('end_date');
+                if (!$startStr || !$endStr) {
+                    $startDate = now()->copy()->subDays(6)->startOfDay();
+                    $endDate = now()->copy()->endOfDay();
+                } else {
+                    $startDate = Carbon::parse($startStr)->startOfDay();
+                    $endDate = Carbon::parse($endStr)->endOfDay();
+                }
+                $filterTitle = 'Từ ' . $startDate->format('d/m/Y') . ' đến ' . $endDate->format('d/m/Y');
+                $xAxisTitle = 'Ngày';
+                break;
+            case 'month':
+            default:
+                $monthStr = $request->query('month', now()->format('Y-m'));
+                $month = Carbon::createFromFormat('Y-m', $monthStr);
+                $startDate = $month->copy()->startOfMonth();
+                $endDate = $month->copy()->endOfMonth();
+                $filterTitle = 'Tháng ' . $month->format('m/Y');
+                $xAxisTitle = 'Ngày trong tháng';
+                break;
+        }
+
+        // Top 5 khách hàng mua nhiều nhất (theo tổng tiền) trong khoảng lọc
         $topCustomers = User::join('orders', 'users.id_user', '=', 'orders.user_id')
-            ->select('users.id_user', 'users.name', DB::raw('SUM(orders.total_amount) as total_spent'))
-            ->groupBy('users.id_user', 'users.name')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->select('users.id_user', 'users.name', 'users.email', DB::raw('SUM(orders.total_amount) as total_spent'))
+            ->groupBy('users.id_user', 'users.name', 'users.email')
             ->orderByDesc('total_spent')
             ->limit(5)
             ->get();
 
-        // Top 5 sản phẩm bán chạy (theo số lượng)
+        // Top 5 sản phẩm bán chạy (theo số lượng) trong khoảng lọc
         $topProducts = DB::table('order_items')
             ->join('variant', 'order_items.variant_id', '=', 'variant.id_variant')
             ->join('products', 'variant.product_id', '=', 'products.id_product')
+            ->whereBetween('order_items.created_at', [$startDate, $endDate])
             ->select(
                 'products.id_product',
                 'products.name_product',
@@ -61,33 +110,69 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Top 5 đơn hàng mới nhất
+        // Top 5 đơn hàng mới nhất trong khoảng lọc
         $latestOrders = Order::with('user')
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->orderByDesc('created_at')
             ->limit(5)
             ->get();
 
-        $currentMonth = Carbon::now()->month; // Tháng hiện tại
-        $currentYear = Carbon::now()->year;   // Năm hiện tại
-
-        // Lấy doanh thu từng ngày trong tháng hiện tại
-        $dailyRevenueMonth = DB::table('orders')
-            ->select(
-                DB::raw('DAY(created_at) as day'),
-                DB::raw('SUM(total_amount) as revenue')
-            )
-            ->whereMonth('created_at', $currentMonth)
-            ->whereYear('created_at', $currentYear)
-            ->where('status', 'completed') // chỉ tính đơn hoàn thành
-            ->groupBy('day')
-            ->orderBy('day')
-            ->pluck('revenue', 'day'); // key = day, value = revenue
-
-        // Tạo mảng đủ số ngày trong tháng, nếu ngày nào không có đơn thì gán = 0
-        $daysInMonth = Carbon::now()->daysInMonth;
+        // Biểu đồ doanh thu theo khoảng lọc
+        $chartLabels = [];
         $chartData = [];
-        for ($i = 1; $i <= $daysInMonth; $i++) {
-            $chartData[] = $dailyRevenueMonth[$i] ?? 0;
+
+        if ($filterType === 'year') {
+            $revenueByMonth = DB::table('orders')
+                ->select(
+                    DB::raw('MONTH(created_at) as month'),
+                    DB::raw('SUM(total_amount) as revenue')
+                )
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->where('status', 'completed')
+                ->groupBy('month')
+                ->orderBy('month')
+                ->pluck('revenue', 'month');
+
+            for ($m = 1; $m <= 12; $m++) {
+                $chartLabels[] = 'Tháng ' . $m;
+                $chartData[] = (float) ($revenueByMonth[$m] ?? 0);
+            }
+        } elseif ($filterType === 'day') {
+            $revenueByHour = DB::table('orders')
+                ->select(
+                    DB::raw('HOUR(created_at) as hour'),
+                    DB::raw('SUM(total_amount) as revenue')
+                )
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->where('status', 'completed')
+                ->groupBy('hour')
+                ->orderBy('hour')
+                ->pluck('revenue', 'hour');
+
+            for ($h = 0; $h < 24; $h++) {
+                $chartLabels[] = 'Giờ ' . $h;
+                $chartData[] = (float) ($revenueByHour[$h] ?? 0);
+            }
+        } else {
+            // month hoặc range -> theo ngày
+            $revenueByDay = DB::table('orders')
+                ->select(
+                    DB::raw('DATE(created_at) as day'),
+                    DB::raw('SUM(total_amount) as revenue')
+                )
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->where('status', 'completed')
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->orderBy('day')
+                ->pluck('revenue', 'day');
+
+            $cursor = $startDate->copy();
+            while ($cursor->lte($endDate)) {
+                $chartLabels[] = $cursor->format('d/m');
+                $key = $cursor->format('Y-m-d');
+                $chartData[] = (float) ($revenueByDay[$key] ?? 0);
+                $cursor->addDay();
+            }
         }
 
         return view('admin.dashboard', compact(
@@ -100,7 +185,11 @@ class DashboardController extends Controller
             'topCustomers',
             'topProducts',
             'latestOrders',
-            'chartData'
+            'chartData',
+            'chartLabels',
+            'filterType',
+            'filterTitle',
+            'xAxisTitle'
         ));
     }
 }
