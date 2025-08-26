@@ -264,12 +264,14 @@ public function vnpayReturnBuyNow(Request $request)
                    ->decrement('quantity', $pending['quantity']);
 
             DB::commit();
+            // dd($order);
             session()->forget('pending_order_buy_now');
             // Gửi mail
 $emailSend = $pending['email'];
 Mail::to($emailSend)->send(new OrderPlacedMail($order));
 Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $emailSend);
-
+Log::info('VNPay Return All', $request->all());
+Log::info('Session Pending', session('pending_order_buy_now'));
             return redirect()->route('home')->with('success', 'Thanh toán thành công');
         } catch (\Exception $e) {
             DB::rollBack();

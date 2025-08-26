@@ -84,8 +84,14 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> SU_20
 		</div>
 	</footer>
 	<!-- End footer Area -->
-	<script src="https://app.tudongchat.com/js/chatbox.js"></script>
-<script>
-  const tudong_chatbox = new TuDongChat('xd_va1ciSPsXFr292bRME')
-  tudong_chatbox.initial()
+	<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/68a9a38a7ebce119279838b3/1j3badlcf';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
 </script>

@@ -160,7 +160,7 @@
                                 <div class="row align-items-center d-flex">
                                     <div class="col-lg-5 col-md-6">
                                         <div class="banner-content">
-                                            <h1>{{ $banner->name ?? 'Bộ sưu tập mới!' }}</h1>
+                                            <h1 class="-ml-3">{{ $banner->name ?? 'Bộ sưu tập mới!' }}</h1>
                                             @if ($banner->product_id)
                                                 <a href="{{ route('client.product.show', $banner->product_id) }}" class="primary-btn">
                                                     Xem sản phẩm
@@ -170,7 +170,7 @@
                                     </div>
                                     <div class="col-lg-7 col-md-6 d-flex justify-content-center">
                                         <div class="banner-img">
-                                            <img class="img-fluid" src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->name }}">
+                                            <img class="img-fluid" src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->name }} ">
                                         </div>
                                     </div>
                                 </div>
@@ -307,7 +307,7 @@
                                 @php
                                     $minPrice = $product->variants->min('price');
                                     $maxPrice = $product->variants->max('price');
-                        
+
                                     $sale = $product->advice_product;
                                     $now = \Carbon\Carbon::now();
                                     $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
@@ -390,7 +390,7 @@
                                 @php
                                     $minPrice = $product->variants->min('price');
                                     $maxPrice = $product->variants->max('price');
-                        
+
                                     $sale = $product->advice_product;
                                     $now = \Carbon\Carbon::now();
                                     $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
