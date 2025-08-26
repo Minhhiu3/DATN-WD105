@@ -13,43 +13,105 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Determine filter type and date range
+        $filterType = $request->query('filter_type'); // day|month|year|range|null
+        $start = null;
+        $end = null;
+        $isFiltered = false;
 
-        $today = Carbon::createFromFormat('d/m/Y', now()->format('d/m/Y'));
+        switch ($filterType) {
+            case 'day':
+                $date = $request->query('date');
+                if ($date) {
+                    $start = Carbon::parse($date)->startOfDay();
+                    $end = Carbon::parse($date)->endOfDay();
+                    $isFiltered = true;
+                }
+                break;
+            case 'month':
+                $month = $request->query('month'); // expects YYYY-MM
+                if ($month) {
+                    $start = Carbon::parse($month . '-01')->startOfMonth();
+                    $end = Carbon::parse($month . '-01')->endOfMonth();
+                    $isFiltered = true;
+                }
+                break;
+            case 'year':
+                $year = (int) $request->query('year');
+                if ($year) {
+                    $start = Carbon::create($year, 1, 1)->startOfYear();
+                    $end = Carbon::create($year, 12, 31)->endOfYear();
+                    $isFiltered = true;
+                }
+                break;
+            case 'range':
+                $startDate = $request->query('start_date');
+                $endDate = $request->query('end_date');
+                if ($startDate && $endDate) {
+                    $start = Carbon::parse($startDate)->startOfDay();
+                    $end = Carbon::parse($endDate)->endOfDay();
+                    if ($start->lte($end)) {
+                        $isFiltered = true;
+                    }
+                }
+                break;
+        }
 
-        // Tổng doanh thu hôm nay
-        $dailyRevenue = Order::whereDate('created_at', $today)->sum('total_amount');
+        // Defaults when no filter provided: today and current month
+        if (!$isFiltered) {
+            $start = Carbon::now()->startOfMonth();
+            $end = Carbon::now()->endOfMonth();
+        }
 
-        // Tổng số sản phẩm
-        $totalProducts = Product::count();
+        // Build a human readable period label
+        if ($filterType === 'day' && $isFiltered) {
+            $periodLabel = 'ngày ' . $start->format('d/m/Y');
+        } elseif ($filterType === 'month' && $isFiltered) {
+            $periodLabel = 'tháng ' . $start->format('m/Y');
+        } elseif ($filterType === 'year' && $isFiltered) {
+            $periodLabel = 'năm ' . $start->format('Y');
+        } elseif ($filterType === 'range' && $isFiltered) {
+            $periodLabel = $start->format('d/m/Y') . ' - ' . $end->format('d/m/Y');
+        } else {
+            $periodLabel = 'tháng ' . now()->format('m/Y');
+        }
 
-        // Tổng số người dùng
-        $totalUsers = User::count();
-
-        // Tổng đơn hôm nay
-        $totalOrdersToday = Order::whereDate('created_at', $today)->count();
-
-        // Tổng khách hàng đăng ký hôm nay
-        $newUsersToday = User::whereDate('created_at', $today)->count();
-         // Tổng doanh thu tháng hiện tại
-        $monthlyRevenue = Order::whereYear('created_at', Carbon::now()->year)
-            ->whereMonth('created_at', Carbon::now()->month)
-            ->where('status', 'completed') // chỉ tính đơn đã hoàn thành
+        // Revenue (within selected period)
+        $periodRevenue = Order::whereBetween('created_at', [$start, $end])
+            ->where('status', 'completed')
             ->sum('total_amount');
 
-        // Top 5 khách hàng mua nhiều nhất (theo tổng tiền)
+        // Total products (overall)
+        $totalProducts = Product::count();
+
+        // Total users (overall)
+        $totalUsers = User::count();
+
+        // Orders count within period
+        $ordersInPeriod = Order::whereBetween('created_at', [$start, $end])->count();
+
+        // New users within period
+        $newUsersInPeriod = User::whereBetween('created_at', [$start, $end])->count();
+
+        // Top 5 customers by spend within period
         $topCustomers = User::join('orders', 'users.id_user', '=', 'orders.user_id')
-            ->select('users.id_user', 'users.name', DB::raw('SUM(orders.total_amount) as total_spent'))
-            ->groupBy('users.id_user', 'users.name')
+            ->whereBetween('orders.created_at', [$start, $end])
+            ->where('orders.status', 'completed')
+            ->select('users.id_user', 'users.name', 'users.email', DB::raw('SUM(orders.total_amount) as total_spent'))
+            ->groupBy('users.id_user', 'users.name', 'users.email')
             ->orderByDesc('total_spent')
             ->limit(5)
             ->get();
 
-        // Top 5 sản phẩm bán chạy (theo số lượng)
+        // Top 5 products by quantity sold within period (based on orders in range)
         $topProducts = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id_order')
             ->join('variant', 'order_items.variant_id', '=', 'variant.id_variant')
             ->join('products', 'variant.product_id', '=', 'products.id_product')
+            ->whereBetween('orders.created_at', [$start, $end])
+            ->where('orders.status', 'completed')
             ->select(
                 'products.id_product',
                 'products.name_product',
@@ -61,46 +123,49 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Top 5 đơn hàng mới nhất
+        // Latest 5 orders within period
         $latestOrders = Order::with('user')
+            ->whereBetween('created_at', [$start, $end])
             ->orderByDesc('created_at')
             ->limit(5)
             ->get();
 
-        $currentMonth = Carbon::now()->month; // Tháng hiện tại
-        $currentYear = Carbon::now()->year;   // Năm hiện tại
-
-        // Lấy doanh thu từng ngày trong tháng hiện tại
-        $dailyRevenueMonth = DB::table('orders')
+        // Build daily revenue series for the selected period
+        $daysDiff = $start->copy()->startOfDay()->diffInDays($end->copy()->startOfDay()) + 1;
+        $dailyRevenueMap = DB::table('orders')
             ->select(
-                DB::raw('DAY(created_at) as day'),
+                DB::raw('DATE(created_at) as day_date'),
                 DB::raw('SUM(total_amount) as revenue')
             )
-            ->whereMonth('created_at', $currentMonth)
-            ->whereYear('created_at', $currentYear)
-            ->where('status', 'completed') // chỉ tính đơn hoàn thành
-            ->groupBy('day')
-            ->orderBy('day')
-            ->pluck('revenue', 'day'); // key = day, value = revenue
+            ->whereBetween('created_at', [$start, $end])
+            ->where('status', 'completed')
+            ->groupBy('day_date')
+            ->orderBy('day_date')
+            ->pluck('revenue', 'day_date');
 
-        // Tạo mảng đủ số ngày trong tháng, nếu ngày nào không có đơn thì gán = 0
-        $daysInMonth = Carbon::now()->daysInMonth;
+        $chartLabels = [];
         $chartData = [];
-        for ($i = 1; $i <= $daysInMonth; $i++) {
-            $chartData[] = $dailyRevenueMonth[$i] ?? 0;
+        for ($i = 0; $i < $daysDiff; $i++) {
+            $date = $start->copy()->addDays($i);
+            $key = $date->toDateString();
+            $chartLabels[] = $date->format('d/m');
+            $chartData[] = (int) ($dailyRevenueMap[$key] ?? 0);
         }
 
         return view('admin.dashboard', compact(
-            'dailyRevenue',
+            'periodRevenue',
             'totalProducts',
-            'monthlyRevenue',
             'totalUsers',
-            'totalOrdersToday',
-            'newUsersToday',
+            'ordersInPeriod',
+            'newUsersInPeriod',
             'topCustomers',
             'topProducts',
             'latestOrders',
-            'chartData'
+            'chartData',
+            'chartLabels',
+            'periodLabel',
+            'isFiltered',
+            'filterType'
         ));
     }
 }

@@ -6,12 +6,58 @@
 
 @section('content')
 <div class="row g-4">
+    {{-- Filter Section --}}
+    <div class="col-12">
+        <div class="card border-0 shadow rounded-lg">
+            <div class="card-body">
+                <form method="GET" action="{{ route('admin.dashboard') }}" class="row g-3 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label">Chọn kiểu lọc</label>
+                        <select name="filter_type" class="form-select">
+                            <option value="" {{ (request('filter_type') === null || request('filter_type') === '') ? 'selected' : '' }}>Tháng hiện tại</option>
+                            <option value="day" {{ request('filter_type') === 'day' ? 'selected' : '' }}>Theo ngày</option>
+                            <option value="month" {{ request('filter_type') === 'month' ? 'selected' : '' }}>Theo tháng</option>
+                            <option value="year" {{ request('filter_type') === 'year' ? 'selected' : '' }}>Theo năm</option>
+                            <option value="range" {{ request('filter_type') === 'range' ? 'selected' : '' }}>Khoảng ngày</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 filter-input filter-day" style="display:none;">
+                        <label class="form-label">Ngày</label>
+                        <input type="date" name="date" value="{{ request('date') }}" class="form-control">
+                    </div>
+                    <div class="col-md-2 filter-input filter-month" style="display:none;">
+                        <label class="form-label">Tháng</label>
+                        <input type="month" name="month" value="{{ request('month') }}" class="form-control">
+                    </div>
+                    <div class="col-md-2 filter-input filter-year" style="display:none;">
+                        <label class="form-label">Năm</label>
+                        <input type="number" min="2000" max="2100" name="year" value="{{ request('year') ?? now()->year }}" class="form-control">
+                    </div>
+                    <div class="col-md-3 filter-input filter-range" style="display:none;">
+                        <label class="form-label">Từ ngày</label>
+                        <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control">
+                    </div>
+                    <div class="col-md-3 filter-input filter-range" style="display:none;">
+                        <label class="form-label">Đến ngày</label>
+                        <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-1"></i> Lọc</button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary w-100">Đặt lại</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     {{-- Cards Section --}}
     <div class="col-md-3">
         <div class="card shadow border-0 rounded-lg p-3 d-flex flex-row align-items-center" style="background-color: #f0f4f8;">
             <div class="flex-grow-1">
-                <h6 class="text-muted mb-1">Doanh thu hôm nay</h6>
-                <h3 class="fw-bold text-dark">{{ number_format($dailyRevenue) }} ₫</h3>
+                <h6 class="text-muted mb-1">Doanh thu {{ isset($periodLabel) ? $periodLabel : 'hôm nay' }}</h6>
+                <h3 class="fw-bold text-dark">{{ number_format($periodRevenue ?? $dailyRevenue ?? 0) }} ₫</h3>
             </div>
             <div class="ms-3">
                 <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #36A2EB;">
@@ -52,8 +98,8 @@
     <div class="col-md-3">
         <div class="card shadow border-0 rounded-lg p-3 d-flex flex-row align-items-center" style="background-color: #fff9e6;">
             <div class="flex-grow-1">
-                <h6 class="text-muted mb-1">Đơn hàng hôm nay</h6>
-                <h3 class="fw-bold text-dark">{{ $totalOrdersToday }}</h3>
+                <h6 class="text-muted mb-1">Đơn hàng {{ isset($periodLabel) ? $periodLabel : 'hôm nay' }}</h6>
+                <h3 class="fw-bold text-dark">{{ $ordersInPeriod ?? $totalOrdersToday ?? 0 }}</h3>
             </div>
             <div class="ms-3">
                 <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #ffc107;">
@@ -63,12 +109,12 @@
         </div>
     </div>
 
-    {{-- Tổng doanh thu tháng --}}
+    {{-- Tổng doanh thu tháng hoặc giai đoạn --}}
     <div class="col-md-3">
         <div class="card shadow border-0 rounded-lg p-3 d-flex flex-row align-items-center" style="background-color: #e8f0fe;">
             <div class="flex-grow-1">
-                <h6 class="text-muted mb-1">Doanh thu tháng</h6>
-                <h3 class="fw-bold text-dark">{{ number_format($monthlyRevenue) }} ₫</h3>
+                <h6 class="text-muted mb-1">Doanh thu {{ isset($periodLabel) ? $periodLabel : 'tháng' }}</h6>
+                <h3 class="fw-bold text-dark">{{ number_format($periodRevenue ?? $monthlyRevenue ?? 0) }} ₫</h3>
             </div>
             <div class="ms-3">
                 <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #6f42c1;">
@@ -87,10 +133,10 @@
         <div class="card-header bg-primary text-white rounded-top-lg d-flex justify-content-between align-items-center">
             <span><i class="fas fa-crown me-2"></i> Top 5 Khách hàng</span>
             <button class="btn btn-sm btn-icon-only text-white toggle-btn"
-                    type="button" 
-                    data-bs-toggle="collapse" 
-                    data-bs-target="#collapseCustomers" 
-                    aria-expanded="true" 
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseCustomers"
+                    aria-expanded="true"
                     aria-controls="collapseCustomers">
                 <i class="fas fa-minus"></i>
             </button>
@@ -101,7 +147,7 @@
                     @forelse ($topCustomers as $customer)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong class="text-primary">#{{ $loop->iteration }}</strong> 
+                                <strong class="text-primary">#{{ $loop->iteration }}</strong>
                                 {{ $customer->name }}<br>
                                 <small class="text-muted">{{ $customer->email }}</small>
                             </div>
@@ -124,10 +170,10 @@
         <div class="card-header bg-success text-white rounded-top-lg d-flex justify-content-between align-items-center">
             <span><i class="fas fa-fire me-2"></i> Top 5 Sản phẩm</span>
             <button class="btn btn-sm btn-icon-only text-white toggle-btn"
-                    type="button" 
-                    data-bs-toggle="collapse" 
-                    data-bs-target="#collapseProducts" 
-                    aria-expanded="true" 
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseProducts"
+                    aria-expanded="true"
                     aria-controls="collapseProducts">
                 <i class="fas fa-minus"></i>
             </button>
@@ -138,7 +184,7 @@
                     @forelse ($topProducts as $product)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong class="text-success">#{{ $loop->iteration }}</strong> 
+                                <strong class="text-success">#{{ $loop->iteration }}</strong>
                                 {{ $product->name_product }}
                             </div>
                             <span class="badge bg-primary">{{ $product->total_sold }} đã bán</span>
@@ -159,10 +205,10 @@
         <div class="card-header bg-warning text-dark rounded-top-lg d-flex justify-content-between align-items-center">
             <span><i class="fas fa-clock me-2"></i> Đơn hàng mới</span>
             <button class="btn btn-sm btn-icon-only text-dark toggle-btn"
-                    type="button" 
-                    data-bs-toggle="collapse" 
-                    data-bs-target="#collapseOrders" 
-                    aria-expanded="true" 
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseOrders"
+                    aria-expanded="true"
                     aria-controls="collapseOrders">
                 <i class="fas fa-minus"></i>
             </button>
@@ -284,6 +330,23 @@
             }
         });
     });
+
+    // Toggle filter inputs based on filter_type
+    function toggleFilterInputs() {
+        const type = document.querySelector("select[name='filter_type']").value;
+        document.querySelectorAll('.filter-input').forEach(el => el.style.display = 'none');
+        if (type === 'day') {
+            document.querySelectorAll('.filter-day').forEach(el => el.style.display = 'block');
+        } else if (type === 'month') {
+            document.querySelectorAll('.filter-month').forEach(el => el.style.display = 'block');
+        } else if (type === 'year') {
+            document.querySelectorAll('.filter-year').forEach(el => el.style.display = 'block');
+        } else if (type === 'range') {
+            document.querySelectorAll('.filter-range').forEach(el => el.style.display = 'block');
+        }
+    }
+    document.addEventListener('DOMContentLoaded', toggleFilterInputs);
+    document.querySelector("select[name='filter_type']").addEventListener('change', toggleFilterInputs);
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -292,7 +355,7 @@
 <div class="card mt-4 border-0 shadow rounded-lg">
     <div class="card-body">
         <h5 class="fw-bold text-center mb-3">
-            📊 Biểu đồ Doanh thu tháng {{ now()->format('m/Y') }}
+            📊 Biểu đồ Doanh thu {{ isset($periodLabel) ? $periodLabel : ("tháng " . now()->format('m/Y')) }}
         </h5>
         <div style=" margin: 0 auto;">
             <canvas id="revenueChart" height="300"></canvas>
@@ -304,9 +367,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const ctx = document.getElementById('revenueChart').getContext('2d');
-    const chartData = @json($chartData);
-
-    const chartLabels = chartData.map((_, index) => `Ngày ${index + 1}`);
+    const chartData = @json($chartData ?? []);
+    const chartLabels = @json($chartLabels ?? (isset($chartData) ? collect($chartData)->keys() : []));
 
     // Gradient đẹp
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
@@ -316,14 +378,14 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: chartLabels, // Ngày trong tháng hiện tại
+            labels: chartLabels,
             datasets: [{
                 label: 'Doanh thu (₫)',
                 data: chartData,
                 borderColor: '#36A2EB',
                 backgroundColor: gradient,
                 fill: true,
-                tension: 0.4, // Mượt hơn
+                tension: 0.4,
                 pointBackgroundColor: '#36A2EB',
                 pointRadius: 4,
                 pointHoverRadius: 6
@@ -334,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
             plugins: {
                 tooltip: {
                     callbacks: {
-                        label: context => `Doanh thu: ${context.raw.toLocaleString('vi-VN')} ₫`
+                        label: context => `Doanh thu: ${Number(context.raw || 0).toLocaleString('vi-VN')} ₫`
                     },
                     backgroundColor: '#111827',
                     titleColor: '#fff',
@@ -348,13 +410,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        callback: value => value.toLocaleString('vi-VN') + ' ₫'
+                        callback: value => Number(value).toLocaleString('vi-VN') + ' ₫'
                     }
                 },
                 x: {
                     title: {
                         display: true,
-                        text: 'Ngày trong tháng',
+                        text: 'Mốc thời gian',
                         font: { size: 14, weight: 'bold' },
                         color: '#6b7280'
                     }
