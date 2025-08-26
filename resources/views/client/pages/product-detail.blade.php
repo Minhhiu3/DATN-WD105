@@ -110,6 +110,9 @@
                         <ul class="list" style="{{ $product->variants->sum('quantity') == 0 ? 'opacity: 1; pointer-events: auto;' : '' }}">
                             <li><a href="{{ route('products', ['category' => $product->category->id_category]) }}"><span>Danh mục</span>: {{ $product->category->name_category ?? 'Chưa phân loại' }}</a></li>
                         </ul>
+                        <ul class="list" style="{{ $product->variants->sum('quantity') == 0 ? 'opacity: 1; pointer-events: auto;' : '' }}">
+                            <li><a href="{{ route('products', ['brand' => $product->brand->id_brand]) }}"><span>Thương hiệu</span>: {{ $product->brand->name ?? 'Chưa phân loại' }}</a></li>
+                        </ul>
 
                         <p>{{ $product->description }}</p>
 

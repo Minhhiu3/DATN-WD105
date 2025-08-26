@@ -22,16 +22,18 @@
             <div class="col-xl-3 col-lg-4 col-md-5">
                 <div class="sidebar-categories">
                     <div class="head">Danh mục sản phẩm</div>
-                    <ul class="main-categories">
+                    {{-- <ul class="main-categories"> --}}
+                          <div class="d-flex flex-wrap gap-2">
                         @foreach ($categories as $category)
-                            <li class="main-nav-list">
+                            {{-- <li class="main-nav-list"> --}}
                                 <a href="{{ route('products', ['category' => $category->id_category]) }}"
-                                   class="{{ request('category') == $category->id_category ? 'active' : '' }}">
+                                   class=" btn btn-outline-dark size-square {{ request('category') == $category->id_category ? 'active' : '' }}">
                                     {{ $category->name_category }}
                                 </a>
-                            </li>
+                            {{-- </li> --}}
                         @endforeach
-                    </ul>
+                          </div>
+                    {{-- </ul> --}}
                 </div>
                 <div class="sidebar-filter mt-50">
                     <div class="top-filter-head">Lọc</div>
@@ -58,7 +60,7 @@
                         </div>
                     </div>
                     <div class="common-filter mb-5">
-                        <div class="head">Price</div>
+                        <div class="head">Giá</div>
                         <form method="get" action="{{ route('products.filterByPrice') }}">
                             <select name="price_range" onchange="this.form.submit()" id="">
                                 <option value="">--Chọn Mức Giá--</option>
@@ -145,9 +147,11 @@
                                 </figure>
                             </div>
                         @empty
-                            <div class="col-12">
-                                <p class="text-muted">Không tìm thấy sản phẩm nào phù hợp.</p>
-                            </div>
+                           <div class="row">
+        <div class="col-12 text-center my-5">
+            <p class="text-muted">Không tìm thấy sản phẩm nào phù hợp.</p>
+        </div>
+    </div>
                         @endforelse
                     </div>
                     @if ($products->hasPages())
