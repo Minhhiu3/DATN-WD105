@@ -5,6 +5,22 @@
 @section('page_title', 'Dashboard')
 
 @section('content')
+<div class="mb-4">
+    <form method="GET" action="{{ route('admin.dashboard') }}" class="row g-3 align-items-end">
+        <div class="col-auto">
+            <label for="start_date" class="form-label mb-0">Từ ngày</label>
+            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
+        </div>
+        <div class="col-auto">
+            <label for="end_date" class="form-label mb-0">Đến ngày</label>
+            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Lọc</button>
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
+</div>
 <div class="row g-4">
     {{-- Cards Section --}}
     <div class="col-md-3">
@@ -305,8 +321,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     const ctx = document.getElementById('revenueChart').getContext('2d');
     const chartData = @json($chartData);
-
-    const chartLabels = chartData.map((_, index) => `Ngày ${index + 1}`);
+    const chartLabels = @json($chartLabels ?? []);
+    const finalLabels = chartLabels.length ? chartLabels : chartData.map((_, index) => `Ngày ${index + 1}`);
 
     // Gradient đẹp
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
@@ -316,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: chartLabels, // Ngày trong tháng hiện tại
+            labels: finalLabels, // sử dụng nhãn theo lọc hoặc mặc định
             datasets: [{
                 label: 'Doanh thu (₫)',
                 data: chartData,
