@@ -72,7 +72,7 @@
             </div>
             <div class="col-xl-9 col-lg-8 col-md-7">
                 <!-- Start Filter Bar -->
-                <div class="filter-bar d-flex flex-wrap align-items-center">
+                {{-- <div class="filter-bar d-flex flex-wrap align-items-center">
                     <div class="sorting mr-auto">
                         <form method="get" action="{{ route('products') }}" class="d-inline">
                             <input type="text" name="keyword" value="{{ $keyword ?? '' }}" placeholder="Tìm kiếm sản phẩm..."
@@ -80,7 +80,7 @@
                             <button type="submit" class="btn btn-outline-secondary">Tìm</button>
                         </form>
                     </div>
-                </div>
+                </div> --}}
                 <!-- End Filter Bar -->
                 <!-- Start Best Seller -->
                 <section class="lattest-product-area pb-40 category-list">

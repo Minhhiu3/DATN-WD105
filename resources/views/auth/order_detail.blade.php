@@ -76,7 +76,7 @@
                          alt="{{ $item->product_name }}"
                          style="width: 70px; height: 80px; object-fit: cover;">
                 </td>
-                <td>{{ $item->product_name ?? 'Không có sản phẩm' }}</td>
+                <td>{{ $item->product_name ?? 'Không có tên sản phẩm' }}</td>
                 <td>{{ $item->size_name }}</td>
                 <td>{{ $item->color_name }}</td>
                 <td>{{ $item->quantity }}</td>

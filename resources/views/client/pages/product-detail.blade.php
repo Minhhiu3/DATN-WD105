@@ -37,7 +37,7 @@
                         <div style="display: flex">
                             @if ($product->variants->sum('quantity') == 0)
                                 <div class="alert alert-danger mt-3 text-center" style="
-                                  opacity: 0.9 !important; 
+                                  opacity: 0.9 !important;
                                   background: linear-gradient(135deg,rgb(234, 162, 162),rgb(210, 108, 108));
                                   font-weight: 600;
                                   font-size: 1.1rem;
@@ -277,6 +277,7 @@
                                                 <i class="fa fa-star" data-value="{{ $i }}" {{ $product->variants->sum('quantity') == 0 ? 'style="pointer-events: none;"' : '' }}></i>
                                             @endfor
                                         </div>
+                                        {{-- <input type="text" name="rating" id="selectedRating" value="0" > --}}
                                     </div>
 
                                     <div class="form-group">
@@ -533,7 +534,7 @@
                 }
             @endif
 
-            document.addEventListener("DOMContentLoaded", function() {
+            // document.addEventListener("DOMContentLoaded", function() {
                 const stars = document.querySelectorAll("#starRating i");
                 const ratingInput = document.getElementById("selectedRating");
 
@@ -552,7 +553,7 @@
                         @endif
                     });
                 });
-            });
+            // });
         });
 
         function addToCart(event) {
