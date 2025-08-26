@@ -87,10 +87,10 @@
         <div class="card-header bg-primary text-white rounded-top-lg d-flex justify-content-between align-items-center">
             <span><i class="fas fa-crown me-2"></i> Top 5 Khách hàng</span>
             <button class="btn btn-sm btn-icon-only text-white toggle-btn"
-                    type="button" 
-                    data-bs-toggle="collapse" 
-                    data-bs-target="#collapseCustomers" 
-                    aria-expanded="true" 
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseCustomers"
+                    aria-expanded="true"
                     aria-controls="collapseCustomers">
                 <i class="fas fa-minus"></i>
             </button>
@@ -101,7 +101,7 @@
                     @forelse ($topCustomers as $customer)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong class="text-primary">#{{ $loop->iteration }}</strong> 
+                                <strong class="text-primary">#{{ $loop->iteration }}</strong>
                                 {{ $customer->name }}<br>
                                 <small class="text-muted">{{ $customer->email }}</small>
                             </div>
@@ -124,10 +124,10 @@
         <div class="card-header bg-success text-white rounded-top-lg d-flex justify-content-between align-items-center">
             <span><i class="fas fa-fire me-2"></i> Top 5 Sản phẩm</span>
             <button class="btn btn-sm btn-icon-only text-white toggle-btn"
-                    type="button" 
-                    data-bs-toggle="collapse" 
-                    data-bs-target="#collapseProducts" 
-                    aria-expanded="true" 
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseProducts"
+                    aria-expanded="true"
                     aria-controls="collapseProducts">
                 <i class="fas fa-minus"></i>
             </button>
@@ -138,7 +138,7 @@
                     @forelse ($topProducts as $product)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong class="text-success">#{{ $loop->iteration }}</strong> 
+                                <strong class="text-success">#{{ $loop->iteration }}</strong>
                                 {{ $product->name_product }}
                             </div>
                             <span class="badge bg-primary">{{ $product->total_sold }} đã bán</span>
@@ -159,10 +159,10 @@
         <div class="card-header bg-warning text-dark rounded-top-lg d-flex justify-content-between align-items-center">
             <span><i class="fas fa-clock me-2"></i> Đơn hàng mới</span>
             <button class="btn btn-sm btn-icon-only text-dark toggle-btn"
-                    type="button" 
-                    data-bs-toggle="collapse" 
-                    data-bs-target="#collapseOrders" 
-                    aria-expanded="true" 
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseOrders"
+                    aria-expanded="true"
                     aria-controls="collapseOrders">
                 <i class="fas fa-minus"></i>
             </button>
@@ -291,11 +291,16 @@
 {{-- Chart Section --}}
 <div class="card mt-4 border-0 shadow rounded-lg">
     <div class="card-body">
+           <form method="GET" action="{{ route('admin.dashboard') }}" class="mb-3 d-flex align-items-center gap-2">
+            <label for="month" class="fw-bold"></label>
+            <input type="month" name="month" id="month" value="{{ $month }}" class="form-control" style="max-width: 200px;">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-eye"></i>Xem</button>
+        </form>
         <h5 class="fw-bold text-center mb-3">
-            📊 Biểu đồ Doanh thu tháng {{ now()->format('m/Y') }}
+             Biểu đồ Doanh thu tháng {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('m/Y') }}
         </h5>
         <div style=" margin: 0 auto;">
-            <canvas id="revenueChart" height="300"></canvas>
+            <canvas id="revenueChart" height="100"></canvas>
         </div>
     </div>
 </div>
@@ -354,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 x: {
                     title: {
                         display: true,
-                        text: 'Ngày trong tháng',
+                        text: ' Tổng Doanh Thu: {{ number_format($monthlyRevenue) }} ₫',
                         font: { size: 14, weight: 'bold' },
                         color: '#6b7280'
                     }
