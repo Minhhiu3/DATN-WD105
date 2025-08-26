@@ -19,6 +19,7 @@ use App\Mail\OrderSuccessMail;
 use App\Mail\OrderPlacedMail;
 use App\Models\UserVoucher;
 use App\Models\AdviceProduct;
+use App\Models\Product;
 use Carbon\Carbon;
 class CheckoutController extends Controller
 {
@@ -96,7 +97,15 @@ class CheckoutController extends Controller
             DB::beginTransaction();
             // Khóa dòng variant để tránh race condition
             $variant = Variant::where('id_variant', $request->variant_id)->lockForUpdate()->first();
+$product = Product::withTrashed()->find($request->product_id);
 
+if (!$product || $product->trashed()) {
+    DB::rollBack();
+
+    return redirect()
+        ->route('products')
+        ->with('error', 'Sản phẩm đã ngừng bán hoặc bị xóa.');
+}
             if (!$variant || $variant->trashed() || !$variant->product || $variant->product->trashed()) {
                 DB::rollBack();
                 return redirect()->back()->withErrors('Sản phẩm đã bị xóa hoặc ngừng bán.');
