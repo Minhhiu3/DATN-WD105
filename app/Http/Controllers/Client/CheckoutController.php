@@ -445,7 +445,7 @@ return view('client.pages.checkout_cart', compact(
             // 'district'        => 'required|string',
             'ward'            => 'required|string',
             'address'         => 'required|string',
-        // 'terms'           => 'accepted', // Kiem cha bam check box chua 
+        // 'terms'           => 'accepted', // Kiem cha bam check box chua
         ],[
             'payment_method.in' => 'Phương thức thanh toán không hợp lệ.',
             'province.required' => 'Vui lòng chọn Tỉnh/Thành phố.',
@@ -484,6 +484,7 @@ return view('client.pages.checkout_cart', compact(
             $valueSale = $adviceProduct->value;
             $pricevariantSale = $variant->price * (1- ($valueSale/100));
             $subtotal = $pricevariantSale * $item->quantity;
+
 
         }else {
             $subtotal = $variant->price * $item->quantity;
@@ -535,7 +536,7 @@ Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $em
                     'variant_id' => $item->variant_id,
                     'quantity'   => $item->quantity,
                     'product_name' => $item->variant->product->name_product,
-                    'price'        => $item->variant->price,
+                    'price'        => $pricevariantSale,
                     'color_name'   => $item->variant->color->name_color ?? null,
                     'size_name'    => $item->variant->size->name ?? null,
                     'image'        => $item->variant->color->image ?? null,

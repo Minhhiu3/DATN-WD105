@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Mail\OrderPlacedMail;
-
+use App\Models\AdviceProduct;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
@@ -108,12 +109,26 @@ public function vnpayReturn(Request $request)
                 ->get();
 
             foreach ($cartItems as $item) {
+                  $variant = $item->variant;
+                  $adviceProduct = AdviceProduct::where('product_id', $variant->product_id)
+            ->whereDate('start_date', '<=', Carbon::today())
+            ->whereDate('end_date', '>=', Carbon::today())
+            ->first();
+              if ($adviceProduct && $adviceProduct->status == "on" ) {
+            $valueSale = $adviceProduct->value;
+            $pricevariantSale = $variant->price * (1- ($valueSale/100));
+
+
+        }else {
+            $pricevariantSale = $variant->price;
+
+        }
               OrderItem::create([
                     'order_id'   => $order->id_order,
                     'variant_id' => $item->variant_id,
                     'quantity'   => $item->quantity,
                     'product_name' => $item->variant->product->name_product,
-                    'price'      => $item->variant->price,
+                    'price'      =>  $pricevariantSale,
                     'color_name' => $item->variant->color->name_color ?? 'Không có màu',
                     'size_name'  => $item->variant->size->name ?? 'Không có size',
                     'image'      => $item->variant->color->image ?? 'khong-co-hinh-anh.jpg',
@@ -238,7 +253,7 @@ public function vnpayReturnBuyNow(Request $request)
                 'variant_id' => $pending['variant_id'],
                 'quantity'   => $pending['quantity'],
                 'product_name' => $pending['product_name'],
-                'price'      => $pending['price'],
+                'price'      => $pending['pricevariantSale'],
                 'color_name' => $pending['color_name'] ?? 'Không có màu',
                 'size_name'  => $pending['size_name'] ?? 'Không có size',
                 'image'      => $pending['image'] ?? 'khong-co-hinh-anh.jpg',
