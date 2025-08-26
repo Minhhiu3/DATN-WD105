@@ -60,7 +60,7 @@
                         </div>
                     </div>
                     <div class="common-filter mb-5">
-                        <div class="head">Price</div>
+                        <div class="head">Giá</div>
                         <form method="get" action="{{ route('products.filterByPrice') }}">
                             <select name="price_range" onchange="this.form.submit()" id="">
                                 <option value="">--Chọn Mức Giá--</option>
