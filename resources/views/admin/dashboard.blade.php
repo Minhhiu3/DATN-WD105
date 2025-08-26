@@ -5,12 +5,36 @@
 @section('page_title', 'Dashboard')
 
 @section('content')
+<div class="d-flex align-items-end justify-content-between mb-3">
+    <div>
+        <h4 class="mb-0">Bảng điều khiển</h4>
+        <small class="text-muted">
+            @if(isset($startDate) && isset($endDate))
+                Khoảng thời gian: {{ $startDate->format('d/m/Y') }} - {{ $endDate->format('d/m/Y') }}
+            @endif
+        </small>
+    </div>
+    <form method="GET" action="{{ route('admin.dashboard') }}" class="d-flex gap-2 align-items-end">
+        <div>
+            <label for="start_date" class="form-label mb-1">Từ ngày</label>
+            <input type="date" id="start_date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date', isset($startDate) ? $startDate->format('Y-m-d') : now()->startOfMonth()->format('Y-m-d')) }}">
+        </div>
+        <div>
+            <label for="end_date" class="form-label mb-1">Đến ngày</label>
+            <input type="date" id="end_date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date', isset($endDate) ? $endDate->format('Y-m-d') : now()->format('Y-m-d')) }}">
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm">Mặc định</a>
+        </div>
+    </form>
+</div>
 <div class="row g-4">
     {{-- Cards Section --}}
     <div class="col-md-3">
         <div class="card shadow border-0 rounded-lg p-3 d-flex flex-row align-items-center" style="background-color: #f0f4f8;">
             <div class="flex-grow-1">
-                <h6 class="text-muted mb-1">Doanh thu hôm nay</h6>
+                <h6 class="text-muted mb-1">Doanh thu @if(!empty($isFiltered) && $isFiltered) (lọc) @else hôm nay @endif</h6>
                 <h3 class="fw-bold text-dark">{{ number_format($dailyRevenue) }} ₫</h3>
             </div>
             <div class="ms-3">
@@ -52,7 +76,7 @@
     <div class="col-md-3">
         <div class="card shadow border-0 rounded-lg p-3 d-flex flex-row align-items-center" style="background-color: #fff9e6;">
             <div class="flex-grow-1">
-                <h6 class="text-muted mb-1">Đơn hàng hôm nay</h6>
+                <h6 class="text-muted mb-1">Đơn hàng @if(!empty($isFiltered) && $isFiltered) (lọc) @else hôm nay @endif</h6>
                 <h3 class="fw-bold text-dark">{{ $totalOrdersToday }}</h3>
             </div>
             <div class="ms-3">
@@ -292,7 +316,7 @@
 <div class="card mt-4 border-0 shadow rounded-lg">
     <div class="card-body">
         <h5 class="fw-bold text-center mb-3">
-            📊 Biểu đồ Doanh thu tháng {{ now()->format('m/Y') }}
+            📊 Biểu đồ Doanh thu @if(!empty($isFiltered) && $isFiltered) theo khoảng {{ $startDate->format('d/m/Y') }} - {{ $endDate->format('d/m/Y') }} @else tháng {{ now()->format('m/Y') }} @endif
         </h5>
         <div style=" margin: 0 auto;">
             <canvas id="revenueChart" height="300"></canvas>
@@ -305,8 +329,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const ctx = document.getElementById('revenueChart').getContext('2d');
     const chartData = @json($chartData);
-
-    const chartLabels = chartData.map((_, index) => `Ngày ${index + 1}`);
+    const chartLabels = @json(isset($chartLabels) ? $chartLabels : (isset($chartData) ? array_map(fn($i)=>'Ngày '+($i+1), range(0, count($chartData)-1)) : []));
 
     // Gradient đẹp
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
@@ -316,14 +339,14 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: chartLabels, // Ngày trong tháng hiện tại
+            labels: chartLabels,
             datasets: [{
                 label: 'Doanh thu (₫)',
                 data: chartData,
                 borderColor: '#36A2EB',
                 backgroundColor: gradient,
                 fill: true,
-                tension: 0.4, // Mượt hơn
+                tension: 0.4,
                 pointBackgroundColor: '#36A2EB',
                 pointRadius: 4,
                 pointHoverRadius: 6
@@ -354,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 x: {
                     title: {
                         display: true,
-                        text: 'Ngày trong tháng',
+                        text: 'Ngày',
                         font: { size: 14, weight: 'bold' },
                         color: '#6b7280'
                     }

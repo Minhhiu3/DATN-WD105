@@ -13,43 +13,54 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Determine selected date range (defaults to current month)
+        $startDateInput = $request->query('start_date');
+        $endDateInput = $request->query('end_date');
 
-        $today = Carbon::createFromFormat('d/m/Y', now()->format('d/m/Y'));
+        $defaultStart = Carbon::now()->startOfMonth();
+        $defaultEnd = Carbon::now()->endOfDay();
 
-        // Tổng doanh thu hôm nay
-        $dailyRevenue = Order::whereDate('created_at', $today)->sum('total_amount');
+        $startDate = $startDateInput ? Carbon::parse($startDateInput)->startOfDay() : $defaultStart;
+        $endDate = $endDateInput ? Carbon::parse($endDateInput)->endOfDay() : $defaultEnd;
 
-        // Tổng số sản phẩm
+        if ($endDate->lt($startDate)) {
+            [$startDate, $endDate] = [$endDate->copy()->startOfDay(), $startDate->copy()->endOfDay()];
+        }
+
+        $isFiltered = $startDate->ne($defaultStart) || $endDate->ne($defaultEnd);
+
+        // Metrics within selected range
+        $revenueInRange = Order::whereBetween('created_at', [$startDate, $endDate])->sum('total_amount');
+
         $totalProducts = Product::count();
-
-        // Tổng số người dùng
         $totalUsers = User::count();
 
-        // Tổng đơn hôm nay
-        $totalOrdersToday = Order::whereDate('created_at', $today)->count();
+        $ordersInRange = Order::whereBetween('created_at', [$startDate, $endDate])->count();
+        $newUsersInRange = User::whereBetween('created_at', [$startDate, $endDate])->count();
 
-        // Tổng khách hàng đăng ký hôm nay
-        $newUsersToday = User::whereDate('created_at', $today)->count();
-         // Tổng doanh thu tháng hiện tại
-        $monthlyRevenue = Order::whereYear('created_at', Carbon::now()->year)
-            ->whereMonth('created_at', Carbon::now()->month)
-            ->where('status', 'completed') // chỉ tính đơn đã hoàn thành
+        // Monthly revenue for the month of end date (still shown as a separate card)
+        $monthlyRevenue = Order::whereYear('created_at', $endDate->year)
+            ->whereMonth('created_at', $endDate->month)
+            ->where('status', 'completed')
             ->sum('total_amount');
 
-        // Top 5 khách hàng mua nhiều nhất (theo tổng tiền)
+        // Top 5 customers by total spent within range
         $topCustomers = User::join('orders', 'users.id_user', '=', 'orders.user_id')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
             ->select('users.id_user', 'users.name', DB::raw('SUM(orders.total_amount) as total_spent'))
             ->groupBy('users.id_user', 'users.name')
             ->orderByDesc('total_spent')
             ->limit(5)
             ->get();
 
-        // Top 5 sản phẩm bán chạy (theo số lượng)
+        // Top 5 best-selling products within range (by quantity)
         $topProducts = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id_order')
             ->join('variant', 'order_items.variant_id', '=', 'variant.id_variant')
             ->join('products', 'variant.product_id', '=', 'products.id_product')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
             ->select(
                 'products.id_product',
                 'products.name_product',
@@ -61,34 +72,39 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Top 5 đơn hàng mới nhất
+        // Latest 5 orders within range
         $latestOrders = Order::with('user')
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->orderByDesc('created_at')
             ->limit(5)
             ->get();
 
-        $currentMonth = Carbon::now()->month; // Tháng hiện tại
-        $currentYear = Carbon::now()->year;   // Năm hiện tại
-
-        // Lấy doanh thu từng ngày trong tháng hiện tại
-        $dailyRevenueMonth = DB::table('orders')
+        // Build daily revenue data within selected range
+        $dailyRevenueRows = DB::table('orders')
             ->select(
-                DB::raw('DAY(created_at) as day'),
+                DB::raw('DATE(created_at) as day'),
                 DB::raw('SUM(total_amount) as revenue')
             )
-            ->whereMonth('created_at', $currentMonth)
-            ->whereYear('created_at', $currentYear)
-            ->where('status', 'completed') // chỉ tính đơn hoàn thành
-            ->groupBy('day')
-            ->orderBy('day')
-            ->pluck('revenue', 'day'); // key = day, value = revenue
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'completed')
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->orderBy(DB::raw('DATE(created_at)'))
+            ->pluck('revenue', 'day');
 
-        // Tạo mảng đủ số ngày trong tháng, nếu ngày nào không có đơn thì gán = 0
-        $daysInMonth = Carbon::now()->daysInMonth;
         $chartData = [];
-        for ($i = 1; $i <= $daysInMonth; $i++) {
-            $chartData[] = $dailyRevenueMonth[$i] ?? 0;
+        $chartLabels = [];
+        $cursor = $startDate->copy()->startOfDay();
+        while ($cursor->lte($endDate)) {
+            $key = $cursor->toDateString();
+            $chartData[] = (float) ($dailyRevenueRows[$key] ?? 0);
+            $chartLabels[] = $cursor->format('d/m');
+            $cursor->addDay();
         }
+
+        // Map to original view variable names for minimal blade changes
+        $dailyRevenue = $revenueInRange;
+        $totalOrdersToday = $ordersInRange;
+        $newUsersToday = $newUsersInRange;
 
         return view('admin.dashboard', compact(
             'dailyRevenue',
@@ -100,7 +116,11 @@ class DashboardController extends Controller
             'topCustomers',
             'topProducts',
             'latestOrders',
-            'chartData'
+            'chartData',
+            'chartLabels',
+            'startDate',
+            'endDate',
+            'isFiltered'
         ));
     }
 }
