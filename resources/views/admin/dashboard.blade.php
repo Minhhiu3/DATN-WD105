@@ -5,12 +5,87 @@
 @section('page_title', 'Dashboard')
 
 @section('content')
+{{-- Date Filter Section --}}
+<div class="card border-0 shadow rounded-lg mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ route('admin.dashboard') }}" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="start_date" class="form-label fw-semibold">
+                    <i class="fas fa-calendar-alt me-1"></i> Từ ngày
+                </label>
+                <input type="date" 
+                       class="form-control" 
+                       id="start_date" 
+                       name="start_date" 
+                       value="{{ request('start_date', now()->startOfMonth()->format('Y-m-d')) }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label fw-semibold">
+                    <i class="fas fa-calendar-alt me-1"></i> Đến ngày
+                </label>
+                <input type="date" 
+                       class="form-control" 
+                       id="end_date" 
+                       name="end_date" 
+                       value="{{ request('end_date', now()->format('Y-m-d')) }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-filter me-1"></i> Lọc
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-refresh me-1"></i> Reset
+                </a>
+            </div>
+            <div class="col-md-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-info dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-clock me-1"></i> Nhanh
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item quick-filter" href="#" data-period="today">Hôm nay</a></li>
+                        <li><a class="dropdown-item quick-filter" href="#" data-period="yesterday">Hôm qua</a></li>
+                        <li><a class="dropdown-item quick-filter" href="#" data-period="this_week">Tuần này</a></li>
+                        <li><a class="dropdown-item quick-filter" href="#" data-period="last_week">Tuần trước</a></li>
+                        <li><a class="dropdown-item quick-filter" href="#" data-period="this_month">Tháng này</a></li>
+                        <li><a class="dropdown-item quick-filter" href="#" data-period="last_month">Tháng trước</a></li>
+                        <li><a class="dropdown-item quick-filter" href="#" data-period="this_year">Năm nay</a></li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+        
+        {{-- Display current filter info --}}
+        @if(request('start_date') || request('end_date'))
+        <div class="mt-3">
+            <div class="alert alert-info d-flex align-items-center">
+                <i class="fas fa-info-circle me-2"></i>
+                <span>
+                    Hiển thị thống kê từ 
+                    <strong>{{ request('start_date', now()->startOfMonth()->format('Y-m-d')) }}</strong> 
+                    đến 
+                    <strong>{{ request('end_date', now()->format('Y-m-d')) }}</strong>
+                </span>
+            </div>
+        </div>
+        @endif
+    </div>
+</div>
+
 <div class="row g-4">
     {{-- Cards Section --}}
     <div class="col-md-3">
         <div class="card shadow border-0 rounded-lg p-3 d-flex flex-row align-items-center" style="background-color: #f0f4f8;">
             <div class="flex-grow-1">
-                <h6 class="text-muted mb-1">Doanh thu hôm nay</h6>
+                <h6 class="text-muted mb-1">
+                    @if(request('start_date') == request('end_date'))
+                        Doanh thu ngày {{ Carbon\Carbon::parse(request('start_date', now()))->format('d/m/Y') }}
+                    @else
+                        Doanh thu ({{ Carbon\Carbon::parse(request('start_date', now()->startOfMonth()))->format('d/m') }} - {{ Carbon\Carbon::parse(request('end_date', now()))->format('d/m') }})
+                    @endif
+                </h6>
                 <h3 class="fw-bold text-dark">{{ number_format($dailyRevenue) }} ₫</h3>
             </div>
             <div class="ms-3">
@@ -52,7 +127,13 @@
     <div class="col-md-3">
         <div class="card shadow border-0 rounded-lg p-3 d-flex flex-row align-items-center" style="background-color: #fff9e6;">
             <div class="flex-grow-1">
-                <h6 class="text-muted mb-1">Đơn hàng hôm nay</h6>
+                <h6 class="text-muted mb-1">
+                    @if(request('start_date') == request('end_date'))
+                        Đơn hàng ngày {{ Carbon\Carbon::parse(request('start_date', now()))->format('d/m/Y') }}
+                    @else
+                        Đơn hàng ({{ Carbon\Carbon::parse(request('start_date', now()->startOfMonth()))->format('d/m') }} - {{ Carbon\Carbon::parse(request('end_date', now()))->format('d/m') }})
+                    @endif
+                </h6>
                 <h3 class="fw-bold text-dark">{{ $totalOrdersToday }}</h3>
             </div>
             <div class="ms-3">
@@ -67,7 +148,13 @@
     <div class="col-md-3">
         <div class="card shadow border-0 rounded-lg p-3 d-flex flex-row align-items-center" style="background-color: #e8f0fe;">
             <div class="flex-grow-1">
-                <h6 class="text-muted mb-1">Doanh thu tháng</h6>
+                <h6 class="text-muted mb-1">
+                    @if(request('start_date') == request('end_date'))
+                        Tổng doanh thu ngày {{ Carbon\Carbon::parse(request('start_date', now()))->format('d/m/Y') }}
+                    @else
+                        Tổng doanh thu ({{ Carbon\Carbon::parse(request('start_date', now()->startOfMonth()))->format('d/m') }} - {{ Carbon\Carbon::parse(request('end_date', now()))->format('d/m') }})
+                    @endif
+                </h6>
                 <h3 class="fw-bold text-dark">{{ number_format($monthlyRevenue) }} ₫</h3>
             </div>
             <div class="ms-3">
@@ -292,7 +379,17 @@
 <div class="card mt-4 border-0 shadow rounded-lg">
     <div class="card-body">
         <h5 class="fw-bold text-center mb-3">
-            📊 Biểu đồ Doanh thu tháng {{ now()->format('m/Y') }}
+            📊 Biểu đồ Doanh thu 
+            @if(isset($chartData['type']))
+                @if($chartData['type'] == 'daily')
+                    theo ngày
+                @elseif($chartData['type'] == 'monthly') 
+                    theo tháng
+                @else
+                    theo năm
+                @endif
+            @endif
+            ({{ request('start_date', now()->startOfMonth()->format('d/m/Y')) }} - {{ request('end_date', now()->format('d/m/Y')) }})
         </h5>
         <div style=" margin: 0 auto;">
             <canvas id="revenueChart" height="300"></canvas>
@@ -304,19 +401,46 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const ctx = document.getElementById('revenueChart').getContext('2d');
-    const chartData = @json($chartData);
-
-    const chartLabels = chartData.map((_, index) => `Ngày ${index + 1}`);
+    const chartInfo = @json($chartData);
+    
+    // Handle both old format (array) and new format (object with data/labels/type)
+    let chartData, chartLabels, chartType;
+    
+    if (Array.isArray(chartInfo)) {
+        // Old format - fallback
+        chartData = chartInfo;
+        chartLabels = chartInfo.map((_, index) => `Ngày ${index + 1}`);
+        chartType = 'daily';
+    } else {
+        // New format
+        chartData = chartInfo.data || [];
+        chartLabels = chartInfo.labels || [];
+        chartType = chartInfo.type || 'daily';
+    }
 
     // Gradient đẹp
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(0, 194, 255, 0.7)');
     gradient.addColorStop(1, 'rgba(0, 194, 255, 0.1)');
 
+    // Dynamic x-axis title based on chart type
+    let xAxisTitle = 'Thời gian';
+    switch(chartType) {
+        case 'daily':
+            xAxisTitle = 'Ngày';
+            break;
+        case 'monthly':
+            xAxisTitle = 'Tháng';
+            break;
+        case 'yearly':
+            xAxisTitle = 'Năm';
+            break;
+    }
+
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: chartLabels, // Ngày trong tháng hiện tại
+            labels: chartLabels,
             datasets: [{
                 label: 'Doanh thu (₫)',
                 data: chartData,
@@ -354,13 +478,70 @@ document.addEventListener('DOMContentLoaded', function () {
                 x: {
                     title: {
                         display: true,
-                        text: 'Ngày trong tháng',
+                        text: xAxisTitle,
                         font: { size: 14, weight: 'bold' },
                         color: '#6b7280'
                     }
                 }
             }
         }
+    });
+});
+
+// Quick filter functionality
+document.querySelectorAll('.quick-filter').forEach(function(element) {
+    element.addEventListener('click', function(e) {
+        e.preventDefault();
+        const period = this.getAttribute('data-period');
+        const today = new Date();
+        let startDate, endDate;
+        
+        switch(period) {
+            case 'today':
+                startDate = endDate = today.toISOString().split('T')[0];
+                break;
+            case 'yesterday':
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                startDate = endDate = yesterday.toISOString().split('T')[0];
+                break;
+            case 'this_week':
+                const startOfWeek = new Date(today);
+                startOfWeek.setDate(today.getDate() - today.getDay());
+                startDate = startOfWeek.toISOString().split('T')[0];
+                endDate = today.toISOString().split('T')[0];
+                break;
+            case 'last_week':
+                const lastWeekEnd = new Date(today);
+                lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
+                const lastWeekStart = new Date(lastWeekEnd);
+                lastWeekStart.setDate(lastWeekEnd.getDate() - 6);
+                startDate = lastWeekStart.toISOString().split('T')[0];
+                endDate = lastWeekEnd.toISOString().split('T')[0];
+                break;
+            case 'this_month':
+                const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                startDate = startOfMonth.toISOString().split('T')[0];
+                endDate = today.toISOString().split('T')[0];
+                break;
+            case 'last_month':
+                const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+                startDate = lastMonthStart.toISOString().split('T')[0];
+                endDate = lastMonthEnd.toISOString().split('T')[0];
+                break;
+            case 'this_year':
+                const startOfYear = new Date(today.getFullYear(), 0, 1);
+                startDate = startOfYear.toISOString().split('T')[0];
+                endDate = today.toISOString().split('T')[0];
+                break;
+        }
+        
+        document.getElementById('start_date').value = startDate;
+        document.getElementById('end_date').value = endDate;
+        
+        // Auto submit form
+        document.querySelector('form').submit();
     });
 });
 </script>
