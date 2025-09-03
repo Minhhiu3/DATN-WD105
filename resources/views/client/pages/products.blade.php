@@ -98,14 +98,17 @@
                                     <figcaption class="product-details" style="">
                                         <h6>{{ $product->name_product }}</h6>
                                         @php
-                                            $minPrice = $product->variants->min('price');
-                                            $maxPrice = $product->variants->max('price');
-                                        @endphp
-                                        @php
                                             $sale = $product->advice_product;
                                             $now = \Carbon\Carbon::now();
                                             $start = \Carbon\Carbon::parse($sale->start_date ?? '')->startOfDay();
                                             $end = \Carbon\Carbon::parse($sale->end_date ?? '')->endOfDay();
+ $minPrice = $product->variants->min('price');
+                                            $maxPrice = $product->variants->max('price');
+                                               if ($sale && $sale->status === "on" && $now->between($start, $end)) {
+        $discount = $sale->value / 100;
+        $minPrice = $minPrice - ($minPrice * $discount);
+        $maxPrice = $maxPrice - ($maxPrice * $discount);
+    }
                                         @endphp
                                         @if (
                                             $sale &&
