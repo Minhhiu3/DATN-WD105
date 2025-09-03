@@ -227,7 +227,9 @@ class CheckoutController extends Controller
 
             //VNPay
             if ($request->payment_method === 'vnpay') {
-
+ $SalePrice = $adviceProduct
+        ? ($variant->price - ($variant->price * $adviceProduct->value / 100))
+        : $variant->price;
                 session([
                     'pending_order_buy_now' => [
                         'user_id'       => $user->id_user,
@@ -243,7 +245,7 @@ class CheckoutController extends Controller
                         'grand_total'   => $grand_total,    // Tổng tiền đã giảm + phí ship
                         'discount_code' => $discountCode,
                          'product_name'  => $variant->product->name ?? '',
-                        'price'         => $variant->price ?? 0,
+                        'price'         => $SalePrice,
                         'color_name'    => $variant->color->name_color ?? 'Không có màu',
                         'size_name'     => $variant->size->name ?? 'Không có size',
                         'image'         => $variant->color->image ?? 'khong-co-hinh-anh.jpg',

@@ -253,7 +253,7 @@ public function vnpayReturnBuyNow(Request $request)
                 'variant_id' => $pending['variant_id'],
                 'quantity'   => $pending['quantity'],
                 'product_name' => $pending['product_name'],
-                'price'      => $pending['pricevariantSale'],
+                'price'      => $pending['price'],
                 'color_name' => $pending['color_name'] ?? 'Không có màu',
                 'size_name'  => $pending['size_name'] ?? 'Không có size',
                 'image'      => $pending['image'] ?? 'khong-co-hinh-anh.jpg',
@@ -271,7 +271,7 @@ $emailSend = $pending['email'];
 Mail::to($emailSend)->send(new OrderPlacedMail($order));
 Log::info('📧 [Checkout] Gửi email đặt hàng thành công đến: ' . $emailSend);
 Log::info('VNPay Return All', $request->all());
-Log::info('Session Pending', session('pending_order_buy_now'));
+// Log::info('Session Pending', session('pending_order_buy_now'));
             return redirect()->route('home')->with('success', 'Thanh toán thành công');
         } catch (\Exception $e) {
             DB::rollBack();

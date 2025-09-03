@@ -312,6 +312,11 @@
                                     $now = \Carbon\Carbon::now();
                                     $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
                                     $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                                     if ($sale && $sale->status === "on" && $now->between($start, $end)) {
+        $discount = $sale->value / 100;
+        $minPrice = $minPrice - ($minPrice * $discount);
+        $maxPrice = $maxPrice - ($maxPrice * $discount);
+    }
                                 @endphp
 
                                 @if (
@@ -395,6 +400,11 @@
                                     $now = \Carbon\Carbon::now();
                                     $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
                                     $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                                     if ($sale && $sale->status === "on" && $now->between($start, $end)) {
+        $discount = $sale->value / 100;
+        $minPrice = $minPrice - ($minPrice * $discount);
+        $maxPrice = $maxPrice - ($maxPrice * $discount);
+    }
                                 @endphp
 
                                 @if (
