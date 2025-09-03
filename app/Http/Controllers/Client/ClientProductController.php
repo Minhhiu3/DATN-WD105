@@ -40,7 +40,7 @@ class ClientProductController extends Controller
                 $query->where('brand_id', $brand); // Lọc trực tiếp theo brand_id
             })
             ->latest()->paginate(9);
-
+// dd($products);
         return view('client.pages.products', compact('products', 'categories', 'sizes', 'brands', 'keyword', 'category', 'size', 'brand'));
     }
 
