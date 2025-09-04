@@ -1,32 +1,182 @@
 @extends('layouts.client_home')
 @section('title', 'Chi tiết sản phẩm')
 @section('content')
+<style>
+     .product-images {
+        flex: 1;
+        min-width: 400px;
+        background: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .product-main-image {
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        object-fit: cover;
+        cursor: zoom-in;
+        transition: transform 0.4s ease;
+        max-height: 450px;
+    }
+
+    .product-main-image:hover {
+        transform: scale(1.05);
+    }
+
+    .thumbnail-slider-wrapper {
+        display: flex;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    .thumbnail-slider {
+        scroll-behavior: smooth;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        gap: 10px;
+        padding: 5px 0;
+    }
+
+    .thumbnail-slider::-webkit-scrollbar {
+        display: none; /* Ẩn scrollbar */
+    }
+
+    .thumb-image {
+        width: 70px;
+        height: 70px;
+        border-radius: 8px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+
+    .thumb-image:hover {
+        border-color: #0ea5e9;
+    }
+
+    .slider-btn {
+        background: rgba(0, 0, 0, 0.4);
+        border: none;
+        color: #fff;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .slider-btn:hover {
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    .slider-prev {
+        left: -10px;
+    }
+
+    .slider-next {
+        right: -10px;
+    }
+
+    .product-info {
+        flex: 1;
+        min-width: 400px;
+        padding: 30px;
+    }
+
+    .product-info h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1d4ed8;
+        margin-bottom: 15px;
+    }
+
+    .product-info p {
+        margin-bottom: 10px;
+        color: #4b5563;
+    }
+
+    .product-price {
+        color: #16a34a;
+        font-weight: 700;
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+    }
+
+    .btn-custom {
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+        color: #fff;
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    }
+
+    .btn-back {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-back:hover {
+        background: #d1d5db;
+    }
+
+    .modal-fullscreen .modal-content {
+        background: #000;
+        border: none;
+    }
+
+    .modal-fullscreen img {
+        max-height: 90vh;
+        object-fit: contain;
+    }
+</style>
     <!-- ================= Start Product Detail Area ================= -->
     <div class="product_image_area my-5">
         <div class="container">
             <div class="row">
                 <!-- Cột trái: Ảnh sản phẩm -->
-                <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="col-lg-6 mb-4 mb-lg-0 product-images">
                     <div class="main-image mb-3">
-                        <img id="main-image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name_product }}"
-                            class="img-fluid rounded shadow-sm w-100" style="object-fit: cover; max-height: 400px;">
+                        <img id="mainImage" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name_product }}"
+                            class="img-fluid rounded shadow-sm w-100 product-main-image" style="object-fit: cover; max-height: 400px;">
                     </div>
 
                     <!-- Danh sách ảnh nhỏ (album) -->
-                    <div class="album-images d-flex flex-wrap gap-2">
-                        @if ($product->albumProducts && $product->albumProducts->count())
-                            @foreach ($product->albumProducts as $album)
-                                <div class="album-thumb border rounded p-1"
-                                    style="width: 100px; height: 100px; overflow: hidden;">
-                                    <img src="{{ asset('storage/' . $album->image) }}"
-                                        alt="{{ $product->name_product }} - album" class="img-fluid h-100 w-100"
-                                        style="object-fit: cover;">
-                                </div>
-                            @endforeach
-                        @else
-                            <img src="{{ asset('assets/img/product/default.jpg') }}" alt="{{ $product->name_product }}"
-                                class="img-fluid">
-                        @endif
+                    <div class="album-images d-flex flex-wrap gap-2 thumbnail-slider-wrapper ">
+                             <button class="slider-btn slider-prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                       <div class="thumbnail-slider">
+                    @foreach($album_products as $album_product)
+                        <img src="{{ asset('/storage/' . $album_product->image) }}"
+                            class="thumb-image"
+                            alt="Thumbnail">
+                    @endforeach
+                </div>
+                         <button class="slider-btn slider-next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
                     </div>
                 </div>
 
@@ -300,6 +450,15 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade modal-fullscreen" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <img src="" class="img-fluid" id="modalImage" alt="Ảnh lớn">
+            </div>
+        </div>
+    </div>
+</div>
     </section>
 
     @php
@@ -385,7 +544,7 @@
                 const colorButtons = document.querySelectorAll('.color-btn');
                 const sizeButtons = document.querySelectorAll('.size-btn');
                 sizeButtons.forEach(btn => btn.style.display = 'none');
-                const mainImage = document.getElementById('main-image');
+                const mainImage = document.getElementById('mainImage');
                 const priceDisplay = document.getElementById('dynamic-price');
                 const priceSaleDisplay = document.getElementById('dynamic-price-sale');
                 const stockDisplay = document.getElementById('dynamic-stock');
@@ -700,5 +859,32 @@
                 qtyInput.value = 1;
             }
         }
+         const mainImage = document.getElementById('mainImage');
+    const modalImage = document.getElementById('modalImage');
+
+    document.querySelectorAll('.thumb-image').forEach(img => {
+        img.addEventListener('click', () => {
+            mainImage.src = img.src;
+        });
+    });
+
+    // Open modal when clicking main image
+    mainImage.addEventListener('click', () => {
+        modalImage.src = mainImage.src;
+        new bootstrap.Modal(document.getElementById('imageModal')).show();
+    });
+
+    // Slider controls
+    const slider = document.querySelector('.thumbnail-slider');
+    const btnPrev = document.querySelector('.slider-prev');
+    const btnNext = document.querySelector('.slider-next');
+
+    btnPrev.addEventListener('click', () => {
+        slider.scrollBy({ left: -100, behavior: 'smooth' });
+    });
+
+    btnNext.addEventListener('click', () => {
+        slider.scrollBy({ left: 100, behavior: 'smooth' });
+    });
     </script>
 @endpush
