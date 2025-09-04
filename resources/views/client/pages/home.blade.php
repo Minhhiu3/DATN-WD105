@@ -261,9 +261,9 @@
                         <div class="category-item">
                             <a href="{{ route('products', ['brand' => $brand->id_brand]) }}">
                                 @if($brand->logo)
-                                    <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}" class="img-fluid">
+                                    <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}" class="img-fluid width:auto">
                                 @else
-                                    <img src="{{ asset('assets/img/brands/default-logo.png') }}" alt="Default Logo" class="img-fluid">
+                                    <img src="{{ asset('assets/img/brands/default-logo.png') }}" alt="Default Logo" class="img-fluid width:auto">
                                 @endif
                             </a>
                         </div>
@@ -374,7 +374,7 @@
                 <div class="col-lg-6 text-center">
                     <div class="section-title">
                         <h1>Sản phẩm bán chạy</h1>
-                        <p>Khám phá những mẫu giày mới nhất, được thiết kế để mang lại sự thoải mái và phong cách
+                        <p>Khám phá những mẫu giày được bán chạy nhất, được thiết kế để mang lại sự thoải mái và phong cách
                             tối ưu
                             cho bạn.</p>
                     </div>
