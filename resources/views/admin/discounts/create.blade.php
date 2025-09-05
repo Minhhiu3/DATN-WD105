@@ -108,7 +108,7 @@
         {{-- Mã giảm giá --}}
         <div class="mb-3">
             <label for="code" class="form-label">Mã Giảm Giá</label>
-            <input type="text" name="code" id="code" class="form-control @error('code') is-invalid @enderror" 
+            <input type="text" name="code" id="code" class="form-control @error('code') is-invalid @enderror"
                    value="{{ old('code') }}" placeholder="Nhập mã giảm giá" >
             <div class="error-message text-danger">
                 @error('code')
@@ -137,7 +137,7 @@
         {{-- Giá trị --}}
         <div class="mb-3">
             <label for="value" class="form-label">Giá Trị</label>
-            <input type="number" name="value" id="value" class="form-control @error('value') is-invalid @enderror" 
+            <input type="number" name="value" id="value" class="form-control @error('value') is-invalid @enderror"
                    value="{{ old('value') }}" placeholder="Nhập giá trị" >
               <div class="error-message text-danger">
                 @error('value')
@@ -149,7 +149,7 @@
         {{-- Giá trị đơn tối thiểu --}}
         <div class="mb-3">
             <label for="min_order_value" class="form-label">Giá Trị Đơn Tối Thiểu</label>
-            <input type="number"   name="min_order_value" id="min_order_value" class="form-control @error('min_order_value') is-invalid @enderror" 
+            <input type="number"   name="min_order_value" id="min_order_value" class="form-control @error('min_order_value') is-invalid @enderror"
                    value="{{ old('min_order_value') }}" placeholder="Nhập giá trị đơn tối thiểu" min="0" step="1000" >
             <div class="error-message text-danger">
                 @error('min_order_value')
@@ -161,7 +161,7 @@
         {{-- Giá trị đơn tối đa --}}
         <div class="mb-3">
             <label for="max_order_value" class="form-label">Giá Trị Đơn Tối Đa</label>
-            <input type="number"   name="max_order_value" id="max_order_value" class="form-control @error('max_order_value') is-invalid @enderror" 
+            <input type="number"   name="max_order_value" id="max_order_value" class="form-control @error('max_order_value') is-invalid @enderror"
                    value="{{ old('max_order_value') }}" placeholder="Nhập giá trị đơn tối đa" min="0" step="1000" >
             <div class="error-message text-danger">
                 @error('max_order_value')
@@ -171,8 +171,8 @@
         </div>
         {{-- Số lượng --}}
         <div class="mb-3">
-            <label for="quantity" class="form-label">Giá Trị</label>
-            <input type="number" name="quantity" id="quantity" class="form-control @error('quantity') is-invalid @enderror" 
+            <label for="quantity" class="form-label">Số lượng</label>
+            <input type="number" name="quantity" id="quantity" class="form-control @error('quantity') is-invalid @enderror"
                    value="{{ old('quantity') }}" placeholder="Nhập số lượng" min="0" step="1" >
               <div class="error-message text-danger">
                 @error('quantity')
@@ -185,7 +185,7 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="start_date" class="form-label">Ngày Bắt Đầu</label>
-                <input type="date" name="start_date" id="start_date" class="form-control @error('start_date') is-invalid @enderror" 
+                <input type="date" name="start_date" id="start_date" class="form-control @error('start_date') is-invalid @enderror"
                        value="{{ old('start_date') }}" >
             <div class="error-message text-danger">
                 @error('start_date')
@@ -196,7 +196,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label for="end_date" class="form-label">Ngày Kết Thúc</label>
-                <input type="date" name="end_date" id="end_date" class="form-control @error('end_date') is-invalid @enderror" 
+                <input type="date" name="end_date" id="end_date" class="form-control @error('end_date') is-invalid @enderror"
                        value="{{ old('end_date') }}" >
             <div class="error-message text-danger">
                 @error('end_date')
@@ -222,7 +222,7 @@
         </div>
         {{-- Hoạt động --}}
         <div class="form-check mb-4">
-            <input type="checkbox" name="is_active" id="is_active" class="form-check-input " 
+            <input type="checkbox" name="is_active" id="is_active" class="form-check-input "
                    value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
             <label class="form-check-label" for="is_active">Hoạt động</label>
             <div class="error-message text-danger">
@@ -267,13 +267,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const maxOrderValueInput = form.querySelector('[name="max_order_value"]');
     const minOrderValueInput = form.querySelector('[name="min_order_value"]');
     // Khi type thay đổi
-    
+
     const messages = {
         code: {
             required: 'Vui lòng nhập mã giảm giá.',
             max: 'Mã giảm giá không được vượt quá 50 ký tự.',
             // unique: 'Mã giảm giá đã tồn tại trong hệ thống.'
-            
+
         },
         type: {
             required: 'Vui lòng chọn loại giảm giá.',
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     rules.value.max = 100;
                     messages.value.min = 'Giá trị giảm không được nhỏ hơn 1.';
                     messages.value.max = 'Khi chọn loại phần trăm, giá trị không được vượt quá 100%.';
-                    
+
                 } else if (typeInput.value === '1') {
                     // Giảm cố định → max không giới hạn
                     rules.value.min = 1000;
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
             input.classList.add('is-invalid');
             showError(input, messages[fieldName].in);
             return false;
-        } 
+        }
         else {
             input.classList.remove('is-invalid');
             clearError(input);
@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function isValidDate(dateString) {
         return !isNaN(Date.parse(dateString));
     }
-    
+
 
     // Bắt sự kiện input và blur
  const inputs = form.querySelectorAll('input, select'); // Đây mới là NodeList thực sự
