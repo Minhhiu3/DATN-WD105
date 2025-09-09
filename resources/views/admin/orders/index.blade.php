@@ -347,12 +347,12 @@
                                 <td>
                                     <a href="{{ route('admin.orders.show', $order->id_order) }}" class="btn-view-sm"><i
                                             class="bi bi-eye"></i> Xem</a>
-                                    @if (in_array($order->status, ['pending', 'processing']))
+                                    {{-- @if (in_array($order->status, ['pending', 'processing']))
                                         <a href="javascript:void(0);" class="btn-cancel-sm cancel-order-btn"
                                             data-id="{{ $order->id_order }}">
                                             <i class="bi bi-x-circle"></i> Hủy
                                         </a>
-                                    @endif
+                                    @endif --}}
                                 </td>
                             </tr>
                             @empty

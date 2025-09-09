@@ -13,8 +13,17 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+
+   $month = $request->input('month');
+   if (empty($month)) {
+    $month = now()->format('Y-m');
+}
+
+
+
+    [$year, $monthNumber] = explode('-', $month);
 
         $today = Carbon::createFromFormat('d/m/Y', now()->format('d/m/Y'));
 
@@ -33,10 +42,10 @@ class DashboardController extends Controller
         // Tổng khách hàng đăng ký hôm nay
         $newUsersToday = User::whereDate('created_at', $today)->count();
          // Tổng doanh thu tháng hiện tại
-        $monthlyRevenue = Order::whereYear('created_at', Carbon::now()->year)
-            ->whereMonth('created_at', Carbon::now()->month)
-            ->where('status', 'completed') // chỉ tính đơn đã hoàn thành
-            ->sum('total_amount');
+         $monthlyRevenue = Order::whereYear('created_at', $year)
+        ->whereMonth('created_at', $monthNumber)
+        ->where('status', 'completed')
+        ->sum('total_amount');
 
         // Top 5 khách hàng mua nhiều nhất (theo tổng tiền)
         $topCustomers = User::join('orders', 'users.id_user', '=', 'orders.user_id')
@@ -67,8 +76,8 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        $currentMonth = Carbon::now()->month; // Tháng hiện tại
-        $currentYear = Carbon::now()->year;   // Năm hiện tại
+        // $currentMonth = Carbon::now()->month; // Tháng hiện tại
+        // $currentYear = Carbon::now()->year;   // Năm hiện tại
 
         // Lấy doanh thu từng ngày trong tháng hiện tại
         $dailyRevenueMonth = DB::table('orders')
@@ -76,8 +85,8 @@ class DashboardController extends Controller
                 DB::raw('DAY(created_at) as day'),
                 DB::raw('SUM(total_amount) as revenue')
             )
-            ->whereMonth('created_at', $currentMonth)
-            ->whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $monthNumber)
+            ->whereYear('created_at', $year)
             ->where('status', 'completed') // chỉ tính đơn hoàn thành
             ->groupBy('day')
             ->orderBy('day')
@@ -100,7 +109,8 @@ class DashboardController extends Controller
             'topCustomers',
             'topProducts',
             'latestOrders',
-            'chartData'
+            'chartData',
+            'month'
         ));
     }
 }

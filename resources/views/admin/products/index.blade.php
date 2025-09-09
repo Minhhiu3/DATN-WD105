@@ -130,7 +130,7 @@
         padding: 10px 12px;
         font-size: 0.95rem;
         transition: all 0.3s ease;
-        
+
     }
 
     .search-form input:focus,
@@ -236,21 +236,21 @@
         <a href="{{ route('admin.products.create') }}" class="btn-icon" title="Thêm sản phẩm mới">
             <i class="bi bi-plus-lg"></i>
         </a>
-    
+
     </div>
     <div class="card-body">
-        
+
         <form action="{{ route('admin.products.index') }}" method="GET" class="search-form mb-3">
             {{-- Tìm theo tên --}}
-            <input type="text" name="keyword" class="form-control" 
-                placeholder="Tìm theo tên sản phẩm" 
+            <input type="text" name="keyword" class="form-control"
+                placeholder="Tìm theo tên sản phẩm"
                 value="{{ request('keyword') }}" style="flex: 2;">
 
             {{-- Lọc danh mục --}}
             <select name="category" class="form-select" style="flex: 1;">
                 <option value="">-- Tất cả danh mục --</option>
                 @foreach ($categoris as $category)
-                    <option value="{{ $category->id_category }}" 
+                    <option value="{{ $category->id_category }}"
                         {{ request('category') == $category->id_category ? 'selected' : '' }}>
                         {{ $category->name_category }}
                     </option>
@@ -277,14 +277,14 @@
                         <th>ID</th>
                         <th>Ảnh</th>
                         <th>Tên</th>
-                        <th>Giá</th>                     
+                        <th>Giá</th>
                         <th>Danh Mục</th>
                         <th>Thương Hiệu</th>
                         <th>Giá Sale</th>
                         <th>Tổng Kho</th>
                         <th>Trạng Thái Kho</th>
                         <th>Sale</th>
-                        <th>Biến Thể</th>                               
+                        <th>Biến Thể</th>
                         <th>Album</th>
                         <th>Trạng Thái</th>
                         <th>Hành động</th>
@@ -295,12 +295,34 @@
                         <tr>
                             <td>{{ $product->id_product }}</td>
                             <td>
-                                <img src="{{ asset('/storage/'.$product->image) }}" 
-                                     alt="{{$product->name_product}}" 
+                                <img src="{{ asset('/storage/'.$product->image) }}"
+                                     alt="{{$product->name_product}}"
                                      class="product-thumb">
                             </td>
                             <td>{{ $product->name_product }}</td>
-                            <td>{{ number_format($product->price, 0, ',', '.') }} VND</td>
+                                  @php
+                                    $minPrice = $product->variants->min('price');
+                                    $maxPrice = $product->variants->max('price');
+
+                                    $sale = $product->advice_product;
+                                    $now = \Carbon\Carbon::now();
+                                    $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                                    $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                                     if ($sale && $sale->status === "on" && $now->between($start, $end)) {
+        $discount = $sale->value / 100;
+        $minPrice = $minPrice - ($minPrice * $discount);
+        $maxPrice = $maxPrice - ($maxPrice * $discount);
+    }
+                                @endphp
+                            <td>
+                                    @if ($minPrice === null)
+                                        <h6>Hết hàng!</h6>
+                                    @elseif ($minPrice == $maxPrice)
+                                        <h6>{{ number_format($minPrice, 0, ',', '.') }} VNĐ</h6>
+                                    @else
+                                        <h6>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</h6>
+                                    @endif
+                               </td>
                             <td>{{ $product->category->name_category ?? 'Chưa có' }}</td>
                             <td>{{ $product->brand->name ?? 'Chưa có' }}</td>
 
@@ -321,48 +343,48 @@
                             </td>
 
                             <td>
-                                <a href="{{ route('admin.sale.index', $product->advice_product->id_advice ?? 0) }}" 
+                                <a href="{{ route('admin.sale.index', $product->advice_product->id_advice ?? 0) }}"
                                    class="btn-action btn-view">
-                                    <i class="bi bi-tag "></i> 
+                                    <i class="bi bi-tag "></i>
                                 </a>
                             </td>
                             <td>
-                                <a href="{{ route('admin.variants.show', $product->id_product) }}" 
+                                <a href="{{ route('admin.variants.show', $product->id_product) }}"
                                    class="btn-action btn-view">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </td>
                             <td>
-                                <a href="{{ route('admin.album-products.show', $product->id_product) }}" 
+                                <a href="{{ route('admin.album-products.show', $product->id_product) }}"
                                    class="btn-action btn-view">
                                     <i class="bi bi-images"></i>
                                 </a>
                             </td>
                             <td>
                                 <label class="switch">
-                                    <input type="checkbox" 
-                                        class="toggle-visibility" 
-                                        data-id="{{ $product->id_product }}" 
+                                    <input type="checkbox"
+                                        class="toggle-visibility"
+                                        data-id="{{ $product->id_product }}"
                                         {{ $product->visibility === 'visible' ? 'checked' : '' }}>
                                     <span class="slider round"></span>
                                 </label>
                             </td>
 
                             <td>
-                                <a href="{{ route('admin.products.show', $product->id_product) }}" 
+                                <a href="{{ route('admin.products.show', $product->id_product) }}"
                                    class="btn-action btn-view">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
-                                <a href="{{ route('admin.products.edit', $product->id_product) }}" 
+                                <a href="{{ route('admin.products.edit', $product->id_product) }}"
                                    class="btn-action btn-edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form action="{{ route('admin.products.destroy', $product->id_product) }}" 
+                                <form action="{{ route('admin.products.destroy', $product->id_product) }}"
                                       method="POST" style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')
-                                    <button onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')" 
-                                            type="submit" 
+                                    <button onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')"
+                                            type="submit"
                                             class="btn-action btn-delete">
                                         <i class="bi bi-trash"></i>
                                     </button>

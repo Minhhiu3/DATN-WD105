@@ -19,6 +19,7 @@ use App\Mail\OrderSuccessMail;
 use App\Mail\OrderPlacedMail;
 use App\Models\UserVoucher;
 use App\Models\AdviceProduct;
+use App\Models\Product;
 use Carbon\Carbon;
 class CheckoutController extends Controller
 {
@@ -96,10 +97,12 @@ class CheckoutController extends Controller
             DB::beginTransaction();
             // Khóa dòng variant để tránh race condition
             $variant = Variant::where('id_variant', $request->variant_id)->lockForUpdate()->first();
-
             if (!$variant || $variant->trashed() || !$variant->product || $variant->product->trashed()) {
                 DB::rollBack();
-                return redirect()->back()->withErrors('Sản phẩm đã bị xóa hoặc ngừng bán.');
+                   return redirect()
+        ->route('products')
+        ->with('error', 'Sản phẩm đã ngừng bán hoặc bị xóa.');
+
             }
 
             if ($variant->quantity < $request->quantity) {
@@ -224,7 +227,9 @@ class CheckoutController extends Controller
 
             //VNPay
             if ($request->payment_method === 'vnpay') {
-
+ $SalePrice = $adviceProduct
+        ? ($variant->price - ($variant->price * $adviceProduct->value / 100))
+        : $variant->price;
                 session([
                     'pending_order_buy_now' => [
                         'user_id'       => $user->id_user,
@@ -240,7 +245,7 @@ class CheckoutController extends Controller
                         'grand_total'   => $grand_total,    // Tổng tiền đã giảm + phí ship
                         'discount_code' => $discountCode,
                          'product_name'  => $variant->product->name ?? '',
-                        'price'         => $variant->price ?? 0,
+                        'price'         => $SalePrice,
                         'color_name'    => $variant->color->name_color ?? 'Không có màu',
                         'size_name'     => $variant->size->name ?? 'Không có size',
                         'image'         => $variant->color->image ?? 'khong-co-hinh-anh.jpg',

@@ -20,55 +20,58 @@
     <div class="container">
         <div class="row">
             <div class="col-xl-3 col-lg-4 col-md-5">
+                 <form method="GET" action="{{ route('products') }}">
                 <div class="sidebar-categories">
                     <div class="head">Danh mục sản phẩm</div>
-                    <ul class="main-categories">
-                        @foreach ($categories as $category)
-                            <li class="main-nav-list">
-                                <a href="{{ route('products', ['category' => $category->id_category]) }}"
-                                   class="{{ request('category') == $category->id_category ? 'active' : '' }}">
-                                    {{ $category->name_category }}
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <ul>
+                @foreach ($categories as $category)
+                    <li>
+                        <input type="checkbox" name="category[]" value="{{ $category->id_category }}"
+                               {{ in_array($category->id_category, (array) request('category')) ? 'checked' : '' }}>
+                        <label>{{ $category->name_category }}</label>
+                    </li>
+                @endforeach
+            </ul>
                 </div>
                 <div class="sidebar-filter mt-50">
                     <div class="top-filter-head">Lọc</div>
                     <div class="common-filter">
                         <div class="head">Size</div>
-                        <div class="d-flex flex-wrap gap-2">
-                            @foreach ($sizes as $size)
-                                <a href="{{ route('products', ['size' => $size->name]) }}"
-                                   class="btn btn-outline-dark size-square {{ request('size') == $size->name ? 'active' : '' }}">
-                                    {{ $size->name }}
-                                </a>
-                            @endforeach
-                        </div>
+                        <ul>
+                @foreach ($sizes as $size)
+                    <li>
+                        <input type="checkbox" name="size[]" value="{{ $size->name }}"
+                               {{ in_array($size->name, (array) request('size')) ? 'checked' : '' }}>
+                        <label>{{ $size->name }}</label>
+                    </li>
+                @endforeach
+            </ul>
                     </div>
                     <div class="common-filter">
                         <div class="head">Thương hiệu</div>
-                        <div class="d-flex flex-wrap gap-2">
-                            @foreach ($brands as $brand)
-                                <a href="{{ route('products', ['brand' => $brand->id_brand]) }}"
-                                   class="btn btn-outline-dark size-square {{ request('brand') == $brand->id_brand ? 'active' : '' }}">
-                                    {{ $brand->name }}
-                                </a>
-                            @endforeach
-                        </div>
+                         <ul>
+                @foreach ($brands as $brand)
+                    <li>
+                        <input type="checkbox" name="brand[]" value="{{ $brand->id_brand }}"
+                               {{ in_array($brand->id_brand, (array) request('brand')) ? 'checked' : '' }}>
+                        <label>{{ $brand->name }}</label>
+                    </li>
+                @endforeach
+            </ul>
                     </div>
                     <div class="common-filter mb-5">
-                        <div class="head">Price</div>
-                        <form method="get" action="{{ route('products.filterByPrice') }}">
-                            <select name="price_range" onchange="this.form.submit()" id="">
-                                <option value="">--Chọn Mức Giá--</option>
-                                <option value="under_500000" {{ request('price_range') == 'under_500000' ? 'selected' : '' }}>Dưới 500.000 VNĐ</option>
-                                <option value="500000_2000000" {{ request('price_range') == '500000_2000000' ? 'selected' : '' }}>Từ 500.000 VNĐ đến 2.000.000 VNĐ</option>
-                                <option value="over_2000000" {{ request('price_range') == 'over_2000000' ? 'selected' : '' }}>Trên 2.000.000 VNĐ</option>
-                            </select>
-                        </form>
+                        <div class="head">Giá</div>
+                        <ul>
+                <li><input type="checkbox" name="price[]" value="under_500000" {{ in_array('under_500000', (array) request('price')) ? 'checked' : '' }}> <label>Dưới 500,000₫</label></li>
+                <li><input type="checkbox" name="price[]" value="500000_1000000" {{ in_array('500000_1000000', (array) request('price')) ? 'checked' : '' }}> <label>500,000₫ - 1,000,000₫</label></li>
+                <li><input type="checkbox" name="price[]" value="1000000_2000000" {{ in_array('1000000_2000000', (array) request('price')) ? 'checked' : '' }}> <label>1,000,000₫ - 2,000,000₫</label></li>
+                <li><input type="checkbox" name="price[]" value="2000000_3000000" {{ in_array('2000000_3000000', (array) request('price')) ? 'checked' : '' }}> <label>2,000,000₫ - 3,000,000₫</label></li>
+                <li><input type="checkbox" name="price[]" value="over_3000000" {{ in_array('over_3000000', (array) request('price')) ? 'checked' : '' }}> <label>Trên 3,000,000₫</label></li>
+            </ul>
                     </div>
                 </div>
+                 <button type="submit" class="btn btn-dark w-100 mt-3 mb-5">Lọc</button>
+    </form>
             </div>
             <div class="col-xl-9 col-lg-8 col-md-7">
                 <!-- Start Filter Bar -->
@@ -96,14 +99,17 @@
                                     <figcaption class="product-details" style="">
                                         <h6>{{ $product->name_product }}</h6>
                                         @php
-                                            $minPrice = $product->variants->min('price');
-                                            $maxPrice = $product->variants->max('price');
-                                        @endphp
-                                        @php
                                             $sale = $product->advice_product;
                                             $now = \Carbon\Carbon::now();
                                             $start = \Carbon\Carbon::parse($sale->start_date ?? '')->startOfDay();
                                             $end = \Carbon\Carbon::parse($sale->end_date ?? '')->endOfDay();
+ $minPrice = $product->variants->min('price');
+                                            $maxPrice = $product->variants->max('price');
+                                               if ($sale && $sale->status === "on" && $now->between($start, $end)) {
+        $discount = $sale->value / 100;
+        $minPrice = $minPrice - ($minPrice * $discount);
+        $maxPrice = $maxPrice - ($maxPrice * $discount);
+    }
                                         @endphp
                                         @if (
                                             $sale &&
@@ -145,9 +151,11 @@
                                 </figure>
                             </div>
                         @empty
-                            <div class="col-12">
-                                <p class="text-muted">Không tìm thấy sản phẩm nào phù hợp.</p>
-                            </div>
+                           <div class="row">
+        <div class="col-12 text-center my-5">
+            <p class="text-muted">Không tìm thấy sản phẩm nào phù hợp.</p>
+        </div>
+    </div>
                         @endforelse
                     </div>
                     @if ($products->hasPages())

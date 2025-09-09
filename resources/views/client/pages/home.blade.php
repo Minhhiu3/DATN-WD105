@@ -160,7 +160,7 @@
                                 <div class="row align-items-center d-flex">
                                     <div class="col-lg-5 col-md-6">
                                         <div class="banner-content">
-                                            <h1>{{ $banner->name ?? 'Bộ sưu tập mới!' }}</h1>
+                                            <h1 class="-ml-3">{{ $banner->name ?? 'Bộ sưu tập mới!' }}</h1>
                                             @if ($banner->product_id)
                                                 <a href="{{ route('client.product.show', $banner->product_id) }}" class="primary-btn">
                                                     Xem sản phẩm
@@ -170,7 +170,7 @@
                                     </div>
                                     <div class="col-lg-7 col-md-6 d-flex justify-content-center">
                                         <div class="banner-img">
-                                            <img class="img-fluid" src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->name }}">
+                                            <img class="img-fluid" src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->name }} ">
                                         </div>
                                     </div>
                                 </div>
@@ -261,9 +261,9 @@
                         <div class="category-item">
                             <a href="{{ route('products', ['brand' => $brand->id_brand]) }}">
                                 @if($brand->logo)
-                                    <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}" class="img-fluid">
+                                    <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}" class="img-fluid width:auto">
                                 @else
-                                    <img src="{{ asset('assets/img/brands/default-logo.png') }}" alt="Default Logo" class="img-fluid">
+                                    <img src="{{ asset('assets/img/brands/default-logo.png') }}" alt="Default Logo" class="img-fluid width:auto">
                                 @endif
                             </a>
                         </div>
@@ -307,11 +307,16 @@
                                 @php
                                     $minPrice = $product->variants->min('price');
                                     $maxPrice = $product->variants->max('price');
-                        
+
                                     $sale = $product->advice_product;
                                     $now = \Carbon\Carbon::now();
                                     $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
                                     $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                                     if ($sale && $sale->status === "on" && $now->between($start, $end)) {
+        $discount = $sale->value / 100;
+        $minPrice = $minPrice - ($minPrice * $discount);
+        $maxPrice = $maxPrice - ($maxPrice * $discount);
+    }
                                 @endphp
 
                                 @if (
@@ -369,7 +374,7 @@
                 <div class="col-lg-6 text-center">
                     <div class="section-title">
                         <h1>Sản phẩm bán chạy</h1>
-                        <p>Khám phá những mẫu giày mới nhất, được thiết kế để mang lại sự thoải mái và phong cách
+                        <p>Khám phá những mẫu giày được bán chạy nhất, được thiết kế để mang lại sự thoải mái và phong cách
                             tối ưu
                             cho bạn.</p>
                     </div>
@@ -390,11 +395,16 @@
                                 @php
                                     $minPrice = $product->variants->min('price');
                                     $maxPrice = $product->variants->max('price');
-                        
+
                                     $sale = $product->advice_product;
                                     $now = \Carbon\Carbon::now();
                                     $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
                                     $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                                     if ($sale && $sale->status === "on" && $now->between($start, $end)) {
+        $discount = $sale->value / 100;
+        $minPrice = $minPrice - ($minPrice * $discount);
+        $maxPrice = $maxPrice - ($maxPrice * $discount);
+    }
                                 @endphp
 
                                 @if (

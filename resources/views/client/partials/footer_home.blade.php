@@ -7,13 +7,13 @@
 						<h6>Về chúng tôi</h6>
                         <img src="{{asset('assets/img/logo.png')}}" alt=""  class="bg-light">
 						<p class="text-white mt-3">
-							Địa chỉ: 22 Lý Chiêu Hoàng, Phường 10, Quận 6, TP. Hồ Chí Minh
+							Địa chỉ: Tòa nhà FPT Polytechnic, 13 Trịnh Văn Bô, Phường Xuân Phương, TP Hà Nội
 						</p>
                         <p class="text-white mt-3">
-						Email: cskhshoemart@gmail.com
+						Email: shoemart@gmail.com
 						</p>
                         <p class="text-white mt-3">
-							Số điện thoại: (+84) 123 456 789
+							Số điện thoại: (+84) 84985583
 						</p>
 					</div>
 				</div>
@@ -28,14 +28,14 @@
 
 								<div class="d-flex flex-row">
 
-									<input class="form-control" name="EMAIL" placeholder="Enter Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter Email '"
+									{{-- <input class="form-control" name="EMAIL" placeholder="Enter Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter Email '"
 									 required="" type="email">
 
 
 									<button class="click-btn btn btn-default"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></button>
 									<div style="position: absolute; left: -5000px;">
 										<input name="b_36c4fd991d266f23781ded980_aefe40901a" tabindex="-1" value="" type="text">
-									</div>
+									</div> --}}
 
 									<!-- <div class="col-lg-4 col-md-4">
 												<button class="bb-btn btn"><span class="lnr lnr-arrow-right"></span></button>
@@ -50,14 +50,14 @@
 					<div class="single-footer-widget mail-chimp">
 						<h6 class="mb-20">Instragram Feed</h6>
 						<ul class="instafeed d-flex flex-wrap">
-							<li><img src="{{asset('assets/img/i1.jpg')}}" alt=""></li>
-							<li><img src="{{asset('assets/img/i2.jpg')}}" alt=""></li>
-                            <li><img src="{{asset('assets/img/i3.jpg')}}" alt=""></li>
-                            <li><img src="{{asset('assets/img/i4.jpg')}}" alt=""></li>
-                            <li><img src="{{asset('assets/img/i5.jpg')}}" alt=""></li>
-                            <li><img src="{{asset('assets/img/i6.jpg')}}" alt=""></li>
-                            <li><img src="{{asset('assets/img/i7.jpg')}}" alt=""></li>
-                            <li><img src="{{asset('assets/img/i8.jpg')}}" alt=""></li>
+							<li><img src="{{asset('assets/img/product/p1.jpg')}}" alt="" width="58px" height="58px"></li>
+							<li><img src="{{asset('assets/img/product/p2.jpg')}}" alt="" width="58px" height="58px"></li>
+                            <li><img src="{{asset('assets/img/product/p3.jpg')}}" alt="" width="58px" height="58px"></li>
+                            <li><img src="{{asset('assets/img/product/p4.jpg')}}" alt="" width="58px" height="58px"></li>
+                            <li><img src="{{asset('assets/img/product/p5.jpg')}}" alt="" width="58px" height="58px"></li>
+                            <li><img src="{{asset('assets/img/product/p6.jpg')}}" alt="" width="58px" height="58px"></li>
+                            <li><img src="{{asset('assets/img/product/p7.jpg')}}" alt="" width="58px" height="58px"></li>
+                            <li><img src="{{asset('assets/img/product/p8.jpg')}}" alt="" width="58px" height="58px"></li>
 
 						</ul>
 					</div>
@@ -67,10 +67,10 @@
 						<h6>Theo dõi chúng tôi</h6>
 						{{-- <p>Let us be social</p> --}}
 						<div class="footer-social d-flex align-items-center">
-							<a href="#"><i class="fa fa-facebook"></i></a>
-							<a href="#"><i class="fa fa-twitter"></i></a>
-							<a href="#"><i class="fa fa-dribbble"></i></a>
-							<a href="#"><i class="fa fa-behance"></i></a>
+							<a href="#"><i class="fab fa-facebook"></i></a>
+							<a href="#"><i class="fab fa-twitter"></i></a>
+							{{-- <a href="#"><i class="fab fa-dribbble"></i></a>
+							<a href="#"><i class="fab fa-behance"></i></a> --}}
 						</div>
 					</div>
 				</div>
@@ -84,8 +84,14 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> SU_20
 		</div>
 	</footer>
 	<!-- End footer Area -->
-	<script src="https://app.tudongchat.com/js/chatbox.js"></script>
-<script>
-  const tudong_chatbox = new TuDongChat('xd_va1ciSPsXFr292bRME')
-  tudong_chatbox.initial()
+	<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/68a9a38a7ebce119279838b3/1j3badlcf';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
 </script>

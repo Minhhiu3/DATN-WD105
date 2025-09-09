@@ -134,7 +134,7 @@
 {{-- Giá trị đơn tối đa --}}
         <div class="mb-3">
             <label for="max_order_value" class="form-label">Giá Trị Đơn Tối Đa</label>
-            <input type="number"   name="max_order_value" id="max_order_value" class="form-control @error('max_order_value') is-invalid @enderror" 
+            <input type="number"   name="max_order_value" id="max_order_value" class="form-control @error('max_order_value') is-invalid @enderror"
                    value="{{ old('max_order_value', (int) $discount->max_order_value) }}" placeholder="Nhập giá trị đơn tối đa" min="0" step="1000" >
             <div class="error-message text-danger">
                 @error('max_order_value')
@@ -144,8 +144,8 @@
         </div>
         {{-- Số lượng --}}
         <div class="mb-3">
-            <label for="quantity" class="form-label">Giá Trị</label>
-            <input type="number" name="quantity" id="quantity" class="form-control @error('quantity') is-invalid @enderror" 
+            <label for="quantity" class="form-label">Số lượng</label>
+            <input type="number" name="quantity" id="quantity" class="form-control @error('quantity') is-invalid @enderror"
                    value="{{ old('quantity',(int) $discount->quantity) }}" placeholder="Nhập số lượng" min="0" step="1" >
               <div class="error-message text-danger">
                 @error('quantity')
@@ -163,7 +163,7 @@
                     @error('start_date')
                         <i class="bi bi-exclamation-circle"></i> {{ $message }}
                     @enderror
-                </div>     
+                </div>
             </div>
             <div class="col-md-6 mb-3">
                 <label for="end_date" class="form-label">Ngày kết thúc</label>
@@ -235,12 +235,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const minOrderValueInput = form.querySelector('[name="min_order_value"]');
 
     // Khi type thay đổi
-    
+
     const messages = {
         code: {
             required: 'Vui lòng nhập mã giảm giá.',
             max: 'Mã giảm giá không được vượt quá 50 ký tự.',
-            
+
         },
         type: {
             required: 'Vui lòng chọn loại giảm giá.',
@@ -290,7 +290,7 @@ typeInput.addEventListener('change', function () {
             rules.value.max = 99;
             messages.value.min = 'Giá trị giảm không được nhỏ hơn 1.';
             messages.value.max = 'Khi chọn loại phần trăm, giá trị không được vượt quá 99%.';
-            
+
         } else if (typeInput.value === '1') {
             // Giảm cố định → max không giới hạn
             rules.value.min = 1000;
@@ -388,7 +388,7 @@ maxOrderValueInput.addEventListener('input', function () {
             input.classList.add('is-invalid');
             showError(input, messages[fieldName].in);
             return false;
-        } 
+        }
         else {
             input.classList.remove('is-invalid');
             clearError(input);
@@ -400,7 +400,7 @@ maxOrderValueInput.addEventListener('input', function () {
     function isValidDate(dateString) {
         return !isNaN(Date.parse(dateString));
     }
-    
+
 
     // Bắt sự kiện input và blur
  const inputs = form.querySelectorAll('input, select'); // Đây mới là NodeList thực sự

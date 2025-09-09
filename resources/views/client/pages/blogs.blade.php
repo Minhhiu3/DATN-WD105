@@ -69,11 +69,11 @@
                             <div class="blog_post">
                                 <img src="{{ asset('img/blog/main-blog/m-blog-1.jpg') }}" alt="">
                                 <div class="blog_details">
-                                    <a href="{{ route('blog-detail') }}">
+                                    <a href="#">
                                         <h2>Top 5 Mẫu Sneaker Mới Nhất 2025</h2>
                                     </a>
                                     <p>Khám phá những đôi sneaker hot trend đang làm mưa làm gió năm nay. Từ thiết kế năng động, màu sắc nổi bật đến độ bền bỉ khi sử dụng mỗi ngày.</p>
-                                    <a href="{{ route('blog-detail') }}" class="white_bg_btn">Xem thêm</a>
+                                    <a href="#" class="white_bg_btn">Xem thêm</a>
                                 </div>
                             </div>
                         </div>
@@ -128,7 +128,7 @@
                         <div class="media post_item">
                             <img src="{{ asset('assets/img/blog/popular-post/post1.jpg') }}" alt="post">
                             <div class="media-body">
-                                <a href="blog-details.html">
+                                <a href="#">
                                     <h3>10 Tips Giữ Giày Trắng Luôn Như Mới</h3>
                                 </a>
                                 <p>2 giờ trước</p>
