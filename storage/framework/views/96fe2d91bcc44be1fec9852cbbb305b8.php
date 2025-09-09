@@ -128,7 +128,7 @@
         padding: 10px 12px;
         font-size: 0.95rem;
         transition: all 0.3s ease;
-        
+
     }
 
     .search-form input:focus,
@@ -234,25 +234,21 @@
         <a href="<?php echo e(route('admin.products.create')); ?>" class="btn-icon" title="Thêm sản phẩm mới">
             <i class="bi bi-plus-lg"></i>
         </a>
-         <a href="<?php echo e(route('admin.products.trash')); ?>" class="btn btn-add-modern">
-                <i class="bi bi-trash3-fill"></i> Thùng Rác
-            </a>
-        
-    </div>
 
+    </div>
     <div class="card-body">
-        
+
         <form action="<?php echo e(route('admin.products.index')); ?>" method="GET" class="search-form mb-3">
             
-            <input type="text" name="keyword" class="form-control" 
-                placeholder="Tìm theo tên sản phẩm" 
+            <input type="text" name="keyword" class="form-control"
+                placeholder="Tìm theo tên sản phẩm"
                 value="<?php echo e(request('keyword')); ?>" style="flex: 2;">
 
             
             <select name="category" class="form-select" style="flex: 1;">
                 <option value="">-- Tất cả danh mục --</option>
                 <?php $__currentLoopData = $categoris; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <option value="<?php echo e($category->id_category); ?>" 
+                    <option value="<?php echo e($category->id_category); ?>"
                         <?php echo e(request('category') == $category->id_category ? 'selected' : ''); ?>>
                         <?php echo e($category->name_category); ?>
 
@@ -282,14 +278,14 @@
                         <th>ID</th>
                         <th>Ảnh</th>
                         <th>Tên</th>
-                        <th>Giá</th>                     
+                        <th>Giá</th>
                         <th>Danh Mục</th>
                         <th>Thương Hiệu</th>
                         <th>Giá Sale</th>
                         <th>Tổng Kho</th>
                         <th>Trạng Thái Kho</th>
                         <th>Sale</th>
-                        <th>Biến Thể</th>                               
+                        <th>Biến Thể</th>
                         <th>Album</th>
                         <th>Trạng Thái</th>
                         <th>Hành động</th>
@@ -300,12 +296,34 @@
                         <tr>
                             <td><?php echo e($product->id_product); ?></td>
                             <td>
-                                <img src="<?php echo e(asset('/storage/'.$product->image)); ?>" 
-                                     alt="<?php echo e($product->name_product); ?>" 
+                                <img src="<?php echo e(asset('/storage/'.$product->image)); ?>"
+                                     alt="<?php echo e($product->name_product); ?>"
                                      class="product-thumb">
                             </td>
                             <td><?php echo e($product->name_product); ?></td>
-                            <td><?php echo e(number_format($product->price, 0, ',', '.')); ?> VND</td>
+                                  <?php
+                                    $minPrice = $product->variants->min('price');
+                                    $maxPrice = $product->variants->max('price');
+
+                                    $sale = $product->advice_product;
+                                    $now = \Carbon\Carbon::now();
+                                    $start = \Carbon\Carbon::parse($sale->start_date ?? 0)->startOfDay();
+                                    $end = \Carbon\Carbon::parse($sale->end_date ?? 0)->endOfDay();
+                                     if ($sale && $sale->status === "on" && $now->between($start, $end)) {
+        $discount = $sale->value / 100;
+        $minPrice = $minPrice - ($minPrice * $discount);
+        $maxPrice = $maxPrice - ($maxPrice * $discount);
+    }
+                                ?>
+                            <td>
+                                    <?php if($minPrice === null): ?>
+                                        <h6>Hết hàng!</h6>
+                                    <?php elseif($minPrice == $maxPrice): ?>
+                                        <h6><?php echo e(number_format($minPrice, 0, ',', '.')); ?> VNĐ</h6>
+                                    <?php else: ?>
+                                        <h6><?php echo e(number_format($minPrice, 0, ',', '.')); ?> – <?php echo e(number_format($maxPrice, 0, ',', '.')); ?> VNĐ</h6>
+                                    <?php endif; ?>
+                               </td>
                             <td><?php echo e($product->category->name_category ?? 'Chưa có'); ?></td>
                             <td><?php echo e($product->brand->name ?? 'Chưa có'); ?></td>
 
@@ -326,48 +344,48 @@
                             </td>
 
                             <td>
-                                <a href="<?php echo e(route('admin.sale.index', $product->advice_product->id_advice ?? 0)); ?>" 
+                                <a href="<?php echo e(route('admin.sale.index', $product->advice_product->id_advice ?? 0)); ?>"
                                    class="btn-action btn-view">
-                                    <i class="bi bi-tag "></i> 
+                                    <i class="bi bi-tag "></i>
                                 </a>
                             </td>
                             <td>
-                                <a href="<?php echo e(route('admin.variants.show', $product->id_product)); ?>" 
+                                <a href="<?php echo e(route('admin.variants.show', $product->id_product)); ?>"
                                    class="btn-action btn-view">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </td>
                             <td>
-                                <a href="<?php echo e(route('admin.album-products.show', $product->id_product)); ?>" 
+                                <a href="<?php echo e(route('admin.album-products.show', $product->id_product)); ?>"
                                    class="btn-action btn-view">
                                     <i class="bi bi-images"></i>
                                 </a>
                             </td>
                             <td>
                                 <label class="switch">
-                                    <input type="checkbox" 
-                                        class="toggle-visibility" 
-                                        data-id="<?php echo e($product->id_product); ?>" 
+                                    <input type="checkbox"
+                                        class="toggle-visibility"
+                                        data-id="<?php echo e($product->id_product); ?>"
                                         <?php echo e($product->visibility === 'visible' ? 'checked' : ''); ?>>
                                     <span class="slider round"></span>
                                 </label>
                             </td>
 
                             <td>
-                                <a href="<?php echo e(route('admin.products.show', $product->id_product)); ?>" 
+                                <a href="<?php echo e(route('admin.products.show', $product->id_product)); ?>"
                                    class="btn-action btn-view">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
-                                <a href="<?php echo e(route('admin.products.edit', $product->id_product)); ?>" 
+                                <a href="<?php echo e(route('admin.products.edit', $product->id_product)); ?>"
                                    class="btn-action btn-edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form action="<?php echo e(route('admin.products.destroy', $product->id_product)); ?>" 
+                                <form action="<?php echo e(route('admin.products.destroy', $product->id_product)); ?>"
                                       method="POST" style="display:inline-block;">
                                     <?php echo csrf_field(); ?>
                                     <?php echo method_field('DELETE'); ?>
-                                    <button onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')" 
-                                            type="submit" 
+                                    <button onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')"
+                                            type="submit"
                                             class="btn-action btn-delete">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -376,9 +394,16 @@
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
-                            <td colspan="8" class="text-center text-muted">Không có sản phẩm nào.</td>
+                            <td colspan="14" class="text-center text-muted">Không có sản phẩm nào.</td>
                         </tr>
                     <?php endif; ?>
+                        <tr>
+                            <td colspan="13" class="text-center text-muted"></td>
+                            <td colspan="1" class="text-center text-muted">        <a href="<?php echo e(route('admin.products.trash')); ?>" class="btn btn-add-modern">
+                <i class="bi bi-trash3-fill"></i> Thùng Rác
+        </a>
+                            </td>
+                        </tr>
                 </tbody>
             </table>
         </div>

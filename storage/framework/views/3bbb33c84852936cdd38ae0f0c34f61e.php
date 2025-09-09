@@ -17,6 +17,7 @@
                     <ul class="nav navbar-nav menu_nav ml-auto">
                         <li class="nav-item"><a class="nav-link" href="<?php echo e(route('home')); ?>">Trang chủ</a></li>
                         <li class="nav-item "><a class="nav-link" href="<?php echo e(route('products')); ?>">Cửa hàng</a></li>
+                        <li class="nav-item "><a class="nav-link" href="<?php echo e(route('discounts')); ?>">Khuyến Mãi</a></li>
 
                         <li class="nav-item"><a class="nav-link" href="<?php echo e(route('blogs')); ?>">Tin tức</a></li>
 

@@ -127,8 +127,8 @@
 
     <div class="card-body">
         <?php if(session('error')): ?>
-            <div class="alert alert-danger-modern">
-                <i class="bi bi-x-circle-fill"></i> <?php echo e(session('error')); ?>
+            <div class="alert alert-danger">
+                <?php echo e(session('error')); ?>
 
             </div>
         <?php endif; ?>
@@ -168,9 +168,23 @@
                             </td>
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <tr>
+                            <td colspan="2" class="text-center text-muted"></td>
+                            <td colspan="1" class="text-center text-muted">        
+                                <a href="<?php echo e(route('admin.sizes.trash')); ?>" class="btn ">
+                                        <i class="bi bi-trash3-fill"></i> Thùng Rác
+                                </a>
+                            </td>
+                        </tr>
                 </tbody>
             </table>
         </div>
+        <?php if($sizes->hasPages()): ?>
+            <div class="d-flex justify-content-center mt-4">
+                <?php echo $sizes->links('pagination::bootstrap-5'); ?>
+
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 <?php $__env->stopSection(); ?>
