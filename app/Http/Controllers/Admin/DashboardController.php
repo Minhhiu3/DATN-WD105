@@ -15,47 +15,59 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        $month = $request->input('month');
+        if (empty($month)) {
+            $month = now()->format('Y-m');
+        }
 
-   $month = $request->input('month');
-   if (empty($month)) {
-    $month = now()->format('Y-m');
-}
+        [$year, $monthNumber] = explode('-', $month);
 
+        // Lấy ngày cụ thể từ request hoặc mặc định là hôm nay
+        $day = $request->input('day');
+        if (empty($day)) {
+            $day = now()->format('Y-m-d');
+        }
+        
+        // Tạo đối tượng Carbon từ ngày được chọn
+        $selectedDate = Carbon::createFromFormat('Y-m-d', $day);
 
+        $year = $selectedDate->year;
+        $monthNumber = $selectedDate->month;
+        
+        // Doanh thu của ngày được chọn
+        $dailyRevenue = Order::whereDate('created_at', $selectedDate)
+            ->where('status', 'completed') // chỉ tính đơn đã hoàn thành
+            ->sum('total_amount');
 
-    [$year, $monthNumber] = explode('-', $month);
+        // Tổng số đơn hàng của ngày được chọn
+        $totalOrdersToday = Order::whereDate('created_at', $selectedDate)->count();
 
-        $today = Carbon::createFromFormat('d/m/Y', now()->format('d/m/Y'));
-
-        // Tổng doanh thu hôm nay
-        $dailyRevenue = Order::whereDate('created_at', $today)->sum('total_amount');
-
-        // Tổng số sản phẩm
+        // ==== THỐNG KÊ CHUNG ====
         $totalProducts = Product::count();
-
-        // Tổng số người dùng
         $totalUsers = User::count();
+        $newUsersToday = User::whereDate('created_at', $selectedDate)->count();
 
-        // Tổng đơn hôm nay
-        $totalOrdersToday = Order::whereDate('created_at', $today)->count();
+        // Tổng doanh thu tháng hiện tại
+        $monthlyRevenue = Order::whereYear('created_at', $year)
+            ->whereMonth('created_at', $monthNumber)
+            ->where('status', 'completed')
+            ->sum('total_amount');
 
-        // Tổng khách hàng đăng ký hôm nay
-        $newUsersToday = User::whereDate('created_at', $today)->count();
-         // Tổng doanh thu tháng hiện tại
-         $monthlyRevenue = Order::whereYear('created_at', $year)
-        ->whereMonth('created_at', $monthNumber)
-        ->where('status', 'completed')
-        ->sum('total_amount');
+        // Doanh thu riêng của ngày được chọn 
+        $selectedDayRevenue = $dailyRevenue;
 
-        // Top 5 khách hàng mua nhiều nhất (theo tổng tiền)
+        // ==== TOP KHÁCH HÀNG ====
         $topCustomers = User::join('orders', 'users.id_user', '=', 'orders.user_id')
-            ->select('users.id_user', 'users.name', DB::raw('SUM(orders.total_amount) as total_spent'))
-            ->groupBy('users.id_user', 'users.name')
+            ->select('users.id_user', 'users.name', 'users.email', DB::raw('SUM(orders.total_amount) as total_spent'))
+            ->whereYear('orders.created_at', $year)
+            ->whereMonth('orders.created_at', $monthNumber)
+            ->where('orders.status', 'completed')
+            ->groupBy('users.id_user', 'users.name', 'users.email')
             ->orderByDesc('total_spent')
             ->limit(5)
             ->get();
 
-        // Top 5 sản phẩm bán chạy (theo số lượng)
+        // ==== TOP SẢN PHẨM ====
         $topProducts = DB::table('order_items')
             ->join('variant', 'order_items.variant_id', '=', 'variant.id_variant')
             ->join('products', 'variant.product_id', '=', 'products.id_product')
@@ -68,7 +80,7 @@ class DashboardController extends Controller
             ->groupBy('products.id_product', 'products.name_product', 'products.image')
             ->orderByDesc('total_sold')
             ->limit(5)
-            ->get();
+            ->get(); 
 
         // Top 5 đơn hàng mới nhất
         $latestOrders = Order::with('user')
@@ -76,10 +88,7 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // $currentMonth = Carbon::now()->month; // Tháng hiện tại
-        // $currentYear = Carbon::now()->year;   // Năm hiện tại
-
-        // Lấy doanh thu từng ngày trong tháng hiện tại
+        // ==== DOANH THU TỪNG NGÀY TRONG THÁNG ====
         $dailyRevenueMonth = DB::table('orders')
             ->select(
                 DB::raw('DAY(created_at) as day'),
@@ -87,30 +96,31 @@ class DashboardController extends Controller
             )
             ->whereMonth('created_at', $monthNumber)
             ->whereYear('created_at', $year)
-            ->where('status', 'completed') // chỉ tính đơn hoàn thành
+            ->where('status', 'completed')
             ->groupBy('day')
             ->orderBy('day')
-            ->pluck('revenue', 'day'); // key = day, value = revenue
+            ->pluck('revenue', 'day');
 
-        // Tạo mảng đủ số ngày trong tháng, nếu ngày nào không có đơn thì gán = 0
-        $daysInMonth = Carbon::now()->daysInMonth;
+        $daysInMonth = Carbon::createFromDate($year, $monthNumber)->daysInMonth;
         $chartData = [];
         for ($i = 1; $i <= $daysInMonth; $i++) {
             $chartData[] = $dailyRevenueMonth[$i] ?? 0;
         }
 
         return view('admin.dashboard', compact(
-            'dailyRevenue',
+            'dailyRevenue',          // doanh thu của ngày được chọn
             'totalProducts',
             'monthlyRevenue',
             'totalUsers',
-            'totalOrdersToday',
+            'totalOrdersToday',      // đơn hàng của ngày được chọn
             'newUsersToday',
             'topCustomers',
             'topProducts',
             'latestOrders',
             'chartData',
-            'month'
+            'month',
+            'day',
+            'selectedDayRevenue'
         ));
     }
 }

@@ -85,7 +85,7 @@
 <div class="col-md-4">
     <div class="card border-0 shadow rounded-lg overflow-hidden">
         <div class="card-header bg-primary text-white rounded-top-lg d-flex justify-content-between align-items-center">
-            <span><i class="fas fa-crown me-2"></i> Top 5 Khách hàng</span>
+            <span><i class="fas fa-crown me-2"></i> Top 5 Khách hàng theo tháng</span>
             <button class="btn btn-sm btn-icon-only text-white toggle-btn"
                     type="button"
                     data-bs-toggle="collapse"
@@ -272,6 +272,64 @@
 </style>
 
 <script>
+    const selectedDay = "{{ $day ?? '' }}"; 
+let highlightIndex = null;
+
+if (selectedDay) {
+    const dayNumber = new Date(selectedDay).getDate();
+    highlightIndex = dayNumber - 1; // index bắt đầu từ 0
+}
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: chartLabels,
+        datasets: [{
+            label: 'Doanh thu (₫)',
+            data: chartData,
+            borderColor: '#36A2EB',
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: chartData.map((_, index) => index === highlightIndex ? 'red' : '#36A2EB'),
+            pointRadius: chartData.map((_, index) => index === highlightIndex ? 8 : 4),
+            pointHoverRadius: chartData.map((_, index) => index === highlightIndex ? 10 : 6)
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: context => `Doanh thu: ${context.raw.toLocaleString('vi-VN')} ₫`
+                },
+                backgroundColor: '#111827',
+                titleColor: '#fff',
+                bodyColor: '#d1d5db'
+            },
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: value => value.toLocaleString('vi-VN') + ' ₫'
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Tổng Doanh Thu: {{ number_format($monthlyRevenue) }} ₫',
+                    font: { size: 14, weight: 'bold' },
+                    color: '#6b7280'
+                }
+            }
+        }
+    }
+});
+
     document.querySelectorAll('.toggle-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             const icon = this.querySelector('i');
@@ -289,11 +347,18 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 {{-- Chart Section --}}
+@if($day)
+<div class="alert alert-info">
+    <strong>Doanh thu ngày {{ \Carbon\Carbon::parse($day)->format('d/m/Y') }}:</strong>
+    {{ number_format($selectedDayRevenue, 0, ',', '.') }} ₫
+</div>
+@endif
+
 <div class="card mt-4 border-0 shadow rounded-lg">
     <div class="card-body">
            <form method="GET" action="{{ route('admin.dashboard') }}" class="mb-3 d-flex align-items-center gap-2">
             <label for="month" class="fw-bold"></label>
-            <input type="month" name="month" id="month" value="{{ $month }}" class="form-control" style="max-width: 200px;">
+            <input type="date" name ="day" id="day" value ="{{ $day ?? now()->format('Y-m-d')}}" class= "form-control" style="max-width: 200px">
             <button type="submit" class="btn btn-primary"><i class="bi bi-eye"></i>Xem</button>
         </form>
         <h5 class="fw-bold text-center mb-3">
