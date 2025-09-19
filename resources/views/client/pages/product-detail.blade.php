@@ -271,6 +271,13 @@
                         @guest
                             <a href="{{ route('login') }}" class="primary-btn">Đăng nhập để thêm vào giỏ</a>
                         @else
+                            <!-- Wishlist Button -->
+                            <div class="wishlist-section mb-3">
+                                <button type="button" class="btn btn-outline-danger wishlist-btn" id="wishlist-btn" data-product-id="{{ $product->id_product }}">
+                                    <i class="fas fa-heart"></i>
+                                    <span class="wishlist-text">Thêm vào yêu thích</span>
+                                </button>
+                            </div>
                             <form onsubmit="addToCart(event)" class="mt-3" id="add-to-cart-form">
                                 @csrf
 
@@ -529,12 +536,55 @@
             white-space: nowrap;
             z-index: 10;
         }
+
+        .wishlist-btn {
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+            background: transparent;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wishlist-btn:hover {
+            background: #e74c3c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        .wishlist-btn.in-wishlist {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .wishlist-btn.in-wishlist:hover {
+            background: #c0392b;
+            border-color: #c0392b;
+        }
+
+        .wishlist-btn i {
+            font-size: 1.1rem;
+        }
+
+        .wishlist-btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
     </style>
 @endpush
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize wishlist functionality
+            initializeWishlist();
+            
             @if ($product->variants->sum('quantity') > 0)
                 updateCartCount();
                 const selectedVariantInput = document.getElementById('selectedVariant');
@@ -886,5 +936,118 @@
     btnNext.addEventListener('click', () => {
         slider.scrollBy({ left: 100, behavior: 'smooth' });
     });
+
+    // Wishlist functionality
+    function initializeWishlist() {
+        const wishlistBtn = document.getElementById('wishlist-btn');
+        if (!wishlistBtn) return;
+
+        const productId = wishlistBtn.dataset.productId;
+        
+        // Check if product is in wishlist
+        checkWishlistStatus(productId);
+        
+        // Add click event listener
+        wishlistBtn.addEventListener('click', function() {
+            toggleWishlist(productId);
+        });
+    }
+
+    function checkWishlistStatus(productId) {
+        $.ajax({
+            url: '{{ route("wishlist.check") }}',
+            method: 'POST',
+            data: {
+                product_id: productId
+            },
+            success: function(response) {
+                if (response.success) {
+                    updateWishlistButton(response.is_in_wishlist);
+                }
+            },
+            error: function(xhr) {
+                console.error('Error checking wishlist status:', xhr);
+            }
+        });
+    }
+
+    function toggleWishlist(productId) {
+        const wishlistBtn = document.getElementById('wishlist-btn');
+        const originalText = wishlistBtn.querySelector('.wishlist-text').textContent;
+        
+        // Show loading state
+        wishlistBtn.classList.add('loading');
+        wishlistBtn.querySelector('.wishlist-text').textContent = 'Đang xử lý...';
+        
+        $.ajax({
+            url: '{{ route("wishlist.toggle") }}',
+            method: 'POST',
+            data: {
+                product_id: productId,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    updateWishlistButton(response.is_in_wishlist);
+                    
+                    // Show success message
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: response.message,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    
+                    // Update wishlist count in header if exists
+                    updateWishlistCount();
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: 'Có lỗi xảy ra khi cập nhật danh sách yêu thích 1',
+                    icon: 'error'
+                });
+            },
+            complete: function() {
+                // Remove loading state
+                wishlistBtn.classList.remove('loading');
+                wishlistBtn.querySelector('.wishlist-text').textContent = originalText;
+            }
+        });
+    }
+
+    function updateWishlistButton(isInWishlist) {
+        const wishlistBtn = document.getElementById('wishlist-btn');
+        const wishlistText = wishlistBtn.querySelector('.wishlist-text');
+        const wishlistIcon = wishlistBtn.querySelector('i');
+        
+        if (isInWishlist) {
+            wishlistBtn.classList.add('in-wishlist');
+            wishlistText.textContent = 'Đã yêu thích';
+            wishlistIcon.className = 'fas fa-heart';
+        } else {
+            wishlistBtn.classList.remove('in-wishlist');
+            wishlistText.textContent = 'Thêm vào yêu thích';
+            wishlistIcon.className = 'far fa-heart';
+        }
+    }
+
+    function updateWishlistCount() {
+        $.ajax({
+            url: '{{ route("wishlist.count") }}',
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    // Update wishlist count in header if element exists
+                    const wishlistCountElement = document.querySelector('.wishlist-count');
+                    if (wishlistCountElement) {
+                        wishlistCountElement.textContent = response.count;
+                    }
+                }
+            }
+        });
+    }
     </script>
 @endpush

@@ -78,4 +78,20 @@ class Product extends Model
     {
         return $this->hasOne(AdviceProduct::class, 'product_id');
     }
+
+    /**
+     * Get the wishlist items for this product.
+     */
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class, 'product_id', 'id_product');
+    }
+
+    /**
+     * Get the users who have this product in their wishlist.
+     */
+    public function wishlistUsers()
+    {
+        return $this->belongsToMany(User::class, 'wishlists', 'product_id', 'user_id', 'id_product', 'id_user');
+    }
 }

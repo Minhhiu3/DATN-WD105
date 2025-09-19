@@ -18,7 +18,9 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
                         <li class="nav-item "><a class="nav-link" href="{{ route('products') }}">Cửa hàng</a></li>
                         <li class="nav-item "><a class="nav-link" href="{{ route('discounts') }}">Khuyến Mãi</a></li>
-
+                        @auth
+                        <li class="nav-item"><a class="nav-link" href="{{ route('wishlist.index') }}">Yêu thích</a></li>
+                        @endauth
                         <li class="nav-item"><a class="nav-link" href="{{ route('blogs') }}">Tin tức</a></li>
 
                         <li class="nav-item"><a class="nav-link" href="{{ route('contact') }}">Liên hệ</a></li>
@@ -37,6 +39,15 @@
                         @endauth
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
+                        @auth
+                        <li class="nav-item position-relative">
+                            <a href="{{ route('wishlist.index') }}" class="cart" id="wishlist-icon" title="Danh sách yêu thích">
+                                <span class="ti-heart"></span>
+                                <span id="wishlist-count" class="badge"
+                                    style="display:none;position:absolute;top:0;right:0;">0</span>
+                            </a>
+                        </li>
+                        @endauth
                         <li class="nav-item position-relative">
                             <a href="{{ route('cart') }}" class="cart" id="cart-icon">
                                 <span class="ti-bag"></span>
@@ -129,9 +140,32 @@
             });
     }
 
+    // Cập nhật số lượng wishlist từ server
+    function updateWishlistCountFromServer() {
+        @auth
+        fetch('{{ route('wishlist.count') }}')
+            .then(response => response.json())
+            .then(data => {
+                const wishlistCountEl = document.getElementById('wishlist-count');
+                if (wishlistCountEl) {
+                    if (data.count > 0) {
+                        wishlistCountEl.style.display = 'inline-block';
+                        wishlistCountEl.innerText = data.count;
+                    } else {
+                        wishlistCountEl.style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error updating wishlist count:', error);
+            });
+        @endauth
+    }
+
     // Cập nhật khi trang load
     document.addEventListener('DOMContentLoaded', function() {
         updateCartCountFromServer();
+        updateWishlistCountFromServer();
     });
 </script>
 <script>

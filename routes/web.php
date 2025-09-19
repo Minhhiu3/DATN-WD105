@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\AdviceProductController;
 use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\ProductReviewController as ClientProductReviewController;
+use App\Http\Controllers\Client\WishlistController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Client\ClientDiscountController;
@@ -94,6 +95,15 @@ Route::prefix('account')->middleware('auth')->group(function () {
     Route::post('/apply-coupon', [CheckoutController::class, 'apply'])->name('apply.coupon');
     Route::post('/apply-coupon-cart', [CheckoutController::class, 'applyCouponCart'])->name('apply.couponCart');
     Route::post('/reviews', [ClientProductReviewController::class, 'store'])->name('product.reviews.store');
+    
+    // Wishlist Routes
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist.add');
+    Route::post('/wishlist/remove', [WishlistController::class, 'remove'])->name('wishlist.remove');
+    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::post('/wishlist/check', [WishlistController::class, 'check'])->name('wishlist.check');
+    Route::get('/wishlist/count', [WishlistController::class, 'count'])->name('wishlist.count');
+    Route::post('/wishlist/clear', [WishlistController::class, 'clear'])->name('wishlist.clear');
 });
 
 
