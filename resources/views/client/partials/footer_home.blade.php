@@ -84,14 +84,11 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> SU_20
 		</div>
 	</footer>
 	<!-- End footer Area -->
-	<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/68a9a38a7ebce119279838b3/1j3badlcf';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
+<script data-name-bot="bot-demo"
+	src="https://app.preny.ai/embed-global.js"
+	data-button-style="width:300px;height:300px;"
+	data-language="vi"
+	async
+	defer
+	data-preny-bot-id="68cd4f12d41f4511f9269942"
+></script>
