@@ -135,4 +135,20 @@ class User extends Authenticatable
             $q->where('name', 'User');
         });
     }
+
+    /**
+     * Get the user's wishlist items.
+     */
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class, 'user_id', 'id_user');
+    }
+
+    /**
+     * Get the user's wishlist products.
+     */
+    public function wishlistProducts()
+    {
+        return $this->belongsToMany(Product::class, 'wishlists', 'user_id', 'product_id', 'id_user', 'id_product');
+    }
 }

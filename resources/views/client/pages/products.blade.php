@@ -146,6 +146,14 @@
                                                 <span class="lnr lnr-move"></span>
                                                 <p class="hover-text">Xem chi tiết</p>
                                             </a>
+                                            @auth
+                                            <a href="#" class="social-info wishlist-btn" 
+                                               data-product-id="{{ $product->id_product }}"
+                                               onclick="toggleWishlist({{ $product->id_product }}, event)">
+                                                <span class="lnr lnr-heart"></span>
+                                                <p class="hover-text">Yêu thích</p>
+                                            </a>
+                                            @endauth
                                         </div>
                                     </figcaption>
                                 </figure>
@@ -171,6 +179,127 @@
 
 @endsection
 
+@push('scripts')
+<script>
+// CSRF token setup
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
+// Initialize wishlist status for all products on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const wishlistBtns = document.querySelectorAll('.wishlist-btn');
+    wishlistBtns.forEach(btn => {
+        const productId = btn.dataset.productId;
+        checkWishlistStatus(productId, btn);
+    });
+});
+
+function toggleWishlist(productId, event) {
+    event.preventDefault();
+    
+    const wishlistBtn = event.currentTarget;
+    const originalText = wishlistBtn.querySelector('p').textContent;
+    
+    // Show loading state
+    wishlistBtn.style.pointerEvents = 'none';
+    wishlistBtn.querySelector('p').textContent = 'Đang xử lý...';
+    
+    $.ajax({
+        url: '{{ route("wishlist.toggle") }}',
+        method: 'POST',
+        data: {
+            product_id: productId,
+            _token: '{{ csrf_token() }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                updateWishlistButton(wishlistBtn, response.is_in_wishlist);
+                
+                // Show success message
+                Swal.fire({
+                    title: 'Thành công!',
+                    text: response.message,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                
+                // Update wishlist count in header
+                updateWishlistCount();
+            }
+        },
+        error: function(xhr) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Có lỗi xảy ra khi cập nhật danh sách yêu thích 2',
+                icon: 'error'
+            });
+        },
+        complete: function() {
+            // Remove loading state
+            wishlistBtn.style.pointerEvents = 'auto';
+            wishlistBtn.querySelector('p').textContent = originalText;
+        }
+    });
+}
+
+function checkWishlistStatus(productId, wishlistBtn) {
+    $.ajax({
+        url: '{{ route("wishlist.check") }}',
+        method: 'POST',
+        data: {
+            product_id: productId
+        },
+        success: function(response) {
+            if (response.success) {
+                updateWishlistButton(wishlistBtn, response.is_in_wishlist);
+            }
+        },
+        error: function(xhr) {
+            console.error('Error checking wishlist status:', xhr);
+        }
+    });
+}
+
+function updateWishlistButton(wishlistBtn, isInWishlist) {
+    const heartIcon = wishlistBtn.querySelector('.lnr-heart');
+    const hoverText = wishlistBtn.querySelector('p');
+    
+    if (isInWishlist) {
+        wishlistBtn.classList.add('in-wishlist');
+        hoverText.textContent = 'Đã yêu thích';
+    } else {
+        wishlistBtn.classList.remove('in-wishlist');
+        hoverText.textContent = 'Yêu thích';
+    }
+}
+
+function updateWishlistCount() {
+    $.ajax({
+        url: '{{ route("wishlist.count") }}',
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                // Update wishlist count in header if element exists
+                const wishlistCountElement = document.querySelector('#wishlist-count');
+                if (wishlistCountElement) {
+                    if (response.count > 0) {
+                        wishlistCountElement.style.display = 'inline-block';
+                        wishlistCountElement.textContent = response.count;
+                    } else {
+                        wishlistCountElement.style.display = 'none';
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+@endpush
+
 @push('styles')
 <style>
     /* CSS cho Filter Form */
@@ -195,6 +324,23 @@
         background-color: #f97316;
         color: white;
         border-color: #f97316;
+    }
+
+    .wishlist-btn {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .wishlist-btn:hover {
+        color: #e74c3c !important;
+    }
+
+    .wishlist-btn.in-wishlist {
+        color: #e74c3c !important;
+    }
+
+    .wishlist-btn.in-wishlist .lnr-heart::before {
+        content: "\e87d"; /* filled heart */
     }
 
     .size-square:hover {
