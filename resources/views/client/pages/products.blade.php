@@ -140,21 +140,22 @@
                                                 <h6>{{ number_format($minPrice, 0, ',', '.') }} – {{ number_format($maxPrice, 0, ',', '.') }} VNĐ</h6>
                                             @endif
                                         </div>
-                                        <div class="prd-bottom">
-                                            <a href="{{ route('client.product.show', $product->id_product) }}"
-                                               class="social-info">
-                                                <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">Xem chi tiết</p>
-                                            </a>
-                                            @auth
-                                            <a href="#" class="social-info wishlist-btn" 
-                                               data-product-id="{{ $product->id_product }}"
-                                               onclick="toggleWishlist({{ $product->id_product }}, event)">
-                                                <span class="lnr lnr-heart"></span>
-                                                <p class="hover-text">Yêu thích</p>
-                                            </a>
-                                            @endauth
-                                        </div>
+                                        <div class="social-info-wrapper">
+    <a href="{{ route('client.product.show', $product->id_product) }}" class="social-info">
+        <span class="lnr lnr-move"></span>
+        <p class="hover-text">Xem chi tiết</p>
+    </a>
+
+    @auth
+    <a href="#" class="social-info wishlist-btn" 
+       data-product-id="{{ $product->id_product }}"
+       onclick="toggleWishlist({{ $product->id_product }}, event)">
+        <span class="lnr lnr-heart"></span>
+        <p class="hover-text">Yêu thích</p>
+    </a>
+    @endauth
+</div>
+
                                     </figcaption>
                                 </figure>
                             </div>
@@ -361,5 +362,65 @@ function updateWishlistCount() {
     .filter-bar .btn-outline-secondary {
         margin-left: 5px;
     }
+    .social-info-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.social-info {
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+}
+
+.social-info span {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #7a8ab9;
+    color: #fff;
+    font-size: 16px;
+    transition: background 0.3s ease;
+    z-index: 2;
+}
+
+.social-info .hover-text {
+    position: absolute;
+    left: 45px;
+    opacity: 0;
+    white-space: nowrap;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+    padding: 3px 6px;
+    border-radius: 4px;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.social-info:hover .hover-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.social-info:hover span {
+    background: #5a6bb3;
+}
+
+.wishlist-btn span {
+    background: #e74c3c;
+}
+
+.wishlist-btn:hover span {
+    background: #c0392b;
+}
+
 </style>
 @endpush

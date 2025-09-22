@@ -300,7 +300,7 @@
                                 </a>
                                 <button type="button" class="btn-add-cart" 
                                         onclick="addToCart({{ $item->id_product }})">
-                                    <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
+                                    <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
                                 </button>
                             </div>
                         </div>
