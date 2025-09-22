@@ -936,7 +936,12 @@
     btnNext.addEventListener('click', () => {
         slider.scrollBy({ left: 100, behavior: 'smooth' });
     });
-
+    $.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+   
     // Wishlist functionality
     function initializeWishlist() {
         const wishlistBtn = document.getElementById('wishlist-btn');
@@ -980,29 +985,23 @@
         wishlistBtn.querySelector('.wishlist-text').textContent = 'Đang xử lý...';
         
         $.ajax({
-            url: '{{ route("wishlist.toggle") }}',
-            method: 'POST',
-            data: {
-                product_id: productId,
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                if (response.success) {
-                    updateWishlistButton(response.is_in_wishlist);
-                    
-                    // Show success message
-                    Swal.fire({
-                        title: 'Thành công!',
-                        text: response.message,
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    
-                    // Update wishlist count in header if exists
-                    updateWishlistCount();
-                }
-            },
+        url: '{{ route("wishlist.toggle") }}',
+        method: 'POST',
+        data: {
+            product_id: productId
+        },
+        success: function(response) {
+            if (response.success) {
+                
+                location.reload();
+            } else {
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: response.message || 'Không thể cập nhật danh sách yêu thích',
+                    icon: 'error'
+                });
+            }
+        },
             error: function(xhr) {
                 Swal.fire({
                     title: 'Lỗi!',
@@ -1025,7 +1024,7 @@
         
         if (isInWishlist) {
             wishlistBtn.classList.add('in-wishlist');
-            wishlistText.textContent = 'Đã yêu thích';
+            wishlistText.textContent = 'Bỏ yêu thích';
             wishlistIcon.className = 'fas fa-heart';
         } else {
             wishlistBtn.classList.remove('in-wishlist');
