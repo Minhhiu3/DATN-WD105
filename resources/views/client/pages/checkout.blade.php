@@ -145,6 +145,7 @@
     <!-- Hidden fields cho Laravel -->
     <input type="hidden" id="variantId" name="variant_id" value="{{ $variant->id_variant }}">
     <input type="hidden" id="quantity" name="quantity" value="{{$quantity}}">
+    <input type="hidden" id="discount_id" name="discount_id" value="">
 
     <div class="smv-footer">
         <button type="button" id="smv-cancel" class="smv-btn-cancel">Trở lại</button>

@@ -166,13 +166,14 @@ public function cancelOrder(Request $request, $id)
 
 public function orderDetail($id)
 {
-    $order = Order::with('orderItems.variant.product')
-        ->where('user_id', Auth::id())
+    $order = Order::with(['orderItems.variant.product', 'discountCode'])
+        ->where('user_id', auth()->id())
         ->where('id_order', $id)
         ->firstOrFail();
 
     return view('auth.order_detail', compact('order'));
 }
+
 
     /**
      * Hiển thị thông tin cá nhân

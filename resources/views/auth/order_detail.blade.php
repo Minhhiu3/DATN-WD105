@@ -89,11 +89,22 @@
         </div>
 
        <div class="mt-3 text-end">
-   <p><strong>Tạm tính:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} VNĐ</p>
-<p><strong>Phí vận chuyển:</strong> {{ number_format($order->shipping_fee ?? 30000, 0, ',', '.') }} VNĐ</p>
-<p><strong>Tổng thanh toán:</strong> {{ number_format($order->grand_total ?? ($order->total_amount + ($order->shipping_fee ?? 30000)), 0, ',', '.') }} VNĐ</p>
+    <p><strong>Tạm tính:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} VNĐ</p>
+    <p><strong>Phí vận chuyển:</strong> {{ number_format($order->shipping_fee, 0, ',', '.') }} VNĐ</p>
 
+    @if ($order->discountCode)
+        @if ($order->discountCode->type === '0')
+            <p><strong>Mã giảm giá:</strong> {{ $order->discountCode->code }} (Giảm {{ $order->discountCode->value }}%)</p>
+        @elseif ($order->discountCode->type === '1')
+            <p><strong>Mã giảm giá:</strong> {{ $order->discountCode->code }} (Giảm {{ number_format($order->discountCode->value, 0, ',', '.') }} VNĐ)</p>
+        @endif
+    @else
+        <p><strong>Mã giảm giá:</strong> Không áp dụng</p>
+    @endif
+
+    <p><strong>Tổng thanh toán:</strong> {{ number_format($order->grand_total, 0, ',', '.') }} VNĐ</p>
 </div>
+
 
 
         <a href="{{ route('account.orders') }}" class="btn btn-secondary mt-3">

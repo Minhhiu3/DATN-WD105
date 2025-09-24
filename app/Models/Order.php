@@ -28,6 +28,7 @@ class Order extends Model
     'user_name',
     'phone',
     'grand_total',
+    'discount_id',
     'created_at',
 ];
 
@@ -53,6 +54,11 @@ class Order extends Model
     {
         return "{$this->address}, {$this->ward}, {$this->district}, {$this->province}";
     }
+    public function discountCode()
+{
+    return $this->belongsTo(DiscountCode::class, 'discount_id', 'discount_id');
+}
+
     public function productReviews()
 {
     return $this->hasMany(ProductReview::class, 'order_id', 'id_order');
